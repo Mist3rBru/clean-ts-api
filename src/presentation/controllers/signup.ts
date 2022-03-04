@@ -3,7 +3,7 @@ export class Signup {
     return {
       statusCode: 400,
       body: {
-        error: new Error('Missing param: name').message
+        error: 'Missing param: name'
       }
     }
   }
