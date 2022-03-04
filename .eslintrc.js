@@ -1,19 +1,12 @@
 module.exports = {
-  env: {
-    es2021: true,
-    node: true
-  },
-  extends: [
-    'standard'
-  ],
-  parser: '@typescript-eslint/parser',
+  extends: 'standard-with-typescript',
   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module'
+    project: './tsconfig.json'
   },
-  plugins: [
-    '@typescript-eslint'
-  ],
   rules: {
+    '@typescript-eslint/consistent-type-definitions': 'off',
+    '@typescript-eslint/strict-boolean-expressions': 'off',
+    '@typescript-eslint/return-await': 'off',
+    'import/export': 'off'
   }
 }
