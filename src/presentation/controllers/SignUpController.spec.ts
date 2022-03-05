@@ -28,11 +28,7 @@ describe('Signup Controller', () => {
   it('should return 400 if no name is provided', async () => {
     const { sut } = makeSut()
     const httpRequest = {
-      body: {
-        email: 'any-email',
-        password: 'any-password',
-        password_confirmation: 'any-password'
-      }
+      body: {}
     }
     const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse.statusCode).toBe(400)
@@ -42,11 +38,7 @@ describe('Signup Controller', () => {
   it('should return 400 if no email is provided', async () => {
     const { sut } = makeSut()
     const httpRequest = {
-      body: {
-        name: 'any-name',
-        password: 'any-password',
-        password_confirmation: 'any-password'
-      }
+      body: { name: 'any-name' }
     }
     const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse.statusCode).toBe(400)
@@ -58,8 +50,7 @@ describe('Signup Controller', () => {
     const httpRequest = {
       body: {
         name: 'any-name',
-        email: 'any-email',
-        password_confirmation: 'any-password'
+        email: 'any-email'
       }
     }
     const httpResponse = await sut.handle(httpRequest)
@@ -81,7 +72,7 @@ describe('Signup Controller', () => {
     expect(httpResponse.body.error).toBe(new MissingParamError('password_confirmation').message)
   })
 
-  it('should return 400 email provided is not valid', async () => {
+  it('should return 400 if email provided is not valid', async () => {
     const { sut, emailValidatorSpy } = makeSut()
     jest.spyOn(emailValidatorSpy, 'isValid').mockReturnValueOnce(false)
     const httpRequest = {
