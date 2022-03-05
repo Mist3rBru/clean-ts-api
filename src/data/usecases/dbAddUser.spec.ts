@@ -39,32 +39,43 @@ class AddUserRepositorySpy implements AddUserRepository {
   }
 }
 
+const makeFakeUser = (): AddUserModel => {
+  return {
+    name: 'any-name',
+    email: 'any-email',
+    password: 'any-password'
+  }
+}
+
 describe('DbAddUser', () => {
   it('should call Encrypter with correct password', async () => {
     const { sut, encrypterSpy } = makeSut()
     const encryptSpy = jest.spyOn(encrypterSpy, 'encrypt')
-    const userModel = {
-      name: 'any-name',
-      email: 'any-email',
-      password: 'any-password'
-    }
+    const userModel = makeFakeUser()
     await sut.add(userModel)
     expect(encryptSpy).toHaveBeenCalledWith(userModel.password)
   })
 
-  it('should  call AddUserRepository with correct values', async () => {
+  it('should call AddUserRepository with correct values', async () => {
     const { sut, addUserRepositorySpy } = makeSut()
     const addSpy = jest.spyOn(addUserRepositorySpy, 'add')
-    const userModel = {
-      name: 'any-name',
-      email: 'any-email',
-      password: 'any-password'
-    }
+    const userModel = makeFakeUser()
     await sut.add(userModel)
     expect(addSpy).toHaveBeenCalledWith({
       name: userModel.name,
       email: userModel.email,
       password: 'any-hash'
+    })
+  })
+
+  it('should return user if AddUserRepository return user', async () => {
+    const { sut } = makeSut()
+    const userModel = makeFakeUser()
+    const user = await sut.add(userModel)
+    expect(user).toEqual({
+      id: 'any-id',
+      name: userModel.name,
+      email: userModel.email
     })
   })
 })
