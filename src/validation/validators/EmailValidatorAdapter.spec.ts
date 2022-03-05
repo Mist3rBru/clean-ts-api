@@ -14,8 +14,8 @@ const makeSut = (): EmailValidatorAdapter => {
 
 describe('EmailValidatorAdapter', () => {
   it('should return false if email is invalid', async () => {
-    jest.spyOn(validator, 'isEmail').mockReturnValueOnce(false)
     const sut = makeSut()
+    jest.spyOn(validator, 'isEmail').mockReturnValueOnce(false)
     const isValid = sut.isValid('invalid-email')
     expect(isValid).toBe(false)
   })
@@ -24,5 +24,12 @@ describe('EmailValidatorAdapter', () => {
     const sut = makeSut()
     const isValid = sut.isValid('valid-email')
     expect(isValid).toBe(true)
+  })
+
+  it('should call validator with correct email', async () => {
+    const sut = makeSut()
+    const isEmailSpy = jest.spyOn(validator, 'isEmail')
+    sut.isValid('valid-email')
+    expect(isEmailSpy).toBeCalledWith('valid-email')
   })
 })
