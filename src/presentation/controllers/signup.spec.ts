@@ -11,7 +11,6 @@ describe('Signup Controller', () => {
     const sut = makeSut()
     const httpRequest = {
       body: {
-        name: 'any-name',
         email: 'any-email',
         password: 'any-password',
         password_confirmation: 'any-password'
@@ -22,10 +21,17 @@ describe('Signup Controller', () => {
     expect(httpResponse.body.error).toBe(new MissingParamError('name').message)
   })
 
-  it('should return 400 if no name is provided', async () => {
+  it('should return 400 if no email is provided', async () => {
     const sut = makeSut()
-    const httpResponse = await sut.handle()
+    const httpRequest = {
+      body: {
+        name: 'any-name',
+        password: 'any-password',
+        password_confirmation: 'any-password'
+      }
+    }
+    const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse.statusCode).toBe(400)
-    expect(httpResponse.body.error).toBe(new Error('Missing param: name').message)
+    expect(httpResponse.body.error).toBe(new Error('Missing param: email').message)
   })
 })
