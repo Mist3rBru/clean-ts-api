@@ -78,4 +78,22 @@ describe('DbAddUser', () => {
       email: userModel.email
     })
   })
+
+  it('should throw if any dependency throws', async () => {
+    const suts = [].concat(
+      new DbAddUser(
+        { encrypt: () => { throw new Error() } },
+        new AddUserRepositorySpy()
+      ),
+      new DbAddUser(
+        new EncrypterSpy(),
+        { add: () => { throw new Error() } }
+      )
+    )
+    for (const sut of suts) {
+      const userModel = makeFakeUser()
+      const promise = sut.add(userModel)
+      void expect(promise).rejects.toThrow()
+    }
+  })
 })
