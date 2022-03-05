@@ -111,4 +111,24 @@ describe('Signup Controller', () => {
     await sut.handle(httpRequest)
     expect(isValidSpy).toBeCalledWith('any-email')
   })
+  
+  it('should return 500 if any dependency throws', async () => {
+    const suts = [].concat(
+      new SignUpController(
+        { isValid: () => { throw new Error() } }
+      )
+    )
+    for (const sut of suts) {
+      const httpRequest = {
+        body: {
+          name: 'any-name',
+          email: 'any-email',
+          password: 'any-password',
+          password_confirmation: 'any-password'
+        }
+      }
+      const httpResponse = await sut.handle(httpRequest)
+      expect(httpResponse.statusCode).toBe(500)
+    }
+  })
 })
