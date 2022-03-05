@@ -1,1 +1,1 @@
-export * from './MissingParamError'
+export * from './ParamErrors'
