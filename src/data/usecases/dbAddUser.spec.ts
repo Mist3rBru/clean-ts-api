@@ -1,4 +1,5 @@
 import { DbAddUser } from './DbAddUser'
+import { Encrypter } from '@/data/protocols'
 
 interface SutTypes {
   sut: DbAddUser
@@ -6,7 +7,7 @@ interface SutTypes {
 }
 
 const makeSut = (): SutTypes => {
-  const encrypterSpy = new Encrypter()
+  const encrypterSpy = new EncrypterSpy()
   const sut = new DbAddUser(
     encrypterSpy
   )
@@ -16,8 +17,8 @@ const makeSut = (): SutTypes => {
   }
 }
 
-class Encrypter {
-  async hash (value: string): Promise<string> {
+class EncrypterSpy {
+  async encrypt (value: string): Promise<string> {
     return 'any-hash'
   }
 }
@@ -25,13 +26,13 @@ class Encrypter {
 describe('DbAddUser', () => {
   it('should call Encrypter ', async () => {
     const { sut, encrypterSpy } = makeSut()
-    const hashSpy = jest.spyOn(encrypterSpy, 'hash')
+    const encryptSpy = jest.spyOn(encrypterSpy, 'encrypt')
     const userModel = {
       name: 'any-name',
       email: 'any-email',
       password: 'any-password'
     }
     await sut.add(userModel)
-    expect(hashSpy).toHaveBeenCalledWith(userModel.password)
+    expect(encryptSpy).toHaveBeenCalledWith(userModel.password)
   })
 })
