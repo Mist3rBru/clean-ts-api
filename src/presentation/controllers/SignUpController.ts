@@ -1,5 +1,6 @@
 import { MissingParamError, InvalidParamError } from '@/utils/errors'
-import { HttpRequest, HttpResponse, Controller, EmailValidator } from '@/presentation/protocols'
+import { EmailValidator } from '@/validation/protocols'
+import { HttpRequest, HttpResponse, Controller } from '@/presentation/protocols'
 import { ok, badRequest, serverError } from '@/presentation/helpers'
 import { AddUser } from '@/domain/usecases'
 

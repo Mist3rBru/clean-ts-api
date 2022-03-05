@@ -1,6 +1,6 @@
 import { MissingParamError, InvalidParamError } from '@/utils/errors'
+import { EmailValidator } from '@/validation/protocols'
 import { SignUpController } from '@/presentation/controllers/SignUpController'
-import { EmailValidator } from '@/presentation/protocols'
 import { AddUser, AddUserModel } from '@/domain/usecases'
 import { UserModel } from '@/domain/models'
 
