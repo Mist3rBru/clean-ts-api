@@ -1,18 +1,16 @@
+import { Encrypter, AddUserRepository } from '@/data/protocols'
 import { AddUser, AddUserModel } from '@/domain/usecases'
 import { UserModel } from '@/domain/models'
-import { Encrypter } from '@/data/protocols'
 
 export class DbAddUser implements AddUser {
   constructor (
-    private readonly encrypter: Encrypter
+    private readonly encrypter: Encrypter,
+    private readonly addUserRepository: AddUserRepository
   ) {}
 
   async add (model: AddUserModel): Promise<UserModel> {
-    await this.encrypter.encrypt(model.password)
-    return {
-      id: 'any-id',
-      name: model.name,
-      email: model.email
-    }
+    const hashedPassword = await this.encrypter.encrypt(model.password)
+    const user = await this.addUserRepository.add(Object.assign({}, model, { password: hashedPassword }))
+    return user
   }
 }
