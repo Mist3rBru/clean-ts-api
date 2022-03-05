@@ -1,5 +1,5 @@
-import { MissingParamError, InvalidParamError } from '@/utils/errors'
 import { SignUpController } from './SignUpController'
+import { MissingParamError, InvalidParamError } from '@/utils/errors'
 import { EmailValidator } from '../protocols'
 import { AddUser, AddUserModel } from '@/domain/usecases'
 import { UserModel } from '@/domain/models'
@@ -25,7 +25,7 @@ const makeSut = (): SutTypes => {
 }
 
 class AddUserSpy implements AddUser {
-  add (model: AddUserModel): UserModel {
+  async add (model: AddUserModel): Promise<UserModel> {
     const user = {
       id: 'any-id',
       name: model.name,
@@ -36,7 +36,7 @@ class AddUserSpy implements AddUser {
   }
 }
 
-class EmailValidatorSpy {
+class EmailValidatorSpy implements EmailValidator {
   isValid (email: string): boolean {
     return true
   }
@@ -171,5 +171,25 @@ describe('Signup Controller', () => {
       const httpResponse = await sut.handle(httpRequest)
       expect(httpResponse.statusCode).toBe(500)
     }
+  })
+
+  it('should return 200 if user be signed up', async () => {
+    const { sut } = makeSut()
+    const httpRequest = {
+      body: {
+        name: 'valid-name',
+        email: 'valid-email',
+        password: 'valid-password',
+        password_confirmation: 'valid-password'
+      }
+    }
+    const httpResponse = await sut.handle(httpRequest)
+    expect(httpResponse.statusCode).toBe(200)
+    expect(httpResponse.body).toEqual({
+      id: 'any-id',
+      name: httpRequest.body.name,
+      email: httpRequest.body.email,
+      password_hash: 'any-hash'
+    })
   })
 })

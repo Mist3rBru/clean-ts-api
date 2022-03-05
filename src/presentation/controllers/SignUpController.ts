@@ -1,6 +1,6 @@
-import { HttpRequest, HttpResponse, Controller, EmailValidator } from '../protocols'
+import { HttpRequest, HttpResponse, Controller, EmailValidator } from '@/presentation/protocols'
+import { ok, badRequest, serverError } from '@/presentation/helpers'
 import { MissingParamError, InvalidParamError } from '@/utils/errors'
-import { badRequest, serverError } from '@/utils/helpers'
 import { AddUser } from '@/domain/usecases'
 
 export class SignUpController implements Controller {
@@ -25,11 +25,12 @@ export class SignUpController implements Controller {
       if (password !== passwordConfirmation) {
         return badRequest(new InvalidParamError('password confirmation'))
       }
-      this.addUser.add({
+      const user = await this.addUser.add({
         name,
         email,
         password
       })
+      return ok(user)
     } catch (error) {
       return serverError()
     }
