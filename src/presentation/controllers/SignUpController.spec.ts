@@ -1,24 +1,42 @@
 import { MissingParamError, InvalidParamError } from '@/utils/errors'
 import { SignUpController } from './SignUpController'
 import { EmailValidator } from '../protocols'
+import { AddUser, AddUserModel } from '@/domain/usecases'
+import { UserModel } from '@/domain/models'
 
 interface SutTypes {
   sut: SignUpController
   emailValidatorSpy: EmailValidator
+  addUserSpy: AddUser
 }
 
 const makeSut = (): SutTypes => {
+  const addUserSpy = new AddUserSpy()
   const emailValidatorSpy = new EmailValidatorSpy()
   const sut = new SignUpController(
-    emailValidatorSpy
+    emailValidatorSpy,
+    addUserSpy
   )
   return {
     sut,
-    emailValidatorSpy
+    emailValidatorSpy,
+    addUserSpy
   }
 }
 
-class EmailValidatorSpy implements EmailValidator {
+class AddUserSpy implements AddUser {
+  add (model: AddUserModel): UserModel {
+    const user = {
+      id: 'any-id',
+      name: model.name,
+      email: model.email,
+      password_hash: 'any-hash'
+    }
+    return user
+  }
+}
+
+class EmailValidatorSpy {
   isValid (email: string): boolean {
     return true
   }
@@ -72,6 +90,21 @@ describe('Signup Controller', () => {
     expect(httpResponse.body.error).toBe(new MissingParamError('password_confirmation').message)
   })
 
+  it('should call EmailValidator with correct values', async () => {
+    const { sut, emailValidatorSpy } = makeSut()
+    const isValidSpy = jest.spyOn(emailValidatorSpy, 'isValid')
+    const httpRequest = { 
+      body: {
+        name: 'any-name',
+        email: 'any-email',
+        password: 'any-password',
+        password_confirmation: 'any-password'
+      }
+    }
+    await sut.handle(httpRequest)
+    expect(isValidSpy).toBeCalledWith('any-email')
+  })
+
   it('should return 400 if email provided is not valid', async () => {
     const { sut, emailValidatorSpy } = makeSut()
     jest.spyOn(emailValidatorSpy, 'isValid').mockReturnValueOnce(false)
@@ -103,25 +136,27 @@ describe('Signup Controller', () => {
     expect(httpResponse.body.error).toBe(new InvalidParamError('password confirmation').message)
   })
 
-  it('should call EmailValidator with correct values', async () => {
-    const { sut, emailValidatorSpy } = makeSut()
-    const isValidSpy = jest.spyOn(emailValidatorSpy, 'isValid')
-    const httpRequest = { 
+  it('should call AddAccount with correct values', async () => {
+    const { sut, addUserSpy } = makeSut()
+    const addSpy = jest.spyOn(addUserSpy, 'add')
+    const httpRequest = {
       body: {
         name: 'any-name',
         email: 'any-email',
         password: 'any-password',
-        password_confirmation: 'anu-password'
+        password_confirmation: 'any-password'
       }
     }
     await sut.handle(httpRequest)
-    expect(isValidSpy).toBeCalledWith('any-email')
+    const { password_confirmation: passwordConfirmation, ...expectedValues } = httpRequest.body
+    expect(addSpy).toBeCalledWith(expectedValues)
   })
   
   it('should return 500 if any dependency throws', async () => {
     const suts = [].concat(
       new SignUpController(
-        { isValid: () => { throw new Error() } }
+        { isValid: () => { throw new Error() } },
+        { add: () => { throw new Error() } }
       )
     )
     for (const sut of suts) {
