@@ -1,5 +1,6 @@
-import { badRequest } from '@/utils/helpers'
 import { MissingParamError } from '@/utils/errors'
+import { badRequest } from '@/utils/helpers'
+
 export class Signup {
   async handle (httpRequest: any): Promise<any> {
     const requiredParams = ['name', 'email', 'password', 'password_confirmation']
