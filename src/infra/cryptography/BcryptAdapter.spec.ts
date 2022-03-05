@@ -19,4 +19,10 @@ describe('BcryptAdapter', () => {
     await sut.encrypt('any-data')
     expect(encryptSpy).toBeCalledWith('any-data', 8)
   })
+
+  it('should return a on success', async () => {
+    const sut = makeSut()
+    const hash = await sut.encrypt('any-data')
+    expect(hash).toBe('any-hash')
+  })
 })
