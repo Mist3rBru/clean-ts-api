@@ -1,13 +1,13 @@
 import { AddUserRepository } from '@/data/protocols'
 import { AddUserModel } from '@/domain/usecases'
 import { UserModel } from '@/domain/models'
+import { MongoHelper } from './MongoHelper'
 
 export class UserRepository implements AddUserRepository {
   async add (model: AddUserModel): Promise<UserModel> {
-    return {
-      id: 'any-id',
-      name: model.name,
-      email: model.email
-    }
+    const userCollection = await MongoHelper.getCollection('users')
+    await userCollection.insertOne(model)
+    const user = await userCollection.findOne({ email: model.email })
+    return MongoHelper.map(user)
   }
 }

@@ -20,18 +20,20 @@ describe('UserRepository', () => {
     await MongoHelper.connect()
   })
 
+  beforeEach(async () => {
+    const usersCollection = await MongoHelper.getCollection('users')
+    await usersCollection.deleteMany({})
+  })
+
   afterAll(async () => {
     await MongoHelper.disconnect()
   })
 
-  it('should return user when registered on MongoDB', async () => {;
+  it('should return user when registered on MongoDB', async () => {
     const sut = makeSut()
     const model = makeUser()
     const user = await sut.add(model)
-    expect(user).toEqual({
-      id: 'any-id',
-      name: model.name,
-      email: model.email
-    })
+    expect(user.name).toBe(model.name)
+    expect(user.email).toBe(model.email)
   })
 })
