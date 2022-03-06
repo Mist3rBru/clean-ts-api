@@ -1,4 +1,5 @@
 import express, { Express, Router } from 'express'
+import fg from 'fast-glob'
 import { cors, jsonParser, contentType } from '@/main/middlewares'
 
 class App {
@@ -21,6 +22,9 @@ class App {
 
   _routes (): void {
     this.express.use('/api', this.router)
+    fg.sync('**/src/main/routes/**routes.ts').map(async (file) => {
+      (await import(`../../../${file}`)).default(this.router)
+    })
   }
 }
 
