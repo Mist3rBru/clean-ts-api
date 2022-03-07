@@ -1,6 +1,6 @@
 import express, { Express, Router } from 'express'
-import fg from 'fast-glob'
 import { cors, jsonParser, contentType } from '@/main/middlewares'
+import fg from 'fast-glob'
 
 class App {
   express: Express
@@ -28,6 +28,4 @@ class App {
   }
 }
 
-const app = new App()
-
-export default app.express
+export const app = new App().express
