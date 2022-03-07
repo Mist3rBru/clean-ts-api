@@ -22,4 +22,16 @@ describe('MongoHelper', () => {
     expect(MongoHelper.client).toBeTruthy()
     expect(collection).toBeTruthy()
   })
+
+  it('should return the data collection without _id', async () => {
+    const collection = {
+      _id: 'any-id',
+      email: 'any-email'
+    }
+    const newCollection = MongoHelper.map(collection)
+    expect(newCollection).toEqual({
+      id: collection._id, 
+      email: collection.email
+    })
+  })
 })
