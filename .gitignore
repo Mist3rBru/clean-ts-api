@@ -3,3 +3,4 @@ node_modules
 coverage
 dist
 globalConfig.json
+package-lock.json
