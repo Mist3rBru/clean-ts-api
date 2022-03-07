@@ -1,4 +1,6 @@
 import { MongoHelper } from './MongoHelper'
+import { env } from '@/main/config'
+const uri = env.MONGO_URL
 
 describe('MongoHelper', () => {
   afterAll(async () => {
@@ -6,7 +8,7 @@ describe('MongoHelper', () => {
   })
   
   it('should connect to MongoDB', async () => {
-    await MongoHelper.connect()
+    await MongoHelper.connect(uri)
     expect(MongoHelper.client).toBeTruthy()
   })
 
@@ -16,7 +18,7 @@ describe('MongoHelper', () => {
   })
 
   it('should reconnect and return collection to MongoDB', async () => {
-    await MongoHelper.connect()
+    await MongoHelper.connect(uri)
     await MongoHelper.disconnect()
     const collection = await MongoHelper.getCollection('users')
     expect(MongoHelper.client).toBeTruthy()

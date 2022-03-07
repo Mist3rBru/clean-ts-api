@@ -1,6 +1,8 @@
 import { UserRepository } from './UserRepository'
 import { MongoHelper } from './MongoHelper'
 import { AddUserModel } from '@/domain/usecases'
+import { env } from '@/main/config'
+const uri = env.MONGO_URL
 
 const makeSut = (): UserRepository => {
   const sut = new UserRepository()
@@ -17,7 +19,7 @@ const makeUser = (): AddUserModel => {
 
 describe('UserRepository', () => {
   beforeAll(async () => {
-    await MongoHelper.connect()
+    await MongoHelper.connect(uri)
   })
 
   beforeEach(async () => {

@@ -47,4 +47,12 @@ describe('LogControllerDecorator', () => {
     expect(httpResponse.body).toEqual(request.body)
     expect(httpResponse.statusCode).toBe(200)
   })
+
+  it('should return Controller response', async () => {
+    const { sut } = makeSut()
+    const request = makeRequest()
+    const httpResponse = await sut.handle(request)
+    expect(httpResponse.body).toEqual(request.body)
+    expect(httpResponse.statusCode).toBe(200)
+  })
 })
