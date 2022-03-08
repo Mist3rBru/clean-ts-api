@@ -1,5 +1,5 @@
 import { DbAddUser } from './DbAddUser'
-import { Encrypter, AddUserRepository } from '@/data/protocols'
+import { Encrypter, AddUserRepository, hash } from '@/data/protocols'
 import { UserModel } from '@/domain/models'
 import { AddUserModel } from '@/domain/usecases'
 
@@ -24,7 +24,7 @@ const makeSut = (): SutTypes => {
 }
 
 class EncrypterSpy implements Encrypter {
-  async encrypt (value: string): Promise<string> {
+  async encrypt (value: string): Promise<hash> {
     return 'any-hash'
   }
 }

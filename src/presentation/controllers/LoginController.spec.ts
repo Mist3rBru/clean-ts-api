@@ -3,7 +3,7 @@ import { badRequest } from '@/presentation/helpers'
 import { MissingParamError, InvalidParamError } from '@/presentation/errors'
 import { HttpRequest } from '@/presentation/protocols'
 import { EmailValidator } from '@/validation/protocols'
-import { Authentication } from '@/domain/usecases'
+import { Authentication, token } from '@/domain/usecases'
 
 interface SutTypes {
   sut: LoginController
@@ -32,7 +32,7 @@ class EmailValidatorSpy implements EmailValidator {
 }
 
 class AuthenticationSpy implements Authentication {
-  async auth (email: string, password: string): Promise<string> {
+  async auth (email: string, password: string): Promise<token> {
     return 'any-token'
   }
 }
