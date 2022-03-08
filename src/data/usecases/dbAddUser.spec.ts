@@ -39,13 +39,11 @@ class AddUserRepositorySpy implements AddUserRepository {
   }
 }
 
-const makeFakeUser = (): AddUserModel => {
-  return {
-    name: 'any-name',
-    email: 'any-email',
-    password: 'any-password'
-  }
-}
+const makeFakeUser = (): AddUserModel => ({
+  name: 'any-name',
+  email: 'any-email',
+  password: 'any-password'
+})
 
 describe('DbAddUser', () => {
   it('should call Encrypter with correct password', async () => {

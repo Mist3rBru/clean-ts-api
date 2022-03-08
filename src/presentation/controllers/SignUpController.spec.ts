@@ -32,7 +32,7 @@ class AddUserSpy implements AddUser {
       id: 'any-id',
       name: model.name,
       email: model.email,
-      password_hash: 'hashed-password'
+      password: 'hashed-password'
     }
     return user
   }
@@ -162,7 +162,7 @@ describe('Signup Controller', () => {
       id: 'any-id',
       name: 'any-name',
       email: 'any-email',
-      password_hash: 'hashed-password'
+      password: 'hashed-password'
     }))
   })
 })
