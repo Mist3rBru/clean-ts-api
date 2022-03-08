@@ -9,7 +9,7 @@
     "start": "node dist/main/server.js",
     "dev": "ts-node-dev -r tsconfig-paths/register src/main/server.ts",
     "build": "rimraf dist && tsc -p tsconfig-build.json",
-    "test": "jest --runInBand",
+    "test": "jest --runInBand --no-cache",
     "test:unit": "npm test -- --watch -c jest-unit-config.js",
     "test:int": "npm test -- --watch -c jest-integration-config.js",
     "test:cover": "npm test -- --coverage"
