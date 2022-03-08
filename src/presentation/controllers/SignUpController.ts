@@ -13,6 +13,7 @@ export class SignUpController implements Controller {
 
   async handle (request: HttpRequest): Promise<HttpResponse> {
     try {
+      this.validation.validate(request.body)
       const requiredFields = ['name', 'email', 'password', 'password_confirmation']
       for (const field of requiredFields) {
         if (!request.body[field]) {
@@ -27,7 +28,6 @@ export class SignUpController implements Controller {
       if (password !== passwordConfirmation) {
         return badRequest(new InvalidParamError('password confirmation'))
       }
-      this.validation.validate('')
       const user = await this.addUser.add({
         name,
         email,

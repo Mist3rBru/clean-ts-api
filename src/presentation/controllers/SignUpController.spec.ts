@@ -64,6 +64,14 @@ const makeFakeRequest = (): HttpRequest => ({
 })
 
 describe('Signup Controller', () => {
+  it('should call Validation with correct values', async () => {
+    const { sut, validationSpy } = makeSut()
+    const validateSpy = jest.spyOn(validationSpy, 'validate')
+    const httpRequest = makeFakeRequest()
+    await sut.handle(httpRequest)
+    expect(validateSpy).toBeCalledWith(httpRequest.body)
+  })
+
   it('should return 400 if no name is provided', async () => {
     const { sut } = makeSut()
     const httpRequest = {
