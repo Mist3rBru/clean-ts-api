@@ -42,7 +42,7 @@ class ControllerSpyWithError implements Controller {
 }
 
 class LogErrorRepositorySpy implements LogErrorRepository {
-  async log (stackError: string): Promise<void> {
+  async log (stack: string): Promise<void> {
     return new Promise(resolve => resolve())
   }
 }

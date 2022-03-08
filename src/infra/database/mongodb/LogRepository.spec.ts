@@ -1,0 +1,28 @@
+import { LogRepository } from './LogRepository'
+import { MongoHelper } from './MongoHelper'
+import { Collection } from 'mongodb'
+import { env } from '@/main/config'
+const uri = env.MONGO_URL
+let errorCollection: Collection
+
+describe('LogRepository', () => {
+  beforeAll(async () => {
+    await MongoHelper.connect(uri)
+    errorCollection = await MongoHelper.getCollection('errors')
+  })
+
+  beforeEach(async () => {
+    await errorCollection.deleteMany({})
+  })
+
+  afterAll(async () => {
+    await MongoHelper.disconnect()
+  })
+
+  it('should register error on success', async () => {
+    const sut = new LogRepository()
+    await sut.log('any-stack')
+    const count = await errorCollection.countDocuments()
+    expect(count).toBe(1)
+  })
+})
