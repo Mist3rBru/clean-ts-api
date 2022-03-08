@@ -59,51 +59,69 @@ describe('LoginController', () => {
   it('should call EmailValidator with correct email', async () => {
     const { sut, emailValidatorSpy } = makeSut()
     const isValidSpy = jest.spyOn(emailValidatorSpy, 'isValid')
-    const request = makeFakeRequest()
-    await sut.handle(request)
-    expect(isValidSpy).toBeCalledWith(request.body.email)
+    const httpRequest = makeFakeRequest()
+    await sut.handle(httpRequest)
+    expect(isValidSpy).toBeCalledWith(httpRequest.body.email)
   })
 
   it('should return 400 if invalid email is provided', async () => {
     const { sut, emailValidatorSpy } = makeSut()
     jest.spyOn(emailValidatorSpy, 'isValid').mockReturnValueOnce(false)
-    const request = makeFakeRequest()
-    const httpResponse = await sut.handle(request)
+    const httpRequest = makeFakeRequest()
+    const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse).toEqual(badRequest(new InvalidParamError('email')))
   })
 
   it('should return 400 if no password is provided', async () => {
     const { sut } = makeSut()
-    const request = {
+    const httpRequest = {
       body: {
         email: 'any-email'
       }
     }
-    const httpResponse = await sut.handle(request)
+    const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse).toEqual(badRequest(new MissingParamError('password')))
   })
 
   it('should call Authentication with correct values', async () => {
     const { sut, authenticationSpy } = makeSut()
     const authSpy = jest.spyOn(authenticationSpy, 'auth')
-    const request = makeFakeRequest()
-    await sut.handle(request)
-    const { email, password } = request.body
+    const httpRequest = makeFakeRequest()
+    await sut.handle(httpRequest)
+    const { email, password } = httpRequest.body
     expect(authSpy).toHaveBeenCalledWith(email, password)
   })
 
   it('should  return 401 if invalid credentials are provided', async () => {
     const { sut, authenticationSpy } = makeSut()
     jest.spyOn(authenticationSpy, 'auth').mockReturnValueOnce(null)
-    const request = makeFakeRequest()
-    const httpResponse = await sut.handle(request)
+    const httpRequest = makeFakeRequest()
+    const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse).toEqual(unauthorized())
   })
 
   it('should  return 200 if valid credentials are provided', async () => {
     const { sut } = makeSut()
-    const request = makeFakeRequest()
-    const httpResponse = await sut.handle(request)
+    const httpRequest = makeFakeRequest()
+    const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse).toEqual(ok({ token: 'any-token' }))
+  })
+
+  it('should  return 500 if any dependency throws', async () => {
+    const suts = [].concat(
+      new LoginController(
+        { isValid () { throw new Error() } },
+        new AuthenticationSpy()
+      ),
+      new LoginController(
+        new EmailValidatorSpy(),
+        { auth () { throw new Error() } }
+      )
+    )
+    for (const sut of suts) {
+      const httpRequest = makeFakeRequest()
+      const httpResponse = await sut.handle(httpRequest)
+      expect(httpResponse.statusCode).toBe(500)
+    }
   })
 })
