@@ -1,4 +1,4 @@
-import { MongoHelper } from './MongoHelper'
+import { MongoHelper } from '@/infra/database/mongodb'
 import { env } from '@/main/config'
 const uri = env.MONGO_URL
 

@@ -1,5 +1,4 @@
-import { LogRepository } from './LogRepository'
-import { MongoHelper } from './MongoHelper'
+import { LogRepository, MongoHelper } from '@/infra/database/mongodb'
 import { Collection } from 'mongodb'
 import { env } from '@/main/config'
 const uri = env.MONGO_URL

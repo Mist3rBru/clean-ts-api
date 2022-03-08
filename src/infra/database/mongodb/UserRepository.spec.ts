@@ -1,5 +1,4 @@
-import { UserRepository } from './UserRepository'
-import { MongoHelper } from './MongoHelper'
+import { UserRepository, MongoHelper } from '@/infra/database/mongodb'
 import { AddUserModel } from '@/domain/usecases'
 import { env } from '@/main/config'
 const uri = env.MONGO_URL

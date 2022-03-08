@@ -1,4 +1,4 @@
-import { DbAddUser } from './DbAddUser'
+import { DbAddUser } from '@/data/usecases'
 import { Encrypter, AddUserRepository, hash } from '@/data/protocols'
 import { UserModel } from '@/domain/models'
 import { AddUserModel } from '@/domain/usecases'

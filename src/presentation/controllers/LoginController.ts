@@ -26,6 +26,9 @@ export class LoginController implements Controller {
     if (!token) {
       return unauthorized()
     }
-    return new Promise(resolve => resolve(null))
+    return {
+      statusCode: 200,
+      body: {}
+    }
   }
 }

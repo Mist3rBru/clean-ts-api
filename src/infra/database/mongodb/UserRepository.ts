@@ -1,7 +1,7 @@
 import { AddUserRepository } from '@/data/protocols'
 import { AddUserModel } from '@/domain/usecases'
 import { UserModel } from '@/domain/models'
-import { MongoHelper } from './MongoHelper'
+import { MongoHelper } from '@/infra/database/mongodb'
 
 export class UserRepository implements AddUserRepository {
   async add (model: AddUserModel): Promise<UserModel> {

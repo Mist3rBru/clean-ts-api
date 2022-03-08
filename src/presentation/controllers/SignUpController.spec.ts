@@ -1,4 +1,4 @@
-import { SignUpController } from '@/presentation/controllers/SignUpController'
+import { SignUpController } from '@/presentation/controllers'
 import { MissingParamError, InvalidParamError } from '@/presentation/errors'
 import { HttpRequest } from '@/presentation/protocols'
 import { ok, badRequest } from '@/presentation/helpers'
