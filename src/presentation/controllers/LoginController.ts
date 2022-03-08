@@ -1,6 +1,6 @@
 import { Controller, HttpRequest, HttpResponse } from '@/presentation/protocols'
 import { badRequest, ok, serverError, unauthorized } from '@/presentation/helpers'
-import { MissingParamError, InvalidParamError } from '@/presentation/errors'
+import { InvalidParamError } from '@/presentation/errors'
 import { EmailValidator, Validation } from '@/validation/protocols'
 import { Authentication } from '@/domain/usecases'
 
@@ -13,11 +13,9 @@ export class LoginController implements Controller {
 
   async handle (request: HttpRequest): Promise<HttpResponse> {
     try {
-      const requiredFields = ['email', 'password']
-      for (const field of requiredFields) {
-        if (!request.body[field]) {
-          return badRequest(new MissingParamError(field))
-        }
+      const error = this.validation.validate(request.body)
+      if (error) {
+        return badRequest(error)
       }
       const { email, password } = request.body
       const isEmailValid = this.emailValidator.isValid(email)
@@ -28,7 +26,6 @@ export class LoginController implements Controller {
       if (!token) {
         return unauthorized()
       }
-      this.validation.validate('')
       return ok({ token })
     } catch (error) {
       return serverError(error)
