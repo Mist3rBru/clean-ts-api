@@ -72,6 +72,15 @@ describe('Signup Controller', () => {
     expect(validateSpy).toBeCalledWith(httpRequest.body)
   })
 
+  it('should return 400 if Validation returns an error', async () => {
+    const { sut, validationSpy } = makeSut()
+    const error = new MissingParamError('any-param')
+    jest.spyOn(validationSpy, 'validate').mockReturnValueOnce(error)
+    const httpRequest = makeFakeRequest()
+    const httpResponse = await sut.handle(httpRequest)
+    expect(httpResponse.body.error).toBe(error.message)
+  })
+
   it('should return 400 if no name is provided', async () => {
     const { sut } = makeSut()
     const httpRequest = {
