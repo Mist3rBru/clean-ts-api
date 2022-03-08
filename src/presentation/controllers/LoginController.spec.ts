@@ -2,26 +2,30 @@ import { LoginController } from '@/presentation/controllers'
 import { badRequest, ok, unauthorized } from '@/presentation/helpers'
 import { MissingParamError, InvalidParamError } from '@/presentation/errors'
 import { HttpRequest } from '@/presentation/protocols'
-import { EmailValidator } from '@/validation/protocols'
+import { EmailValidator, Validation } from '@/validation/protocols'
 import { Authentication, token } from '@/domain/usecases'
 
 interface SutTypes {
   sut: LoginController
   emailValidatorSpy: EmailValidator
   authenticationSpy: Authentication
+  validationSpy: Validation
 }
 
 const makeSut = (): SutTypes => {
+  const validationSpy = new ValidationSpy()
   const authenticationSpy = new AuthenticationSpy()
   const emailValidatorSpy = new EmailValidatorSpy()
   const sut = new LoginController(
     emailValidatorSpy,
-    authenticationSpy
+    authenticationSpy,
+    validationSpy
   )
   return {
     sut,
     emailValidatorSpy,
-    authenticationSpy
+    authenticationSpy,
+    validationSpy
   }
 }
 
@@ -34,6 +38,12 @@ class EmailValidatorSpy implements EmailValidator {
 class AuthenticationSpy implements Authentication {
   async auth (email: string, password: string): Promise<token> {
     return 'any-token'
+  }
+}
+
+class ValidationSpy implements Validation {
+  validate (input: any): Error {
+    return null
   }
 }
 
@@ -111,11 +121,18 @@ describe('LoginController', () => {
     const suts = [].concat(
       new LoginController(
         { isValid () { throw new Error() } },
-        new AuthenticationSpy()
+        new AuthenticationSpy(),
+        new ValidationSpy()
       ),
       new LoginController(
         new EmailValidatorSpy(),
-        { auth () { throw new Error() } }
+        { auth () { throw new Error() } },
+        new ValidationSpy()
+      ),
+      new LoginController(
+        new EmailValidatorSpy(),
+        new AuthenticationSpy(),
+        { validate () { throw new Error() } }
       )
     )
     for (const sut of suts) {

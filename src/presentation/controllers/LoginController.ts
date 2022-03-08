@@ -1,13 +1,14 @@
 import { Controller, HttpRequest, HttpResponse } from '@/presentation/protocols'
 import { badRequest, ok, serverError, unauthorized } from '@/presentation/helpers'
 import { MissingParamError, InvalidParamError } from '@/presentation/errors'
-import { EmailValidator } from '@/validation/protocols'
+import { EmailValidator, Validation } from '@/validation/protocols'
 import { Authentication } from '@/domain/usecases'
 
 export class LoginController implements Controller {
   constructor (
     private readonly emailValidator: EmailValidator,
-    private readonly authentication: Authentication
+    private readonly authentication: Authentication,
+    private readonly validation: Validation
   ) {}
 
   async handle (request: HttpRequest): Promise<HttpResponse> {
@@ -27,6 +28,7 @@ export class LoginController implements Controller {
       if (!token) {
         return unauthorized()
       }
+      this.validation.validate('')
       return ok({ token })
     } catch (error) {
       return serverError(error)

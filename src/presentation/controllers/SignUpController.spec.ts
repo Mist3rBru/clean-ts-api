@@ -2,7 +2,7 @@ import { SignUpController } from '@/presentation/controllers'
 import { MissingParamError, InvalidParamError } from '@/presentation/errors'
 import { HttpRequest } from '@/presentation/protocols'
 import { ok, badRequest } from '@/presentation/helpers'
-import { EmailValidator } from '@/validation/protocols'
+import { EmailValidator, Validation } from '@/validation/protocols'
 import { AddUser, AddUserModel } from '@/domain/usecases'
 import { UserModel } from '@/domain/models'
 
@@ -10,19 +10,23 @@ interface SutTypes {
   sut: SignUpController
   emailValidatorSpy: EmailValidator
   addUserSpy: AddUser
+  validationSpy: Validation
 }
 
 const makeSut = (): SutTypes => {
+  const validationSpy = new ValidationSpy()
   const addUserSpy = new AddUserSpy()
   const emailValidatorSpy = new EmailValidatorSpy()
   const sut = new SignUpController(
     emailValidatorSpy,
-    addUserSpy
+    addUserSpy,
+    validationSpy
   )
   return {
     sut,
     emailValidatorSpy,
-    addUserSpy
+    addUserSpy,
+    validationSpy
   }
 }
 
@@ -41,6 +45,12 @@ class AddUserSpy implements AddUser {
 class EmailValidatorSpy implements EmailValidator {
   isValid (email: string): boolean {
     return true
+  }
+}
+
+class ValidationSpy implements Validation {
+  validate (input: any): Error {
+    return null
   }
 }
 
@@ -140,11 +150,18 @@ describe('Signup Controller', () => {
     const suts = [].concat(
       new SignUpController(
         { isValid: () => { throw new Error() } },
-        new AddUserSpy()
+        new AddUserSpy(),
+        new ValidationSpy()
       ),
       new SignUpController(
         new EmailValidatorSpy(),
-        { add: () => { throw new Error() } }
+        { add: () => { throw new Error() } },
+        new ValidationSpy()
+      ),
+      new SignUpController(
+        new EmailValidatorSpy(),
+        new AddUserSpy(),
+        { validate: () => { throw new Error() } }
       )
     )
     for (const sut of suts) {
