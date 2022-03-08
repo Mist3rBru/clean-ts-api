@@ -1,4 +1,4 @@
-import { MissingParamError, InvalidParamError } from '@/utils/errors'
+import { MissingParamError, InvalidParamError } from '@/presentation/errors'
 import { EmailValidator } from '@/validation/protocols'
 import { HttpRequest, HttpResponse, Controller } from '@/presentation/protocols'
 import { ok, badRequest, serverError } from '@/presentation/helpers'
@@ -33,7 +33,7 @@ export class SignUpController implements Controller {
       })
       return ok(user)
     } catch (error) {
-      return serverError()
+      return serverError(error)
     }
   }
 }

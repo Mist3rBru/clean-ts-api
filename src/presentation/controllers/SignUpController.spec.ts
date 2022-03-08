@@ -1,4 +1,4 @@
-import { MissingParamError, InvalidParamError } from '@/utils/errors'
+import { MissingParamError, InvalidParamError } from '@/presentation/errors'
 import { EmailValidator } from '@/validation/protocols'
 import { SignUpController } from '@/presentation/controllers/SignUpController'
 import { AddUser, AddUserModel } from '@/domain/usecases'
