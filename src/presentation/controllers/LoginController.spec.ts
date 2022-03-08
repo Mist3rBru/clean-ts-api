@@ -3,26 +3,37 @@ import { badRequest } from '@/presentation/helpers'
 import { MissingParamError, InvalidParamError } from '@/presentation/errors'
 import { HttpRequest } from '@/presentation/protocols'
 import { EmailValidator } from '@/validation/protocols'
+import { Authentication } from '@/domain/usecases'
 
 interface SutTypes {
   sut: LoginController
   emailValidatorSpy: EmailValidator
+  authenticationSpy: Authentication
 }
 
 const makeSut = (): SutTypes => {
+  const authenticationSpy = new AuthenticationSpy()
   const emailValidatorSpy = new EmailValidatorSpy()
   const sut = new LoginController(
-    emailValidatorSpy
+    emailValidatorSpy,
+    authenticationSpy
   )
   return {
     sut,
-    emailValidatorSpy
+    emailValidatorSpy,
+    authenticationSpy
   }
 }
 
 class EmailValidatorSpy implements EmailValidator {
   isValid (email: string): boolean {
     return true
+  }
+}
+
+class AuthenticationSpy implements Authentication {
+  async auth (email: string, password: string): Promise<string> {
+    return 'any-token'
   }
 }
 
@@ -70,5 +81,14 @@ describe('LoginController', () => {
     }
     const httpResponse = await sut.handle(request)
     expect(httpResponse).toEqual(badRequest(new MissingParamError('password')))
+  })
+
+  it('should call Authentication with correct values', async () => {
+    const { sut, authenticationSpy } = makeSut()
+    const authSpy = jest.spyOn(authenticationSpy, 'auth')
+    const request = makeFakeRequest()
+    await sut.handle(request)
+    const { email, password } = request.body
+    expect(authSpy).toBeCalledWith(email, password)
   })
 })
