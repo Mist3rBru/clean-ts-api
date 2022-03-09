@@ -34,7 +34,8 @@ class AddUserRepositorySpy implements AddUserRepository {
     return {
       id: 'any-id',
       name: model.name,
-      email: model.email
+      email: model.email,
+      password: 'hashed-password'
     }
   }
 }
@@ -73,7 +74,8 @@ describe('DbAddUser', () => {
     expect(user).toEqual({
       id: 'any-id',
       name: userModel.name,
-      email: userModel.email
+      email: userModel.email,
+      password: 'hashed-password'
     })
   })
 
