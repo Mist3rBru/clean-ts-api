@@ -5,6 +5,7 @@ import { DbAddUser } from '@/data/usecases'
 import { EmailValidatorAdapter } from '@/validation/validators'
 import { SignUpController } from '@/presentation/controllers'
 import { LogControllerDecorator } from '@/main/decorators'
+import { makeSignUpValidation } from './signup-validation'
 
 export const composeSignUpController = (): Controller => {
   const salt = 8
@@ -13,6 +14,6 @@ export const composeSignUpController = (): Controller => {
   const addUser = new DbAddUser(encrypter, addUserRepository)
   const emailValidator = new EmailValidatorAdapter()
   const logErrorRepository = new LogRepository()
-  const signUpController = new SignUpController(emailValidator, addUser)
+  const signUpController = new SignUpController(emailValidator, addUser, makeSignUpValidation())
   return new LogControllerDecorator(signUpController, logErrorRepository)
 }
