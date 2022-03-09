@@ -96,4 +96,32 @@ describe('DbAuthentication', () => {
     const token = await sut.auth(credentials)
     expect(token).toBe('any-token')
   })
+
+  it('should throw if any dependency throws', async () => {
+    const findUserByEmailRepository = new FindUserByEmailRepositorySpy()
+    const hashCompare = new HashCompareSpy()
+    const tokenGenerator = new TokenGeneratorSpy()
+    const suts = [].concat(
+      new DbAuthentication(
+        { find () { throw new Error() } },
+        hashCompare,
+        tokenGenerator
+      ),
+      new DbAuthentication(
+        findUserByEmailRepository,
+        { compare () { throw new Error() } },
+        tokenGenerator
+      ),
+      new DbAuthentication(
+        findUserByEmailRepository,
+        hashCompare,
+        { generate () { throw new Error() } }
+      )
+    )
+    for (const sut of suts) {
+      const credentials = makeFakeCredentials()
+      const promise = sut.auth(credentials)
+      void expect(promise).rejects.toThrow()
+    }
+  })
 })
