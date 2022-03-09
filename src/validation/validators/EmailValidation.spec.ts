@@ -39,7 +39,7 @@ describe('EmailValidation', () => {
 
   it('should return null if EmailValidator returns true', () => {
     const { sut } = makeSut()
-    const error = sut.validate({ email: 'invalid-email' })
+    const error = sut.validate({ email: 'valid-email' })
     expect(error).toBeNull()
   })
 })

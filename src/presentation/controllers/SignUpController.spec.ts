@@ -1,14 +1,13 @@
 import { SignUpController } from '@/presentation/controllers'
-import { MissingParamError, InvalidParamError } from '@/presentation/errors'
+import { MissingParamError } from '@/presentation/errors'
 import { HttpRequest } from '@/presentation/protocols'
-import { ok, badRequest } from '@/presentation/helpers'
-import { EmailValidator, Validation } from '@/validation/protocols'
+import { ok } from '@/presentation/helpers'
+import { Validation } from '@/validation/protocols'
 import { AddUser, AddUserModel } from '@/domain/usecases'
 import { UserModel } from '@/domain/models'
 
 interface SutTypes {
   sut: SignUpController
-  emailValidatorSpy: EmailValidator
   addUserSpy: AddUser
   validationSpy: Validation
 }
@@ -16,15 +15,12 @@ interface SutTypes {
 const makeSut = (): SutTypes => {
   const validationSpy = new ValidationSpy()
   const addUserSpy = new AddUserSpy()
-  const emailValidatorSpy = new EmailValidatorSpy()
   const sut = new SignUpController(
-    emailValidatorSpy,
     addUserSpy,
     validationSpy
   )
   return {
     sut,
-    emailValidatorSpy,
     addUserSpy,
     validationSpy
   }
@@ -39,12 +35,6 @@ class AddUserSpy implements AddUser {
       password: 'hashed-password'
     }
     return user
-  }
-}
-
-class EmailValidatorSpy implements EmailValidator {
-  isValid (email: string): boolean {
-    return true
   }
 }
 
@@ -80,22 +70,6 @@ describe('Signup Controller', () => {
     const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse.body.error).toBe(fakeError.message)
   })
-  
-  it('should call EmailValidator with correct values', async () => {
-    const { sut, emailValidatorSpy } = makeSut()
-    const isValidSpy = jest.spyOn(emailValidatorSpy, 'isValid')
-    const httpRequest = makeFakeRequest()
-    await sut.handle(httpRequest)
-    expect(isValidSpy).toBeCalledWith(httpRequest.body.email)
-  })
-
-  it('should return 400 if email provided is not valid', async () => {
-    const { sut, emailValidatorSpy } = makeSut()
-    jest.spyOn(emailValidatorSpy, 'isValid').mockReturnValueOnce(false)
-    const httpRequest = makeFakeRequest()
-    const httpResponse = await sut.handle(httpRequest)
-    expect(httpResponse).toEqual(badRequest(new InvalidParamError('email')))
-  })
 
   it('should call AddAccount with correct values', async () => {
     const { sut, addUserSpy } = makeSut()
@@ -109,17 +83,10 @@ describe('Signup Controller', () => {
   it('should return 500 if any dependency throws', async () => {
     const suts = [].concat(
       new SignUpController(
-        { isValid: () => { throw new Error() } },
-        new AddUserSpy(),
-        new ValidationSpy()
-      ),
-      new SignUpController(
-        new EmailValidatorSpy(),
         { add: () => { throw new Error() } },
         new ValidationSpy()
       ),
       new SignUpController(
-        new EmailValidatorSpy(),
         new AddUserSpy(),
         { validate: () => { throw new Error() } }
       )
