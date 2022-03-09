@@ -7,7 +7,7 @@ export class CompareFieldsValidation implements Validation {
   ) {}
 
   validate (input: any): Error {
-    const isValid = this.fields[0] === this.fields[1]
+    const isValid = input[this.fields[0]] === input[this.fields[1]]
     return isValid ? null : new InvalidParamError(this.fields[1])
   }
 }
