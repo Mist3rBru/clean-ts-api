@@ -42,4 +42,12 @@ describe('EmailValidation', () => {
     const error = sut.validate({ email: 'valid-email' })
     expect(error).toBeNull()
   })
+
+  it('should throw if EmailValidator throws', async () => {
+    const sut = new EmailValidation(
+      'email',
+      { isValid () { throw new Error() } }
+    )
+    expect(sut.validate).toThrow()
+  })
 })
