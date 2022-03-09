@@ -32,4 +32,14 @@ describe('ValidationComposite', () => {
     expect(validateSpy).toBeCalledWith('any-input')
     expect(validateSpy).toBeCalledTimes(2)
   })
+
+  it('should return error if Validation returns error', () => {
+    const { sut, validationSpy } = makeSut()
+    const fakeError = new Error('any')
+    const validateSpy = jest.spyOn(validationSpy, 'validate')
+    validateSpy.mockReturnValueOnce(fakeError)
+    const error = sut.validate('any-input')
+    expect(error).toBe(fakeError)
+    expect(validateSpy).toBeCalledTimes(1)
+  })
 })
