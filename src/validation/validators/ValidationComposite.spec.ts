@@ -42,4 +42,10 @@ describe('ValidationComposite', () => {
     expect(error).toBe(fakeError)
     expect(validateSpy).toBeCalledTimes(1)
   })
+
+  it('should return null if Validation returns no error', () => {
+    const { sut } = makeSut()
+    const error = sut.validate('any-input')
+    expect(error).toBeNull()
+  })
 })
