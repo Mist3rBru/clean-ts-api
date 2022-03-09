@@ -69,4 +69,14 @@ describe('DbAuthentication', () => {
     const token = await sut.auth(credentials)
     expect(token).toBeNull()
   })
+  
+  it('should return null if password is invalid', async () => {
+    const { sut, hashCompareSpy } = makeSut()
+    jest.spyOn(hashCompareSpy, 'compare').mockImplementationOnce(
+      async () => { return new Promise(resolve => resolve(false)) }
+    )
+    const credentials = makeFakeCredentials()
+    const token = await sut.auth(credentials)
+    expect(token).toBeNull()
+  })
 })
