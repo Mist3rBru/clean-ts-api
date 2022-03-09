@@ -1,11 +1,11 @@
 import { DbAddUser } from '@/data/usecases'
-import { Encrypter, AddUserRepository, hash } from '@/data/protocols'
+import { EncrypterGenerator, AddUserRepository, hash } from '@/data/protocols'
 import { UserModel } from '@/domain/models'
 import { AddUserModel } from '@/domain/usecases'
 
 interface SutTypes {
   sut: DbAddUser
-  encrypterSpy: Encrypter
+  encrypterSpy: EncrypterGenerator
   addUserRepositorySpy: AddUserRepository
 }
 
@@ -23,8 +23,8 @@ const makeSut = (): SutTypes => {
   }
 }
 
-class EncrypterSpy implements Encrypter {
-  async encrypt (value: string): Promise<hash> {
+class EncrypterSpy implements EncrypterGenerator {
+  async generate (value: string): Promise<hash> {
     return 'any-hash'
   }
 }
@@ -49,7 +49,7 @@ const makeFakeUser = (): AddUserModel => ({
 describe('DbAddUser', () => {
   it('should call Encrypter with correct password', async () => {
     const { sut, encrypterSpy } = makeSut()
-    const encryptSpy = jest.spyOn(encrypterSpy, 'encrypt')
+    const encryptSpy = jest.spyOn(encrypterSpy, 'generate')
     const userModel = makeFakeUser()
     await sut.add(userModel)
     expect(encryptSpy).toHaveBeenCalledWith(userModel.password)
@@ -82,7 +82,7 @@ describe('DbAddUser', () => {
   it('should throw if any dependency throws', async () => {
     const suts = [].concat(
       new DbAddUser(
-        { encrypt: () => { throw new Error() } },
+        { generate: () => { throw new Error() } },
         new AddUserRepositorySpy()
       ),
       new DbAddUser(

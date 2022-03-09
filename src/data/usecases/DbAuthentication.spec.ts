@@ -1,28 +1,28 @@
 import { DbAuthentication } from '@/data/usecases'
-import { FindUserByEmailRepository, HashCompare, TokenGenerator } from '@/data/protocols'
+import { FindUserByEmailRepository, EncrypterValidator, TokenGenerator } from '@/data/protocols'
 import { AuthenticationModel } from '@/domain/usecases'
 import { token, UserModel } from '@/domain/models'
 
 interface SutTypes {
   sut: DbAuthentication
   findUserByEmailRepositorySpy: FindUserByEmailRepository
-  hashCompareSpy: HashCompare
+  encrypterValidatorSpy: EncrypterValidator
   tokenGeneratorSpy: TokenGenerator
 }
 
 const makeSut = (): SutTypes => {
   const tokenGeneratorSpy = new TokenGeneratorSpy()
-  const hashCompareSpy = new HashCompareSpy()
+  const encrypterValidatorSpy = new EncrypterValidatorSpy()
   const findUserByEmailRepositorySpy = new FindUserByEmailRepositorySpy()
   const sut = new DbAuthentication(
     findUserByEmailRepositorySpy,
-    hashCompareSpy,
+    encrypterValidatorSpy,
     tokenGeneratorSpy
   )
   return {
     sut,
     findUserByEmailRepositorySpy,
-    hashCompareSpy,
+    encrypterValidatorSpy,
     tokenGeneratorSpy
   }
 }
@@ -38,8 +38,8 @@ class FindUserByEmailRepositorySpy implements FindUserByEmailRepository {
   }
 }
 
-class HashCompareSpy implements HashCompare {
-  async compare (value: string, hash: string): Promise<boolean> {
+class EncrypterValidatorSpy implements EncrypterValidator {
+  async validate (value: string, hash: string): Promise<boolean> {
     return new Promise(resolve => resolve(true))
   }
 }
@@ -64,9 +64,9 @@ describe('DbAuthentication', () => {
     expect(findSpy).toBeCalledWith('any-email')
   })
   
-  it('should call HashCompare with correct values', async () => {
-    const { sut, hashCompareSpy } = makeSut()
-    const findSpy = jest.spyOn(hashCompareSpy, 'compare')
+  it('should call EncrypterValidator with correct values', async () => {
+    const { sut, encrypterValidatorSpy } = makeSut()
+    const findSpy = jest.spyOn(encrypterValidatorSpy, 'validate')
     const credentials = makeFakeCredentials()
     await sut.auth(credentials)
     expect(findSpy).toBeCalledWith('any-password', 'hashed-password')
@@ -81,8 +81,8 @@ describe('DbAuthentication', () => {
   })
   
   it('should return null if password is invalid', async () => {
-    const { sut, hashCompareSpy } = makeSut()
-    jest.spyOn(hashCompareSpy, 'compare').mockImplementationOnce(
+    const { sut, encrypterValidatorSpy } = makeSut()
+    jest.spyOn(encrypterValidatorSpy, 'validate').mockImplementationOnce(
       async () => { return new Promise(resolve => resolve(false)) }
     )
     const credentials = makeFakeCredentials()
@@ -107,7 +107,7 @@ describe('DbAuthentication', () => {
 
   it('should throw if any dependency throws', async () => {
     const findUserByEmailRepository = new FindUserByEmailRepositorySpy()
-    const hashCompare = new HashCompareSpy()
+    const hashCompare = new EncrypterValidatorSpy()
     const tokenGenerator = new TokenGeneratorSpy()
     const suts = [].concat(
       new DbAuthentication(
@@ -117,7 +117,7 @@ describe('DbAuthentication', () => {
       ),
       new DbAuthentication(
         findUserByEmailRepository,
-        { compare () { throw new Error() } },
+        { validate () { throw new Error() } },
         tokenGenerator
       ),
       new DbAuthentication(

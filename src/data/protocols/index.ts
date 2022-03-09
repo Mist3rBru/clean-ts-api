@@ -1,5 +1,5 @@
-export * from './cryptography/Encrypter'
-export * from './cryptography/HashCompare'
+export * from './cryptography/EncrypterGenerator'
+export * from './cryptography/EncrypterValidator'
 export * from './cryptography/TokenGenerator'
 
 export * from './database/AddUserRepository'
