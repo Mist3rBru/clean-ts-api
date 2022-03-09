@@ -61,7 +61,7 @@ describe('DbAuthentication', () => {
     const findSpy = jest.spyOn(findUserByEmailRepositorySpy, 'find')
     const credentials = makeFakeCredentials()
     await sut.auth(credentials)
-    expect(findSpy).toBeCalledWith(credentials.email)
+    expect(findSpy).toBeCalledWith('any-email')
   })
   
   it('should call HashCompare with correct values', async () => {
@@ -88,6 +88,14 @@ describe('DbAuthentication', () => {
     const credentials = makeFakeCredentials()
     const token = await sut.auth(credentials)
     expect(token).toBeNull()
+  })
+  
+  it('should call TokenGenerator with correct value', async () => {
+    const { sut, tokenGeneratorSpy } = makeSut()
+    const generateSpy = jest.spyOn(tokenGeneratorSpy, 'generate')
+    const credentials = makeFakeCredentials()
+    await sut.auth(credentials)
+    expect(generateSpy).toBeCalledWith('any-id')
   })
   
   it('should return token valid credentials are provided', async () => {
