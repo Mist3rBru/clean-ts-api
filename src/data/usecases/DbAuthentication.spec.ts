@@ -1,21 +1,25 @@
 import { DbAuthentication } from '@/data/usecases'
-import { FindUserByEmailRepository } from '@/data/protocols'
+import { FindUserByEmailRepository, HashCompare } from '@/data/protocols'
 import { AuthenticationModel } from '@/domain/usecases'
 import { UserModel } from '@/domain/models'
 
 interface SutTypes {
   sut: DbAuthentication
   findUserByEmailRepositorySpy: FindUserByEmailRepository
+  hashCompareSpy: HashCompare
 }
 
 const makeSut = (): SutTypes => {
+  const hashCompareSpy = new HashCompareSpy()
   const findUserByEmailRepositorySpy = new FindUserByEmailRepositorySpy()
   const sut = new DbAuthentication(
-    findUserByEmailRepositorySpy
+    findUserByEmailRepositorySpy,
+    hashCompareSpy
   )
   return {
     sut,
-    findUserByEmailRepositorySpy
+    findUserByEmailRepositorySpy,
+    hashCompareSpy
   }
 }
 
@@ -25,8 +29,14 @@ class FindUserByEmailRepositorySpy implements FindUserByEmailRepository {
       id: 'any-id',
       name: 'any-name',
       email: email,
-      password: 'any-password'
+      password: 'hashed-password'
     }
+  }
+}
+
+class HashCompareSpy implements HashCompare {
+  async compare (value: string, hash: string): Promise<boolean> {
+    return new Promise(resolve => resolve(true))
   }
 }
 
@@ -42,5 +52,13 @@ describe('DbAuthentication', () => {
     const credentials = makeFakeCredentials()
     await sut.auth(credentials)
     expect(findSpy).toBeCalledWith(credentials.email)
+  })
+  
+  it('should call HashCompare with correct values', async () => {
+    const { sut, hashCompareSpy } = makeSut()
+    const findSpy = jest.spyOn(hashCompareSpy, 'compare')
+    const credentials = makeFakeCredentials()
+    await sut.auth(credentials)
+    expect(findSpy).toBeCalledWith('any-password', 'hashed-password')
   })
 })
