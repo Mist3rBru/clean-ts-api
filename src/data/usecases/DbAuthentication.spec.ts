@@ -1,25 +1,29 @@
 import { DbAuthentication } from '@/data/usecases'
-import { FindUserByEmailRepository, HashCompare } from '@/data/protocols'
+import { FindUserByEmailRepository, HashCompare, TokenGenerator } from '@/data/protocols'
 import { AuthenticationModel } from '@/domain/usecases'
-import { UserModel } from '@/domain/models'
+import { token, UserModel } from '@/domain/models'
 
 interface SutTypes {
   sut: DbAuthentication
   findUserByEmailRepositorySpy: FindUserByEmailRepository
   hashCompareSpy: HashCompare
+  tokenGeneratorSpy: TokenGenerator
 }
 
 const makeSut = (): SutTypes => {
+  const tokenGeneratorSpy = new TokenGeneratorSpy()
   const hashCompareSpy = new HashCompareSpy()
   const findUserByEmailRepositorySpy = new FindUserByEmailRepositorySpy()
   const sut = new DbAuthentication(
     findUserByEmailRepositorySpy,
-    hashCompareSpy
+    hashCompareSpy,
+    tokenGeneratorSpy
   )
   return {
     sut,
     findUserByEmailRepositorySpy,
-    hashCompareSpy
+    hashCompareSpy,
+    tokenGeneratorSpy
   }
 }
 
@@ -37,6 +41,12 @@ class FindUserByEmailRepositorySpy implements FindUserByEmailRepository {
 class HashCompareSpy implements HashCompare {
   async compare (value: string, hash: string): Promise<boolean> {
     return new Promise(resolve => resolve(true))
+  }
+}
+
+class TokenGeneratorSpy implements TokenGenerator {
+  async generate (value: string): Promise<token> {
+    return new Promise(resolve => resolve('any-token'))
   }
 }
 
@@ -78,5 +88,12 @@ describe('DbAuthentication', () => {
     const credentials = makeFakeCredentials()
     const token = await sut.auth(credentials)
     expect(token).toBeNull()
+  })
+  
+  it('should return token valid credentials are provided', async () => {
+    const { sut } = makeSut()
+    const credentials = makeFakeCredentials()
+    const token = await sut.auth(credentials)
+    expect(token).toBe('any-token')
   })
 })

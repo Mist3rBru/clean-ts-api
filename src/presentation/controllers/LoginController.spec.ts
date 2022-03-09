@@ -2,7 +2,8 @@ import { LoginController } from '@/presentation/controllers'
 import { ok, unauthorized } from '@/presentation/helpers'
 import { HttpRequest } from '@/presentation/protocols'
 import { Validation } from '@/validation/protocols'
-import { Authentication, AuthenticationModel, token } from '@/domain/usecases'
+import { Authentication, AuthenticationModel } from '@/domain/usecases'
+import { token } from '@/domain/models'
 
 interface SutTypes {
   sut: LoginController
