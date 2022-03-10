@@ -28,4 +28,13 @@ describe('JwtAdapter generate', () => {
     const token = await sut.generate('any-value')
     expect(token).toBe('any-token')
   })
+
+  it('should throw when sign throws', async () => {
+    const sut = makeSut()
+    jest.spyOn(jwt, 'sign').mockImplementationOnce(
+      () => { throw new Error() }
+    )
+    const promise = sut.generate('any-value')
+    void expect(promise).rejects.toThrow()
+  })
 })
