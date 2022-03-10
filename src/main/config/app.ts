@@ -1,6 +1,7 @@
 import express, { Express, Router } from 'express'
 import { cors, jsonParser, contentType } from '@/main/middlewares'
-import fg from 'fast-glob'
+import { readdirSync } from 'fs'
+import { resolve } from 'path'
 
 class App {
   express: Express
@@ -22,9 +23,13 @@ class App {
 
   _routes (): void {
     this.express.use('/api', this.router)
-    fg.sync('**/src/main/routes/**routes.ts').map(async (file) => {
-      (await import(`../../../${file}`)).default(this.router)
-    })
+    const routesPath = resolve(__dirname, '../routes')
+    readdirSync(routesPath)
+      .map(async file => {
+        if (!file.includes('.test.')) {
+          (await import(`../routes/${file}`)).default(this.router)
+        }
+      })
   }
 }
 
