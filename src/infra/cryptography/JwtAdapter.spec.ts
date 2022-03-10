@@ -14,12 +14,18 @@ const makeSut = (): JwtAdapter => {
 }
 
 describe('JwtAdapter generate', () => {
-  it('should call sign with correct values ', async () => {
+  it('should call sign with correct values', async () => {
     const sut = makeSut()
     const signSpy = jest.spyOn(jwt, 'sign')
     await sut.generate('any-value')
     expect(signSpy).toBeCalledWith(
       { id: 'any-value' }, 'any-secret', { expiresIn: '15m' }
     )
+  })
+
+  it('should return token on sign success', async () => {
+    const sut = makeSut()
+    const token = await sut.generate('any-value')
+    expect(token).toBe('any-token')
   })
 })
