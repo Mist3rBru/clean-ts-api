@@ -7,9 +7,6 @@ let usersCollection: Collection
 describe('Auth Routes', () => {
   beforeAll(async () => {
     await MongoHelper.connect(env.MONGO_URL)
-  })
-
-  beforeEach(async () => {
     usersCollection = await MongoHelper.getCollection('users')
     await usersCollection.deleteMany({})
   })
@@ -27,6 +24,18 @@ describe('Auth Routes', () => {
           email: 'any-email@example.com',
           password: 'any-password',
           passwordConfirmation: 'any-password'
+        })
+        .expect(200)
+    })
+  })
+  
+  describe('POST /api/login', () => {
+    it('should return 200 on login success', async () => {
+      await request(app)
+        .post('/api/login')
+        .send({
+          email: 'any-email@example.com',
+          password: 'any-password'
         })
         .expect(200)
     })
