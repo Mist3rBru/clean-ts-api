@@ -17,20 +17,20 @@ const makeFakeUser = (): AddUserModel => ({
 })
 
 describe('UserRepository', () => {
+  beforeAll(async () => {
+    await MongoHelper.connect(uri)
+  })
+
+  beforeEach(async () => {
+    usersCollection = await MongoHelper.getCollection('users')
+    await usersCollection.deleteMany({})
+  })
+
+  afterAll(async () => {
+    await MongoHelper.disconnect()
+  })
+
   describe('add()', () => {
-    beforeAll(async () => {
-      await MongoHelper.connect(uri)
-    })
-
-    beforeEach(async () => {
-      usersCollection = await MongoHelper.getCollection('users')
-      await usersCollection.deleteMany({})
-    })
-
-    afterAll(async () => {
-      await MongoHelper.disconnect()
-    })
-
     it('should return user when registered on MongoDB', async () => {
       const sut = makeSut()
       const model = makeFakeUser()
@@ -42,19 +42,6 @@ describe('UserRepository', () => {
   })
 
   describe('findByEmail()', () => {
-    beforeAll(async () => {
-      await MongoHelper.connect(uri)
-    })
-
-    beforeEach(async () => {
-      usersCollection = await MongoHelper.getCollection('users')
-      await usersCollection.deleteMany({})
-    })
-
-    afterAll(async () => {
-      await MongoHelper.disconnect()
-    })
-
     it('should return null when user is not found', async () => {
       const sut = makeSut()
       const user = await sut.findByEmail('any-email')
