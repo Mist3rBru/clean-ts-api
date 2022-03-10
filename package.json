@@ -9,6 +9,7 @@
     "start": "node dist/main/server.js",
     "dev": "ts-node-dev -r tsconfig-paths/register --transpile-only src/main/server.ts",
     "build": "rimraf dist && tsc -p tsconfig-build.json",
+    "up": "npm run build && docker build -t clean-ts-api .",
     "test": "jest --runInBand --no-cache",
     "test:unit": "npm test -- --watch -c jest-unit-config.js",
     "test:int": "npm test -- --watch -c jest-integration-config.js",
@@ -47,6 +48,6 @@
     "validator": "^13.7.0"
   },
   "engines": {
-    "node": "14.x"
+    "node": "16.x"
   }
 }
