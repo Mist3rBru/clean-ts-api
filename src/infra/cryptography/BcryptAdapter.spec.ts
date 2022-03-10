@@ -54,4 +54,13 @@ describe('BcryptAdapter validate', () => {
     const isValid = await sut.validate('valid-value', 'valid-hash')
     expect(isValid).toBe(true)
   })
+  
+  it('should return false if invalid params are provided', async () => {
+    const sut = makeSut()
+    jest.spyOn(bcrypt, 'compare').mockImplementationOnce(
+      () => false
+    )
+    const isValid = await sut.validate('invalid-value', 'invalid-hash')
+    expect(isValid).toBe(false)
+  })
 })
