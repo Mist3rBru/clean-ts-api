@@ -20,10 +20,10 @@ describe('Auth Routes', () => {
       await request(app)
         .post('/api/signup')
         .send({
-          name: 'any-name',
-          email: 'any-email@example.com',
-          password: 'any-password',
-          passwordConfirmation: 'any-password'
+          name: 'valid-name',
+          email: 'valid-email@example.com',
+          password: 'valid-password',
+          passwordConfirmation: 'valid-password'
         })
         .expect(200)
     })
@@ -34,10 +34,28 @@ describe('Auth Routes', () => {
       await request(app)
         .post('/api/login')
         .send({
-          email: 'any-email@example.com',
-          password: 'any-password'
+          email: 'valid-email@example.com',
+          password: 'valid-password'
         })
         .expect(200)
+    })
+
+    it('should return 401 on login fail', async () => {
+      await request(app)
+        .post('/api/login')
+        .send({
+          email: 'invalid-email@example.com',
+          password: 'valid-password'
+        })
+        .expect(401)
+
+      await request(app)
+        .post('/api/login')
+        .send({
+          email: 'valid-email@example.com',
+          password: 'invalid-password'
+        })
+        .expect(401)
     })
   })
 })
