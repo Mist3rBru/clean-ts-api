@@ -8,7 +8,7 @@ const makeSut = (): UserRepository => {
   return sut
 }
 
-const makeUser = (): AddUserModel => {
+const makeFakeUser = (): AddUserModel => {
   return {
     name: 'any-name',
     email: 'any-email',
@@ -32,10 +32,11 @@ describe('UserRepository add', () => {
 
   it('should return user when registered on MongoDB', async () => {
     const sut = makeSut()
-    const model = makeUser()
+    const model = makeFakeUser()
     const user = await sut.add(model)
-    expect(user.name).toBe(model.name)
-    expect(user.email).toBe(model.email)
+    expect(user.name).toEqual(model.name)
+    expect(user.email).toEqual(model.email)
+    expect(user.password).toEqual(model.password)
   })
 })
 
@@ -57,5 +58,15 @@ describe('UserRepository findByEmail', () => {
     const sut = makeSut()
     const user = await sut.findByEmail('any-email')
     expect(user).toBeNull()
+  })
+
+  it('should return user when user is found', async () => {
+    const sut = makeSut()
+    const model = makeFakeUser()
+    await sut.add(model)
+    const user = await sut.findByEmail(model.email)
+    expect(user.name).toEqual(model.name)
+    expect(user.email).toEqual(model.email)
+    expect(user.password).toEqual(model.password)
   })
 })
