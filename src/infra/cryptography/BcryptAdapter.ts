@@ -1,7 +1,7 @@
-import { EncrypterGenerator, EncrypterValidator, hash } from '@/data/protocols'
+import { HashGenerator, HashComparator, hash } from '@/data/protocols'
 import bcrypt from 'bcrypt'
 
-export class BcryptAdapter implements EncrypterGenerator, EncrypterValidator {
+export class BcryptAdapter implements HashGenerator, HashComparator {
   constructor (
     private readonly salt: number
   ) {}
@@ -10,7 +10,7 @@ export class BcryptAdapter implements EncrypterGenerator, EncrypterValidator {
     return await bcrypt.hash(value, this.salt)
   }
 
-  async validate (value: string, hash: string): Promise<boolean> {
+  async compare (value: string, hash: string): Promise<boolean> {
     return await bcrypt.compare(value, hash)
   }
 }

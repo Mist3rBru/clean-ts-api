@@ -1,4 +1,4 @@
-import { token } from '@/domain/models'
+import { token } from '@/data/protocols'
 
 export interface AuthenticationModel {
   email: string

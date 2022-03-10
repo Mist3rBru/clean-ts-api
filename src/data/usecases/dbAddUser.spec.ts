@@ -1,29 +1,29 @@
 import { DbAddUser } from '@/data/usecases'
-import { EncrypterGenerator, AddUserRepository, hash } from '@/data/protocols'
+import { HashGenerator, AddUserRepository, hash } from '@/data/protocols'
 import { UserModel } from '@/domain/models'
 import { AddUserModel } from '@/domain/usecases'
 
 interface SutTypes {
   sut: DbAddUser
-  encrypterSpy: EncrypterGenerator
+  hashGeneratorSpy: HashGenerator
   addUserRepositorySpy: AddUserRepository
 }
 
 const makeSut = (): SutTypes => {
   const addUserRepositorySpy = new AddUserRepositorySpy()
-  const encrypterSpy = new EncrypterSpy()
+  const hashGeneratorSpy = new HashGeneratorSpy()
   const sut = new DbAddUser(
-    encrypterSpy,
+    hashGeneratorSpy,
     addUserRepositorySpy
   )
   return {
     sut,
-    encrypterSpy,
+    hashGeneratorSpy,
     addUserRepositorySpy
   }
 }
 
-class EncrypterSpy implements EncrypterGenerator {
+class HashGeneratorSpy implements HashGenerator {
   async generate (value: string): Promise<hash> {
     return 'any-hash'
   }
@@ -48,8 +48,8 @@ const makeFakeUser = (): AddUserModel => ({
 
 describe('DbAddUser', () => {
   it('should call Encrypter with correct password', async () => {
-    const { sut, encrypterSpy } = makeSut()
-    const encryptSpy = jest.spyOn(encrypterSpy, 'generate')
+    const { sut, hashGeneratorSpy } = makeSut()
+    const encryptSpy = jest.spyOn(hashGeneratorSpy, 'generate')
     const userModel = makeFakeUser()
     await sut.add(userModel)
     expect(encryptSpy).toHaveBeenCalledWith(userModel.password)
@@ -80,13 +80,15 @@ describe('DbAddUser', () => {
   })
 
   it('should throw if any dependency throws', async () => {
+    const hashGeneratorSpy = new HashGeneratorSpy()
+    const addUserRepositorySpy = new AddUserRepositorySpy()
     const suts = [].concat(
       new DbAddUser(
         { generate: () => { throw new Error() } },
-        new AddUserRepositorySpy()
+        addUserRepositorySpy
       ),
       new DbAddUser(
-        new EncrypterSpy(),
+        hashGeneratorSpy,
         { add: () => { throw new Error() } }
       )
     )

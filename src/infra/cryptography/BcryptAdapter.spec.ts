@@ -45,13 +45,13 @@ describe('BcryptAdapter validate', () => {
   it('should call validate with correct values', async () => {
     const sut = makeSut()
     const validateSpy = jest.spyOn(bcrypt, 'compare')
-    await sut.validate('any-value', 'any-hash')
+    await sut.compare('any-value', 'any-hash')
     expect(validateSpy).toBeCalledWith('any-value', 'any-hash')
   })
   
   it('should return true if valid params are provided', async () => {
     const sut = makeSut()
-    const isValid = await sut.validate('valid-value', 'valid-hash')
+    const isValid = await sut.compare('valid-value', 'valid-hash')
     expect(isValid).toBe(true)
   })
   
@@ -60,7 +60,7 @@ describe('BcryptAdapter validate', () => {
     jest.spyOn(bcrypt, 'compare').mockImplementationOnce(
       () => false
     )
-    const isValid = await sut.validate('invalid-value', 'invalid-hash')
+    const isValid = await sut.compare('invalid-value', 'invalid-hash')
     expect(isValid).toBe(false)
   })
 })
