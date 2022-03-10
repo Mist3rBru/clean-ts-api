@@ -23,8 +23,7 @@ class App {
 
   _routes (): void {
     this.express.use('/api', this.router)
-    const routesPath = resolve(__dirname, '../routes')
-    readdirSync(routesPath)
+    readdirSync(resolve(__dirname, '../routes'))
       .map(async file => {
         if (!file.includes('.test.')) {
           (await import(`../routes/${file}`)).default(this.router)

@@ -1,3 +1,4 @@
+import 'module-alias/register'
 import { app, env } from '@/main/config'
 import { MongoHelper } from '@/infra/database/mongodb'
 const port = env.APP_PORT

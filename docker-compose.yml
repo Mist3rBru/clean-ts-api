@@ -18,5 +18,9 @@ services:
     ports:
       - '3030:3030'
     links:
-     - mongo
+      - mongo
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/clean-ts-api
+      - APP_PORT=3030
+      - TOKEN_SECRET=jakyA3ELhy+8Gr+CdsJ2j/yrVnXENhcJ26wuQGhXXnWjju7y32T8J//H8xkcp1+R5/E6oVJ4pDspUcAn
     command: npm start
