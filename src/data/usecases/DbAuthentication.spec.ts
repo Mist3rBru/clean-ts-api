@@ -28,7 +28,7 @@ const makeSut = (): SutTypes => {
 }
 
 class FindUserByEmailRepositorySpy implements FindUserByEmailRepository {
-  async find (email: string): Promise<UserModel> {
+  async findByEmail (email: string): Promise<UserModel> {
     return {
       id: 'any-id',
       name: 'any-name',
@@ -58,7 +58,7 @@ const makeFakeCredentials = (): AuthenticationModel => ({
 describe('DbAuthentication', () => {
   it('should call FindUserByEmailRepository with correct email', async () => {
     const { sut, findUserByEmailRepositorySpy } = makeSut()
-    const findSpy = jest.spyOn(findUserByEmailRepositorySpy, 'find')
+    const findSpy = jest.spyOn(findUserByEmailRepositorySpy, 'findByEmail')
     const credentials = makeFakeCredentials()
     await sut.auth(credentials)
     expect(findSpy).toBeCalledWith('any-email')
@@ -74,7 +74,7 @@ describe('DbAuthentication', () => {
   
   it('should return null if no user is found', async () => {
     const { sut, findUserByEmailRepositorySpy } = makeSut()
-    jest.spyOn(findUserByEmailRepositorySpy, 'find').mockReturnValueOnce(null)
+    jest.spyOn(findUserByEmailRepositorySpy, 'findByEmail').mockReturnValueOnce(null)
     const credentials = makeFakeCredentials()
     const token = await sut.auth(credentials)
     expect(token).toBeNull()
@@ -111,7 +111,7 @@ describe('DbAuthentication', () => {
     const tokenGenerator = new TokenGeneratorSpy()
     const suts = [].concat(
       new DbAuthentication(
-        { find () { throw new Error() } },
+        { findByEmail () { throw new Error() } },
         hashComparator,
         tokenGenerator
       ),

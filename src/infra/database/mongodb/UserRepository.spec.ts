@@ -16,7 +16,7 @@ const makeUser = (): AddUserModel => {
   }
 }
 
-describe('UserRepository', () => {
+describe('UserRepository add', () => {
   beforeAll(async () => {
     await MongoHelper.connect(uri)
   })
@@ -36,5 +36,26 @@ describe('UserRepository', () => {
     const user = await sut.add(model)
     expect(user.name).toBe(model.name)
     expect(user.email).toBe(model.email)
+  })
+})
+
+describe('UserRepository findByEmail', () => {
+  beforeAll(async () => {
+    await MongoHelper.connect(uri)
+  })
+
+  beforeEach(async () => {
+    const usersCollection = await MongoHelper.getCollection('users')
+    await usersCollection.deleteMany({})
+  })
+
+  afterAll(async () => {
+    await MongoHelper.disconnect()
+  })
+
+  it('should return null when user is not found', async () => {
+    const sut = makeSut()
+    const user = await sut.findByEmail('any-email')
+    expect(user).toBeNull()
   })
 })
