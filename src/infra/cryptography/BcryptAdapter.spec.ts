@@ -48,4 +48,10 @@ describe('BcryptAdapter validate', () => {
     await sut.validate('any-value', 'any-hash')
     expect(validateSpy).toBeCalledWith('any-value', 'any-hash')
   })
+  
+  it('should return true if valid params are provided', async () => {
+    const sut = makeSut()
+    const isValid = await sut.validate('valid-value', 'valid-hash')
+    expect(isValid).toBe(true)
+  })
 })
