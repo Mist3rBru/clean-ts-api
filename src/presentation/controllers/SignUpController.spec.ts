@@ -1,5 +1,6 @@
 import { SignUpController } from '@/presentation/controllers'
-import { badRequest, ok } from '@/presentation/helpers'
+import { badRequest, forbidden, ok } from '@/presentation/helpers'
+import { MissingParamError, EmailInUseError } from '@/presentation/errors'
 import { HttpRequest } from '@/presentation/protocols'
 import { Validation } from '@/validation/protocols'
 import { AddUser, AddUserModel, Authentication, AuthenticationModel } from '@/domain/usecases'
@@ -7,18 +8,18 @@ import { UserModel } from '@/domain/models'
 
 interface SutTypes {
   sut: SignUpController
-  addUserSpy: AddUser
   validationSpy: Validation
+  addUserSpy: AddUser
   authenticationSpy: Authentication
 }
 
 const makeSut = (): SutTypes => {
-  const authenticationSpy = new AuthenticationSpy()
   const validationSpy = new ValidationSpy()
   const addUserSpy = new AddUserSpy()
+  const authenticationSpy = new AuthenticationSpy()
   const sut = new SignUpController(
-    addUserSpy,
     validationSpy,
+    addUserSpy,
     authenticationSpy
   )
   return {
@@ -73,7 +74,7 @@ describe('Signup Controller', () => {
 
   it('should return 400 if Validation returns an error', async () => {
     const { sut, validationSpy } = makeSut()
-    const fakeError = new Error('any-param')
+    const fakeError = new MissingParamError('any-param')
     jest.spyOn(validationSpy, 'validate').mockReturnValueOnce(fakeError)
     const httpRequest = makeFakeRequest()
     const httpResponse = await sut.handle(httpRequest)
@@ -97,6 +98,14 @@ describe('Signup Controller', () => {
     const { email, password } = httpRequest.body
     expect(authSpy).toBeCalledWith({ email, password })
   })
+
+  it('should should return 403 if AddAccount returns null', async () => {
+    const { sut, addUserSpy } = makeSut()
+    jest.spyOn(addUserSpy, 'add').mockReturnValueOnce(null)
+    const httpRequest = makeFakeRequest()
+    const httpResponse = await sut.handle(httpRequest)
+    expect(httpResponse).toEqual(forbidden(new EmailInUseError()))
+  })
   
   it('should return 500 if any dependency throws', async () => {
     const addUserSpy = new AddUserSpy()
@@ -104,18 +113,18 @@ describe('Signup Controller', () => {
     const authenticationSpy = new AuthenticationSpy()
     const suts = [].concat(
       new SignUpController(
-        { add () { throw new Error() } },
-        validationSpy,
-        authenticationSpy
-      ),
-      new SignUpController(
-        addUserSpy,
         { validate () { throw new Error() } },
+        addUserSpy,
         authenticationSpy
       ),
       new SignUpController(
-        addUserSpy,
         validationSpy,
+        { add () { throw new Error() } },
+        authenticationSpy
+      ),
+      new SignUpController(
+        validationSpy,
+        addUserSpy,
         { auth () { throw new Error() } }
       )
     )
