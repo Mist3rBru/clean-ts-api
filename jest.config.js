@@ -1,5 +1,5 @@
 module.exports = {
-  bail: true,
+  // bail: true,
   roots: ['<rootDir>/src'],
   collectCoverage: true,
   collectCoverageFrom: [
