@@ -39,6 +39,14 @@ describe('UserRepository', () => {
       expect(user.email).toEqual(model.email)
       expect(user.password).toEqual(model.password)
     })
+
+    it('should return null when user is already registered on MongoDB', async () => {
+      const sut = makeSut()
+      const model = makeFakeUser()
+      await usersCollection.insertOne(model)
+      const user = await sut.add(model)
+      expect(user).toBeNull()
+    })
   })
 
   describe('findByEmail()', () => {

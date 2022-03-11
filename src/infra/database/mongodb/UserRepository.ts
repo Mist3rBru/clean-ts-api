@@ -6,6 +6,8 @@ import { MongoHelper } from '@/infra/database/mongodb'
 export class UserRepository implements AddUserRepository, FindUserByEmailRepository {
   async add (model: AddUserModel): Promise<UserModel> {
     const userCollection = await MongoHelper.getCollection('users')
+    const alreadyExists = await userCollection.findOne({ email: model.email })
+    if (alreadyExists) return null
     await userCollection.insertOne(model)
     const user = await userCollection.findOne({ email: model.email })
     return MongoHelper.map(user)
