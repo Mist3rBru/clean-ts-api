@@ -5,3 +5,4 @@ dist
 globalConfig.json
 package-lock.json
 data
+!/src/data
