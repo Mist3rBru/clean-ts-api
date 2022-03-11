@@ -1,25 +1,26 @@
 import { DbAddUser } from '@/data/usecases'
-import { HashGenerator, AddUserRepository, hash } from '@/data/protocols'
+import { HashGenerator, AddUserRepository, hash, FindUserByEmailRepository } from '@/data/protocols'
 import { UserModel } from '@/domain/models'
 import { AddUserModel } from '@/domain/usecases'
 
 interface SutTypes {
   sut: DbAddUser
   hashGeneratorSpy: HashGenerator
-  addUserRepositorySpy: AddUserRepository
+  userRepositorySpy: AddUserRepository & FindUserByEmailRepository
 }
 
 const makeSut = (): SutTypes => {
-  const addUserRepositorySpy = new AddUserRepositorySpy()
+  const userRepositorySpy = new UserRepositorySpy()
   const hashGeneratorSpy = new HashGeneratorSpy()
   const sut = new DbAddUser(
     hashGeneratorSpy,
-    addUserRepositorySpy
+    userRepositorySpy,
+    userRepositorySpy
   )
   return {
     sut,
     hashGeneratorSpy,
-    addUserRepositorySpy
+    userRepositorySpy
   }
 }
 
@@ -29,7 +30,7 @@ class HashGeneratorSpy implements HashGenerator {
   }
 }
 
-class AddUserRepositorySpy implements AddUserRepository {
+class UserRepositorySpy implements AddUserRepository, FindUserByEmailRepository {
   async add (model: AddUserModel): Promise<UserModel> {
     return {
       id: 'any-id',
@@ -37,6 +38,10 @@ class AddUserRepositorySpy implements AddUserRepository {
       email: model.email,
       password: 'hashed-password'
     }
+  }
+
+  async findByEmail (email: string): Promise<UserModel> {
+    return null
   }
 }
 
@@ -47,6 +52,17 @@ const makeFakeUser = (): AddUserModel => ({
 })
 
 describe('DbAddUser', () => {
+  it('should return null when user is already registered', async () => {
+    const { sut, userRepositorySpy } = makeSut()
+    const model = makeFakeUser()
+    const fakeUser = Object.assign({}, model, { id: 'any-id' })
+    jest.spyOn(userRepositorySpy, 'findByEmail').mockImplementationOnce(
+      async () => { return new Promise(resolve => resolve(fakeUser)) } 
+    )
+    const user = await sut.add(model)
+    expect(user).toBeNull()
+  })
+
   it('should call Encrypter with correct password', async () => {
     const { sut, hashGeneratorSpy } = makeSut()
     const encryptSpy = jest.spyOn(hashGeneratorSpy, 'generate')
@@ -56,8 +72,8 @@ describe('DbAddUser', () => {
   })
 
   it('should call AddUserRepository with correct values', async () => {
-    const { sut, addUserRepositorySpy } = makeSut()
-    const addSpy = jest.spyOn(addUserRepositorySpy, 'add')
+    const { sut, userRepositorySpy } = makeSut()
+    const addSpy = jest.spyOn(userRepositorySpy, 'add')
     const userModel = makeFakeUser()
     await sut.add(userModel)
     expect(addSpy).toHaveBeenCalledWith({
@@ -81,15 +97,22 @@ describe('DbAddUser', () => {
 
   it('should throw if any dependency throws', async () => {
     const hashGeneratorSpy = new HashGeneratorSpy()
-    const addUserRepositorySpy = new AddUserRepositorySpy()
+    const addUserRepositorySpy = new UserRepositorySpy()
     const suts = [].concat(
       new DbAddUser(
         { generate: () => { throw new Error() } },
+        addUserRepositorySpy,
         addUserRepositorySpy
       ),
       new DbAddUser(
         hashGeneratorSpy,
-        { add: () => { throw new Error() } }
+        { add: () => { throw new Error() } },
+        addUserRepositorySpy
+      ),
+      new DbAddUser(
+        hashGeneratorSpy,
+        addUserRepositorySpy,
+        { findByEmail: () => { throw new Error() } }
       )
     )
     for (const sut of suts) {
