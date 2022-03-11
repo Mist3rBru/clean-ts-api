@@ -10,11 +10,13 @@ services:
       - '27017:27017'
   api:
     container_name: api-container
-    build: .
-    image: clean-ts-api
+    image: node:16
+    working_dir: /usr/src/clean-ts-api
     restart: always
     volumes:
-      - ./dist:/usr/src/clean-ts-api/dist
+      - ./dist/:/usr/src/clean-ts-api/dist/
+      - ./package-lock.json:/usr/src/clean-ts-api/package-lock.json
+      - ./package.json:/usr/src/clean-ts-api/package.json
     ports:
       - '3030:3030'
     links:
@@ -23,4 +25,4 @@ services:
       - MONGO_URL=mongodb://mongo:27017/clean-ts-api
       - APP_PORT=3030
       - TOKEN_SECRET=jakyA3ELhy+8Gr+CdsJ2j/yrVnXENhcJ26wuQGhXXnWjju7y32T8J//H8xkcp1+R5/E6oVJ4pDspUcAn
-    command: npm start
+    command: bash -c "npm ci --production && npm run nodemon"

@@ -7,6 +7,7 @@
   "author": "",
   "scripts": {
     "start": "node dist/main/server.js",
+    "nodemon": "nodemon -L --watch ./dist --nolazy ./dist/main/server.js",
     "dev": "ts-node-dev -r tsconfig-paths/register --transpile-only src/main/server.ts",
     "build": "rimraf dist && tsc -p tsconfig-build.json",
     "up": "npm run build && docker-compose up -d --build",
@@ -47,6 +48,7 @@
     "jsonwebtoken": "^8.5.1",
     "module-alias": "^2.2.2",
     "mongodb": "^4.4.1",
+    "nodemon": "^2.0.15",
     "validator": "^13.7.0"
   },
   "engines": {
