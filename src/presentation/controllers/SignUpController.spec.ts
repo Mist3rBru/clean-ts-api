@@ -1,7 +1,6 @@
 import { SignUpController } from '@/presentation/controllers'
-import { MissingParamError } from '@/presentation/errors'
+import { badRequest, ok } from '@/presentation/helpers'
 import { HttpRequest } from '@/presentation/protocols'
-import { ok } from '@/presentation/helpers'
 import { Validation } from '@/validation/protocols'
 import { AddUser, AddUserModel, Authentication, AuthenticationModel } from '@/domain/usecases'
 import { UserModel } from '@/domain/models'
@@ -74,11 +73,11 @@ describe('Signup Controller', () => {
 
   it('should return 400 if Validation returns an error', async () => {
     const { sut, validationSpy } = makeSut()
-    const fakeError = new MissingParamError('any-param')
+    const fakeError = new Error('any-param')
     jest.spyOn(validationSpy, 'validate').mockReturnValueOnce(fakeError)
     const httpRequest = makeFakeRequest()
     const httpResponse = await sut.handle(httpRequest)
-    expect(httpResponse.body.message).toBe(fakeError.message)
+    expect(httpResponse).toEqual(badRequest(fakeError))
   })
 
   it('should call AddAccount with correct values', async () => {
@@ -131,11 +130,6 @@ describe('Signup Controller', () => {
     const { sut } = makeSut()
     const httpRequest = makeFakeRequest()
     const httpResponse = await sut.handle(httpRequest)
-    expect(httpResponse).toEqual(ok({
-      id: 'any-id',
-      name: 'any-name',
-      email: 'any-email',
-      password: 'hashed-password'
-    }))
+    expect(httpResponse).toEqual(ok({ token: 'any-token' }))
   })
 })
