@@ -68,7 +68,7 @@ describe('Signup Controller', () => {
     jest.spyOn(validationSpy, 'validate').mockReturnValueOnce(fakeError)
     const httpRequest = makeFakeRequest()
     const httpResponse = await sut.handle(httpRequest)
-    expect(httpResponse.body.error).toBe(fakeError.message)
+    expect(httpResponse.body.message).toBe(fakeError.message)
   })
 
   it('should call AddAccount with correct values', async () => {
