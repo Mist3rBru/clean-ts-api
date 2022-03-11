@@ -1,8 +1,10 @@
-import { makeDbAuthentication, makeLoginValidation } from '@/main/composers'
+import { makeDbAuthentication, makeLogControllerDecorator, makeLoginValidation } from '@/main/composers'
 import { LoginController } from '@/presentation/controllers'
+import { Controller } from '@/presentation/protocols'
 
-export const makeLoginController = (): LoginController => {
+export const makeLoginController = (): Controller => {
   const validation = makeLoginValidation()
   const authentication = makeDbAuthentication()
-  return new LoginController(authentication, validation)
+  const controller = new LoginController(authentication, validation)
+  return makeLogControllerDecorator(controller)
 }
