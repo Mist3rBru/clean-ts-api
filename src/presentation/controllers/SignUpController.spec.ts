@@ -3,26 +3,30 @@ import { MissingParamError } from '@/presentation/errors'
 import { HttpRequest } from '@/presentation/protocols'
 import { ok } from '@/presentation/helpers'
 import { Validation } from '@/validation/protocols'
-import { AddUser, AddUserModel } from '@/domain/usecases'
+import { AddUser, AddUserModel, Authentication, AuthenticationModel } from '@/domain/usecases'
 import { UserModel } from '@/domain/models'
 
 interface SutTypes {
   sut: SignUpController
   addUserSpy: AddUser
   validationSpy: Validation
+  authenticationSpy: Authentication
 }
 
 const makeSut = (): SutTypes => {
+  const authenticationSpy = new AuthenticationSpy()
   const validationSpy = new ValidationSpy()
   const addUserSpy = new AddUserSpy()
   const sut = new SignUpController(
     addUserSpy,
-    validationSpy
+    validationSpy,
+    authenticationSpy
   )
   return {
     sut,
     addUserSpy,
-    validationSpy
+    validationSpy,
+    authenticationSpy
   }
 }
 
@@ -41,6 +45,12 @@ class AddUserSpy implements AddUser {
 class ValidationSpy implements Validation {
   validate (input: any): Error {
     return null
+  }
+}
+
+class AuthenticationSpy implements Authentication {
+  async auth (credentials: AuthenticationModel): Promise<string> {
+    return 'any-token'
   }
 }
 
@@ -79,16 +89,35 @@ describe('Signup Controller', () => {
     const { passwordConfirmation, ...expectedValues } = httpRequest.body
     expect(addSpy).toBeCalledWith(expectedValues)
   })
+
+  it('should call authentication with correct values', async () => {
+    const { sut, authenticationSpy } = makeSut()
+    const authSpy = jest.spyOn(authenticationSpy, 'auth')
+    const httpRequest = makeFakeRequest()
+    await sut.handle(httpRequest)
+    const { email, password } = httpRequest.body
+    expect(authSpy).toBeCalledWith({ email, password })
+  })
   
   it('should return 500 if any dependency throws', async () => {
+    const addUserSpy = new AddUserSpy()
+    const validationSpy = new ValidationSpy()
+    const authenticationSpy = new AuthenticationSpy()
     const suts = [].concat(
       new SignUpController(
-        { add: () => { throw new Error() } },
-        new ValidationSpy()
+        { add () { throw new Error() } },
+        validationSpy,
+        authenticationSpy
       ),
       new SignUpController(
-        new AddUserSpy(),
-        { validate: () => { throw new Error() } }
+        addUserSpy,
+        { validate () { throw new Error() } },
+        authenticationSpy
+      ),
+      new SignUpController(
+        addUserSpy,
+        validationSpy,
+        { auth () { throw new Error() } }
       )
     )
     for (const sut of suts) {
