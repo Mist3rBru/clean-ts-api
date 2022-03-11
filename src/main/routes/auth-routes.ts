@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
+import { makeLoginController, makeSignUpController, makeLogControllerDecorator } from '@/main/composers'
 import { adapt } from '@/main/adapters/express-router'
-import { composeLoginController, composeSignUpController } from '@/main/composers'
 import { Router } from 'express'
 
 export default (router: Router): any => {
-  router.post('/signup', adapt(composeSignUpController()))
-  router.post('/login', adapt(composeLoginController()))
+  router.post('/signup', adapt(makeLogControllerDecorator(makeSignUpController())))
+  router.post('/login', adapt(makeLogControllerDecorator(makeLoginController())))
 }

@@ -1,11 +1,10 @@
-import { makeDbAddUser, makeDbAuthentication, makeLogControllerDecorator, makeSignUpValidation } from '@/main/composers'
+import { makeDbAddUser, makeDbAuthentication, makeSignUpValidation } from '@/main/composers'
 import { SignUpController } from '@/presentation/controllers'
 import { Controller } from '@/presentation/protocols'
 
-export const composeSignUpController = (): Controller => {
+export const makeSignUpController = (): Controller => {
   const authentication = makeDbAuthentication()
   const addUser = makeDbAddUser()
   const validation = makeSignUpValidation()
-  const signUpController = new SignUpController(validation, addUser, authentication)
-  return makeLogControllerDecorator(signUpController)
+  return new SignUpController(validation, addUser, authentication)
 }
