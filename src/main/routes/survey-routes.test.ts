@@ -21,9 +21,9 @@ describe('Survey Routes', () => {
         .post('/api/survey')
         .send({
           question: 'any-question',
-          answers: [{ 
-            image: 'any-image', 
-            answer: 'any-answer' 
+          answers: [{
+            image: 'any-image',
+            answer: 'any-answer'
           }]
         })
         .expect(204)

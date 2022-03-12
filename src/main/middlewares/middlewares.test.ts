@@ -47,7 +47,7 @@ describe('Middlewares', () => {
     app.post('/test/json_parser', (req, res) => {
       res.send(req.body)
     })
-    
+
     const body = { test: 'json' }
     await request(app)
       .post('/test/json_parser')

@@ -6,7 +6,7 @@ describe('MongoHelper', () => {
   afterAll(async () => {
     await MongoHelper.disconnect()
   })
-  
+
   it('should connect to MongoDB', async () => {
     await MongoHelper.connect(uri)
     expect(MongoHelper.client).toBeTruthy()
@@ -32,7 +32,7 @@ describe('MongoHelper', () => {
     }
     const newCollection = MongoHelper.map(collection)
     expect(newCollection).toEqual({
-      id: collection._id, 
+      id: collection._id,
       email: collection.email
     })
   })

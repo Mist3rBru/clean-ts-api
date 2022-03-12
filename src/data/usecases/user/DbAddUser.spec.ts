@@ -57,7 +57,7 @@ describe('DbAddUser', () => {
     const model = makeFakeUser()
     const fakeUser = Object.assign({}, model, { id: 'any-id' })
     jest.spyOn(userRepositorySpy, 'findByEmail').mockImplementationOnce(
-      async () => { return new Promise(resolve => resolve(fakeUser)) } 
+      async () => { return new Promise(resolve => resolve(fakeUser)) }
     )
     const user = await sut.add(model)
     expect(user).toBeNull()

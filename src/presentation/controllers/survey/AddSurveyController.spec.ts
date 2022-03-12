@@ -5,7 +5,7 @@ import { HttpRequest } from '@/presentation/protocols'
 import { Validation } from '@/validation/protocols'
 import { AddSurvey, AddSurveyModel } from '@/domain/usecases'
 
-interface SutTypes { 
+interface SutTypes {
   sut: AddSurveyController
   validationSpy: Validation
   addSurveySpy: AddSurvey
@@ -56,7 +56,7 @@ describe('AddSurveyController', () => {
     await sut.handle(httpRequest)
     expect(validateSpy).toHaveBeenCalledWith(httpRequest.body)
   })
-  
+
   it('should return 400 if Validation returns an error', async () => {
     const { sut, validationSpy } = makeSut()
     const fakeError = new MissingParamError('any-param')
@@ -65,7 +65,7 @@ describe('AddSurveyController', () => {
     const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse).toEqual(badRequest(fakeError))
   })
-  
+
   it('should call AddSurvey with correct values', async () => {
     const { sut, addSurveySpy } = makeSut()
     const addSpy = jest.spyOn(addSurveySpy, 'add')
@@ -74,7 +74,7 @@ describe('AddSurveyController', () => {
     const { question, answers } = httpRequest.body
     expect(addSpy).toHaveBeenCalledWith({ question, answers })
   })
-  
+
   it('should return 500 if any dependency throws', async () => {
     const addSurvey = new AddSurveySpy()
     const validation = new ValidationSpy()

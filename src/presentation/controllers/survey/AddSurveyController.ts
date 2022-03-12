@@ -8,7 +8,7 @@ export class AddSurveyController implements Controller {
     private readonly validation: Validation,
     private readonly addSurvey: AddSurvey
   ) {}
-  
+
   async handle (request: HttpRequest): Promise<HttpResponse> {
     try {
       const error = this.validation.validate(request.body)

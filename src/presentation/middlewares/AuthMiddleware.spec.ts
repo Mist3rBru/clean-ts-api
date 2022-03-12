@@ -6,7 +6,7 @@ import { Validation } from '@/validation/protocols'
 import { FindUserByToken } from '@/domain/usecases'
 import { UserModel } from '@/domain/models'
 
-interface SutTypes { 
+interface SutTypes {
   sut: AuthMiddleware
   validationSpy: Validation
   findUserByTokenSpy: FindUserByToken
@@ -28,18 +28,18 @@ const makeSut = (): SutTypes => {
 }
 
 class ValidationSpy implements Validation {
-  validate(input: any): Error {
+  validate (input: any): Error {
     return null
   }
 }
 
 class FindUserByTokenSpy implements FindUserByToken {
-  async find(token: string, role?: string): Promise<UserModel> {
+  async find (token: string, role?: string): Promise<UserModel> {
     const user = {
-       id: 'any-id',
-       name: 'any-name',
-       email: 'any-email',
-       password: 'any-password'
+      id: 'any-id',
+      name: 'any-name',
+      email: 'any-email',
+      password: 'any-password'
     }
     return user
   }
@@ -59,7 +59,7 @@ describe('AuthMiddleware', () => {
     await sut.handle(httpRequest)
     expect(validateSpy).toBeCalledWith(httpRequest.headers)
   })
-  
+
   it('should return 400 if invalid token is provided', async () => {
     const { sut, validationSpy } = makeSut()
     const fakeError = new MissingParamError('token')
@@ -68,7 +68,7 @@ describe('AuthMiddleware', () => {
     const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse).toEqual(badRequest(fakeError))
   })
-  
+
   it('should call FindUserByToken with correct value', async () => {
     const { sut, findUserByTokenSpy } = makeSut()
     const findSpy = jest.spyOn(findUserByTokenSpy, 'find')
@@ -76,10 +76,9 @@ describe('AuthMiddleware', () => {
     await sut.handle(httpRequest)
     expect(findSpy).toBeCalledWith('any-token', 'admin')
   })
-  
+
   it('should return 403 if FindUserByToken returns null', async () => {
     const { sut, findUserByTokenSpy } = makeSut()
-    const fakeError = new MissingParamError('token')
     jest.spyOn(findUserByTokenSpy, 'find').mockReturnValueOnce(null)
     const httpRequest = makeFakeRequest()
     const httpResponse = await sut.handle(httpRequest)
@@ -90,6 +89,26 @@ describe('AuthMiddleware', () => {
     const { sut } = makeSut()
     const httpRequest = makeFakeRequest()
     const httpResponse = await sut.handle(httpRequest)
-    expect(httpResponse).toEqual(ok({userId: 'any-id'}))
+    expect(httpResponse).toEqual(ok({ userId: 'any-id' }))
+  })
+
+  it('should return 500 if any dependency throws', async () => {
+    const validation = new ValidationSpy()
+    const findUserByToken = new FindUserByTokenSpy()
+    const suts = [].concat(
+      new AuthMiddleware(
+        { validate () { throw new Error() } },
+        findUserByToken
+      ),
+      new AuthMiddleware(
+        validation,
+        { find () { throw new Error() } }
+      )
+    )
+    for (const sut of suts) {
+      const httpRequest = makeFakeRequest()
+      const httpResponse = await sut.handle(httpRequest)
+      expect(httpResponse.statusCode).toBe(500)
+    }
   })
 })

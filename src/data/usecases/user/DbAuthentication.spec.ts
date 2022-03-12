@@ -1,5 +1,5 @@
 import { DbAuthentication } from '@/data/usecases'
-import { FindUserByEmailRepository, HashComparator, TokenGenerator } from '@/data/protocols'
+import { FindUserByEmailRepository, HashComparator, token, TokenGenerator } from '@/data/protocols'
 import { AuthenticationModel } from '@/domain/usecases'
 import { UserModel } from '@/domain/models'
 
@@ -45,7 +45,7 @@ class HashComparatorSpy implements HashComparator {
 }
 
 class TokenGeneratorSpy implements TokenGenerator {
-  async generate (value: string): Promise<string> {
+  async generate (value: string): Promise<token> {
     return new Promise(resolve => resolve('any-token'))
   }
 }
@@ -63,7 +63,7 @@ describe('DbAuthentication', () => {
     await sut.auth(credentials)
     expect(findSpy).toBeCalledWith('any-email')
   })
-  
+
   it('should call EncrypterValidator with correct values', async () => {
     const { sut, hashComparatorSpy } = makeSut()
     const findSpy = jest.spyOn(hashComparatorSpy, 'compare')
@@ -71,7 +71,7 @@ describe('DbAuthentication', () => {
     await sut.auth(credentials)
     expect(findSpy).toBeCalledWith('any-password', 'hashed-password')
   })
-  
+
   it('should return null if no user is found', async () => {
     const { sut, findUserByEmailRepositorySpy } = makeSut()
     jest.spyOn(findUserByEmailRepositorySpy, 'findByEmail').mockReturnValueOnce(null)
@@ -79,7 +79,7 @@ describe('DbAuthentication', () => {
     const token = await sut.auth(credentials)
     expect(token).toBeNull()
   })
-  
+
   it('should return null if password is invalid', async () => {
     const { sut, hashComparatorSpy } = makeSut()
     jest.spyOn(hashComparatorSpy, 'compare').mockImplementationOnce(
@@ -89,7 +89,7 @@ describe('DbAuthentication', () => {
     const token = await sut.auth(credentials)
     expect(token).toBeNull()
   })
-  
+
   it('should call TokenGenerator with correct value', async () => {
     const { sut, tokenGeneratorSpy } = makeSut()
     const generateSpy = jest.spyOn(tokenGeneratorSpy, 'generate')
@@ -97,7 +97,7 @@ describe('DbAuthentication', () => {
     await sut.auth(credentials)
     expect(generateSpy).toBeCalledWith('any-id')
   })
-  
+
   it('should return token valid credentials are provided', async () => {
     const { sut } = makeSut()
     const credentials = makeFakeCredentials()

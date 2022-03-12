@@ -33,12 +33,12 @@ class ControllerSpy implements Controller {
   }
 }
 
-class ControllerSpyWithError implements Controller { 
-  async handle (request: HttpRequest): Promise<HttpResponse> { 
+class ControllerSpyWithError implements Controller {
+  async handle (request: HttpRequest): Promise<HttpResponse> {
     const fakeError = new Error()
     fakeError.stack = 'any-stack'
     return serverError(fakeError)
-  } 
+  }
 }
 
 class LogErrorRepositorySpy implements LogErrorRepository {

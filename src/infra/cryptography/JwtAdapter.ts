@@ -1,4 +1,4 @@
-import { TokenGenerator, TokenValidator } from '@/data/protocols'
+import { token, TokenGenerator, TokenValidator } from '@/data/protocols'
 import jwt from 'jsonwebtoken'
 
 export class JwtAdapter implements TokenGenerator, TokenValidator {
@@ -6,7 +6,7 @@ export class JwtAdapter implements TokenGenerator, TokenValidator {
     private readonly secret: string
   ) {}
 
-  async generate (value: string): Promise<string> { 
+  async generate (value: string): Promise<token> {
     return jwt.sign({ id: value }, this.secret, { expiresIn: '15m' })
   }
 

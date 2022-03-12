@@ -54,7 +54,7 @@ class AuthenticationSpy implements Authentication {
   }
 }
 
-const makeFakeRequest = (): HttpRequest => ({ 
+const makeFakeRequest = (): HttpRequest => ({
   body: {
     name: 'any-name',
     email: 'any-email',
@@ -106,7 +106,7 @@ describe('Signup Controller', () => {
     const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse).toEqual(forbidden(new EmailInUseError()))
   })
-  
+
   it('should return 500 if any dependency throws', async () => {
     const addUserSpy = new AddUserSpy()
     const validationSpy = new ValidationSpy()

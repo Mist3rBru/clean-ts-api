@@ -37,7 +37,7 @@ class ValidationSpy implements Validation {
 }
 
 const makeFakeRequest = (): HttpRequest => ({
-  body: { 
+  body: {
     email: 'any-email',
     password: 'any-password'
   }
