@@ -1,5 +1,5 @@
 import { DbAuthentication } from '@/data/usecases'
-import { FindUserByEmailRepository, HashComparator, token, Encrypter } from '@/data/protocols'
+import { FindUserByEmailRepository, HashComparator, token, TokenGenerator } from '@/data/protocols'
 import { AuthenticationModel } from '@/domain/usecases'
 import { UserModel } from '@/domain/models'
 
@@ -7,23 +7,23 @@ interface SutTypes {
   sut: DbAuthentication
   findUserByEmailRepositorySpy: FindUserByEmailRepository
   hashComparatorSpy: HashComparator
-  encrypterSpy: Encrypter
+  tokenGeneratorSpy: TokenGenerator
 }
 
 const makeSut = (): SutTypes => {
-  const encrypterSpy = new EncrypterSpy()
+  const tokenGeneratorSpy = new TokenGeneratorSpy()
   const hashComparatorSpy = new HashComparatorSpy()
   const findUserByEmailRepositorySpy = new FindUserByEmailRepositorySpy()
   const sut = new DbAuthentication(
     findUserByEmailRepositorySpy,
     hashComparatorSpy,
-    encrypterSpy
+    tokenGeneratorSpy
   )
   return {
     sut,
     findUserByEmailRepositorySpy,
     hashComparatorSpy,
-    encrypterSpy
+    tokenGeneratorSpy
   }
 }
 
@@ -44,8 +44,8 @@ class HashComparatorSpy implements HashComparator {
   }
 }
 
-class EncrypterSpy implements Encrypter {
-  async encrypt (value: string): Promise<token> {
+class TokenGeneratorSpy implements TokenGenerator {
+  async generate (value: string): Promise<token> {
     return new Promise(resolve => resolve('any-token'))
   }
 }
@@ -90,9 +90,9 @@ describe('DbAuthentication', () => {
     expect(token).toBeNull()
   })
 
-  it('should call Encrypter with correct value', async () => {
-    const { sut, encrypterSpy } = makeSut()
-    const generateSpy = jest.spyOn(encrypterSpy, 'encrypt')
+  it('should call TokenGenerator with correct value', async () => {
+    const { sut, tokenGeneratorSpy } = makeSut()
+    const generateSpy = jest.spyOn(tokenGeneratorSpy, 'generate')
     const credentials = makeFakeCredentials()
     await sut.auth(credentials)
     expect(generateSpy).toBeCalledWith('any-id')
@@ -108,22 +108,22 @@ describe('DbAuthentication', () => {
   it('should throw if any dependency throws', async () => {
     const findUserByEmailRepository = new FindUserByEmailRepositorySpy()
     const hashComparator = new HashComparatorSpy()
-    const encrypter = new EncrypterSpy()
+    const tokenGenerator = new TokenGeneratorSpy()
     const suts = [].concat(
       new DbAuthentication(
         { findByEmail () { throw new Error() } },
         hashComparator,
-        encrypter
+        tokenGenerator
       ),
       new DbAuthentication(
         findUserByEmailRepository,
         { compare () { throw new Error() } },
-        encrypter
+        tokenGenerator
       ),
       new DbAuthentication(
         findUserByEmailRepository,
         hashComparator,
-        { encrypt () { throw new Error() } }
+        { generate () { throw new Error() } }
       )
     )
     for (const sut of suts) {

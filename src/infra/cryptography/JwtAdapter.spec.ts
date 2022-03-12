@@ -22,7 +22,7 @@ describe('JwtAdapter', () => {
     it('should call sign with correct values', async () => {
       const sut = makeSut()
       const signSpy = jest.spyOn(jwt, 'sign')
-      await sut.encrypt('any-value')
+      await sut.generate('any-value')
       expect(signSpy).toBeCalledWith(
         { id: 'any-value' }, 'any-secret', { expiresIn: '15m' }
       )
@@ -30,7 +30,7 @@ describe('JwtAdapter', () => {
 
     it('should return token when sign success', async () => {
       const sut = makeSut()
-      const token = await sut.encrypt('any-value')
+      const token = await sut.generate('any-value')
       expect(token).toBe('any-token')
     })
 
@@ -39,7 +39,7 @@ describe('JwtAdapter', () => {
       jest.spyOn(jwt, 'sign').mockImplementationOnce(
         () => { throw new Error() }
       )
-      const promise = sut.encrypt('any-value')
+      const promise = sut.generate('any-value')
       void expect(promise).rejects.toThrow()
     })
   })
