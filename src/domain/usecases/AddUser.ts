@@ -4,6 +4,7 @@ export interface AddUserModel {
   name: string
   email: string
   password: string
+  role?: string
 }
 
 export interface AddUser {

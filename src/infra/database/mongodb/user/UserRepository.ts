@@ -1,9 +1,9 @@
-import { AddUserRepository, FindUserByEmailRepository } from '@/data/protocols'
+import { AddUserRepository, FindUserByEmailRepository, FindUserByIdRepository } from '@/data/protocols'
 import { AddUserModel } from '@/domain/usecases'
 import { UserModel } from '@/domain/models'
 import { MongoHelper } from '@/infra/database/mongodb'
 
-export class UserRepository implements AddUserRepository, FindUserByEmailRepository {
+export class UserRepository implements AddUserRepository, FindUserByEmailRepository, FindUserByIdRepository {
   async add (model: AddUserModel): Promise<UserModel> {
     const userCollection = await MongoHelper.getCollection('users')
     await userCollection.insertOne(model)
@@ -14,6 +14,12 @@ export class UserRepository implements AddUserRepository, FindUserByEmailReposit
   async findByEmail (email: string): Promise<UserModel> {
     const userCollection = await MongoHelper.getCollection('users')
     const user = await userCollection.findOne({ email: email })
+    return user ? MongoHelper.map(user) : null
+  }
+
+  async findById (id: string): Promise<UserModel> {
+    const userCollection = await MongoHelper.getCollection('users')
+    const user = await userCollection.findOne({ _id: id })
     return user ? MongoHelper.map(user) : null
   }
 }

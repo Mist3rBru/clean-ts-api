@@ -13,7 +13,8 @@ const makeSut = (): UserRepository => {
 const makeFakeUser = (): AddUserModel => ({
   name: 'any-name',
   email: 'any-email',
-  password: 'any-password'
+  password: 'any-password',
+  role: 'any-role'
 })
 
 describe('UserRepository', () => {
@@ -42,7 +43,7 @@ describe('UserRepository', () => {
   })
 
   describe('findByEmail()', () => {
-    it('should return null when user is not found', async () => {
+    it('should return null when no user is found', async () => {
       const sut = makeSut()
       const user = await sut.findByEmail('any-email')
       expect(user).toBeNull()
@@ -56,6 +57,14 @@ describe('UserRepository', () => {
       expect(user.name).toEqual(model.name)
       expect(user.email).toEqual(model.email)
       expect(user.password).toEqual(model.password)
+    })
+  })
+
+  describe('findById()', () => {
+    it('should return null when no user is found', async () => {
+      const sut = makeSut()
+      const user = await sut.findById('any-id')
+      expect(user).toBeNull()
     })
   })
 })
