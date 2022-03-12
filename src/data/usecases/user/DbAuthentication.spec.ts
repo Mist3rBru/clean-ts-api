@@ -1,5 +1,5 @@
 import { DbAuthentication } from '@/data/usecases'
-import { FindUserByEmailRepository, HashComparator, TokenGenerator, token } from '@/data/protocols'
+import { FindUserByEmailRepository, HashComparator, TokenGenerator } from '@/data/protocols'
 import { AuthenticationModel } from '@/domain/usecases'
 import { UserModel } from '@/domain/models'
 
@@ -45,7 +45,7 @@ class HashComparatorSpy implements HashComparator {
 }
 
 class TokenGeneratorSpy implements TokenGenerator {
-  async generate (value: string): Promise<token> {
+  async generate (value: string): Promise<string> {
     return new Promise(resolve => resolve('any-token'))
   }
 }

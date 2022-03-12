@@ -1,9 +1,7 @@
 export interface TokenGenerator {
-  generate (value: string): Promise<token>
+  generate (value: string): Promise<string>
 }
 
 export interface TokenValidator {
-  validate (token: string): Promise<string>
+  validate (token: string): Promise<boolean>
 }
-
-export type token = string | null

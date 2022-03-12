@@ -1,5 +1,5 @@
 import { Authentication, AuthenticationModel } from '@/domain/usecases'
-import { FindUserByEmailRepository, HashComparator, TokenGenerator, token } from '@/data/protocols'
+import { FindUserByEmailRepository, HashComparator, TokenGenerator } from '@/data/protocols'
 
 export class DbAuthentication implements Authentication {
   constructor (
@@ -8,7 +8,7 @@ export class DbAuthentication implements Authentication {
     private readonly tokenGenerator: TokenGenerator
   ) {}
 
-  async auth (credentials: AuthenticationModel): Promise<token> {
+  async auth (credentials: AuthenticationModel): Promise<string> {
     const { email, password } = credentials
     const user = await this.findUserByEmailRepository.findByEmail(email)
     const isValid = user && await this.hashComparator.compare(password, user.password)
