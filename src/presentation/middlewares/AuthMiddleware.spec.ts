@@ -1,7 +1,7 @@
 import { AuthMiddleware } from '@/presentation/middlewares'
 import { HttpRequest } from '@/presentation/protocols'
-import { badRequest } from '@/presentation/helpers'
-import { MissingParamError } from '@/presentation/errors'
+import { badRequest, forbidden } from '@/presentation/helpers'
+import { AccessDeniedError, MissingParamError } from '@/presentation/errors'
 import { Validation } from '@/validation/protocols'
 import { FindUserByToken } from '@/domain/usecases'
 import { UserModel } from '@/domain/models'
@@ -17,7 +17,8 @@ const makeSut = (): SutTypes => {
   const validationSpy = new ValidationSpy()
   const sut = new AuthMiddleware(
     validationSpy,
-    findUserByTokenSpy
+    findUserByTokenSpy,
+    'admin'
   )
   return {
     sut,
@@ -73,6 +74,15 @@ describe('AuthMiddleware', () => {
     const findSpy = jest.spyOn(findUserByTokenSpy, 'find')
     const httpRequest = makeFakeRequest()
     await sut.handle(httpRequest)
-    expect(findSpy).toBeCalledWith(httpRequest.headers.authorization)
+    expect(findSpy).toBeCalledWith('any-token', 'admin')
+  })
+  
+  it('should return 403 if FindUserByToken returns null', async () => {
+    const { sut, findUserByTokenSpy } = makeSut()
+    const fakeError = new MissingParamError('token')
+    jest.spyOn(findUserByTokenSpy, 'find').mockReturnValueOnce(null)
+    const httpRequest = makeFakeRequest()
+    const httpResponse = await sut.handle(httpRequest)
+    expect(httpResponse).toEqual(forbidden(new AccessDeniedError()))
   })
 })
