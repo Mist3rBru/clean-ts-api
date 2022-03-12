@@ -35,17 +35,17 @@ describe('DbAddSurvey', () => {
   it('should call AddSurveyRepository with correct values', async () => {
     const { sut, addSurveyRepositorySpy } = makeSut()
     const addSpy = jest.spyOn(addSurveyRepositorySpy, 'add')
-    const surveyModel = makeSurveyModel()
-    await sut.add(surveyModel)
-    expect(addSpy).toBeCalledWith(surveyModel)
+    const model = makeSurveyModel()
+    await sut.add(model)
+    expect(addSpy).toBeCalledWith(model)
   })
 
   it('should throw if any dependency throws', async () => {
     const sut = new DbAddSurvey(
       { add () { throw new Error() } }
     )
-    const surveyModel = makeSurveyModel()
-    const promise = sut.add(surveyModel)
+    const model = makeSurveyModel()
+    const promise = sut.add(model)
     await expect(promise).rejects.toThrow()
   })
 })
