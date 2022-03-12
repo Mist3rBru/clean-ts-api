@@ -5,6 +5,8 @@ export * from './controllers/login/login-validation'
 export * from './controllers/add-survey/add-survey-controller'
 export * from './controllers/add-survey/add-survey-validation'
 
+export * from './middlewares/auth-validation'
+
 export * from './usecases/add-user-composer'
 export * from './usecases/authentication-composer'
 
