@@ -1,33 +1,33 @@
-import { TokenValidator } from '@/data/protocols'
+import { Decrypter } from '@/data/protocols'
 import { DbFindUserByToken } from '@/data/usecases'
 
 interface SutTypes {
   sut: DbFindUserByToken
-  tokenValidatorSpy: TokenValidator
+  decrypterSpy: Decrypter
 }
 
 const makeSut = (): SutTypes => {
-  const tokenValidatorSpy = new TokenValidatorSpy()
+  const decrypterSpy = new DecrypterSpy()
   const sut = new DbFindUserByToken(
-    tokenValidatorSpy
+    decrypterSpy
   )
   return {
     sut,
-    tokenValidatorSpy
+    decrypterSpy
   }
 }
 
-class TokenValidatorSpy implements TokenValidator {
-  async validate (token: string): Promise<string> {
+class DecrypterSpy implements Decrypter {
+  async decrypt (token: string): Promise<string> {
     return 'any-id'
   }
 }
 
 describe('DbFindUserByToken', () => {
-  it('should call TokenValidator with correct value', async () => {
-    const { sut, tokenValidatorSpy } = makeSut()
-    const validateSpy = jest.spyOn(tokenValidatorSpy, 'validate')
+  it('should call Decrypter with correct value', async () => {
+    const { sut, decrypterSpy } = makeSut()
+    const decryptSpy = jest.spyOn(decrypterSpy, 'decrypt')
     await sut.find('any-token')
-    expect(validateSpy).toBeCalledWith('any-token')
+    expect(decryptSpy).toBeCalledWith('any-token')
   })
 })

@@ -1,5 +1,5 @@
-export * from './cryptography/Hash'
-export * from './cryptography/Token'
+export * from './cryptography/Hasher'
+export * from './cryptography/Encrypter'
 
 export * from './database/AddUserRepository'
 export * from './database/AddSurveyRepository'

@@ -1,11 +1,11 @@
 import { Authentication, AuthenticationModel } from '@/domain/usecases'
-import { FindUserByEmailRepository, HashComparator, TokenGenerator } from '@/data/protocols'
+import { FindUserByEmailRepository, HashComparator, Encrypter } from '@/data/protocols'
 
 export class DbAuthentication implements Authentication {
   constructor (
     private readonly findUserByEmailRepository: FindUserByEmailRepository,
     private readonly hashComparator: HashComparator,
-    private readonly tokenGenerator: TokenGenerator
+    private readonly encrypter: Encrypter
   ) {}
 
   async auth (credentials: AuthenticationModel): Promise<string> {
@@ -13,7 +13,7 @@ export class DbAuthentication implements Authentication {
     const user = await this.findUserByEmailRepository.findByEmail(email)
     const isValid = user && await this.hashComparator.compare(password, user.password)
     if (!isValid) return null
-    const token = await this.tokenGenerator.generate(user.id)
+    const token = await this.encrypter.encrypt(user.id)
     return token
   }
 }

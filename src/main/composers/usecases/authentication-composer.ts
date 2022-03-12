@@ -4,8 +4,8 @@ import { UserRepository } from '@/infra/database/mongodb'
 import { env } from '@/main/config'
 
 export const makeDbAuthentication = (): DbAuthentication => {
-  const tokenGenerator = new JwtAdapter(env.TOKEN_SECRET)
+  const encrypter = new JwtAdapter(env.TOKEN_SECRET)
   const hashComparator = new BcryptAdapter(12)
   const findUserByEmailRepository = new UserRepository()
-  return new DbAuthentication(findUserByEmailRepository, hashComparator, tokenGenerator)
+  return new DbAuthentication(findUserByEmailRepository, hashComparator, encrypter)
 }
