@@ -5,26 +5,26 @@ import { UserModel } from '@/domain/models'
 interface SutTypes {
   sut: DbFindUserByToken
   decrypterSpy: Decrypter
-  findUserByIdRepository: FindUserByIdRepository
+  findUserByIdRepositorySpy: FindUserByIdRepository
 }
 
 const makeSut = (): SutTypes => {
-  const findUserByIdRepository = new FindUserByIdRepositorySpy()
+  const findUserByIdRepositorySpy = new FindUserByIdRepositorySpy()
   const decrypterSpy = new DecrypterSpy()
   const sut = new DbFindUserByToken(
     decrypterSpy,
-    findUserByIdRepository
+    findUserByIdRepositorySpy
   )
   return {
     sut,
     decrypterSpy,
-    findUserByIdRepository
+    findUserByIdRepositorySpy
   }
 }
 
 class DecrypterSpy implements Decrypter {
   async decrypt (token: string): Promise<string> {
-    return 'any-value'
+    return 'any-id'
   }
 }
 
@@ -52,5 +52,12 @@ describe('DbFindUserByToken', () => {
     jest.spyOn(decrypterSpy, 'decrypt').mockReturnValueOnce(null)
     const user = await sut.find('any-token')
     expect(user).toBeNull()
+  })
+
+  it('should call FindUserByIdRepository with correct value', async () => {
+    const { sut, findUserByIdRepositorySpy } = makeSut()
+    const findSpy = jest.spyOn(findUserByIdRepositorySpy, 'findById')
+    await sut.find('any-token')
+    expect(findSpy).toBeCalledWith('any-id')
   })
 })
