@@ -1,9 +1,13 @@
-import { SurveyModel } from '@/domain/models'
+export interface SurveyAnswer {
+  image: string
+  answer: string
+}
 
 export interface AddSurveyModel {
-  img: string
+  question: string
+  answers: SurveyAnswer[]
 }
 
 export interface AddSurvey {
-  add: (survey: AddSurveyModel) => Promise<SurveyModel>
+  add: (survey: AddSurveyModel) => Promise<void>
 }
