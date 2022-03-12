@@ -6,6 +6,7 @@ module.exports = {
   rules: {
     '@typescript-eslint/strict-boolean-expressions': 'off',
     '@typescript-eslint/return-await': 'off',
+    '@typescript-eslint/method-signature-style': 'method',
     'no-trailing-spaces': 'off'
   }
 }
