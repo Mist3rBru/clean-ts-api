@@ -13,6 +13,7 @@ export class DbFindUserByToken implements FindUserByToken {
     if (!userId) return null
     const user = await this.findUserByIdRepository.findById(userId)
     if (!user) return null
-    return null
+    if (role && role !== user.role) return null
+    return user
   }
 }

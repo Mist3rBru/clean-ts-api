@@ -30,14 +30,17 @@ class DecrypterSpy implements Decrypter {
 
 class FindUserByIdRepositorySpy implements FindUserByIdRepository {
   async findById (id: string): Promise<UserModel> {
-    return {
-      id: 'any-id',
-      name: 'any-name',
-      email: 'any-email',
-      password: 'any-password'
-    }
+    return makeFakeUser()
   }
 }
+
+const makeFakeUser = (): UserModel => ({
+  id: 'any-id',
+  name: 'any-name',
+  email: 'any-email',
+  password: 'any-password',
+  role: 'any-role'
+})
 
 describe('DbFindUserByToken', () => {
   it('should call Decrypter with correct value', async () => {
@@ -65,6 +68,17 @@ describe('DbFindUserByToken', () => {
     const { sut, findUserByIdRepositorySpy } = makeSut()
     jest.spyOn(findUserByIdRepositorySpy, 'findById').mockReturnValueOnce(null)
     const user = await sut.find('any-token')
+    expect(user).toBeNull()
+  })
+
+  it('should return null if user role is different from param role', async () => {
+    const { sut, findUserByIdRepositorySpy } = makeSut()
+    const fakeUser = makeFakeUser()
+    fakeUser.role = null
+    jest.spyOn(findUserByIdRepositorySpy, 'findById').mockReturnValue(
+      new Promise(resolve => resolve(fakeUser))
+    )
+    const user = await sut.find('any-token', 'any-role')
     expect(user).toBeNull()
   })
 })
