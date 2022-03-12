@@ -1,6 +1,8 @@
 import { AuthMiddleware } from '@/presentation/middlewares'
-import { Validation } from '@/validation/protocols'
 import { HttpRequest } from '@/presentation/protocols'
+import { badRequest } from '@/presentation/helpers'
+import { MissingParamError } from '@/presentation/errors'
+import { Validation } from '@/validation/protocols'
 
 interface SutTypes { 
   sut: AuthMiddleware
@@ -37,5 +39,14 @@ describe('AuthMiddleware', () => {
     const httpRequest = makeFakeRequest()
     await sut.handle(httpRequest)
     expect(validateSpy).toBeCalledWith(httpRequest.headers)
+  })
+  
+  it('should return 400 if invalid token is provided', async () => {
+    const { sut, validationSpy } = makeSut()
+    const fakeError = new MissingParamError('token')
+    jest.spyOn(validationSpy, 'validate').mockReturnValueOnce(fakeError)
+    const httpRequest = makeFakeRequest()
+    const httpResponse = await sut.handle(httpRequest)
+    expect(httpResponse).toEqual(badRequest(fakeError))
   })
 })
