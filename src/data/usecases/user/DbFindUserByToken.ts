@@ -1,14 +1,14 @@
-import { TokenValidator } from '@/data/protocols'
+import { Decrypter } from '@/data/protocols'
 import { UserModel } from '@/domain/models'
 import { FindUserByToken } from '@/domain/usecases'
 
 export class DbFindUserByToken implements FindUserByToken {
   constructor (
-    private readonly tokenValidator: TokenValidator
+    private readonly decrypter: Decrypter
   ) {}
 
   async find (token: string, role?: string): Promise<UserModel> {
-    await this.tokenValidator.validate(token)
+    await this.decrypter.decrypt(token)
     return null
   }
 }
