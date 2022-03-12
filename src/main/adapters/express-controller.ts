@@ -1,7 +1,7 @@
 import { Controller } from '@/presentation/protocols'
 import { Request, Response } from 'express'
 
-export const adapt = (controller: Controller) => {
+export const adaptController = (controller: Controller) => {
   return async (req: Request, res: Response) => {
     const httpRequest = { body: req.body }
     const httpResponse = await controller.handle(httpRequest)
