@@ -1,6 +1,6 @@
 import { AuthMiddleware } from '@/presentation/middlewares'
 import { HttpRequest } from '@/presentation/protocols'
-import { badRequest, forbidden } from '@/presentation/helpers'
+import { badRequest, forbidden, ok } from '@/presentation/helpers'
 import { AccessDeniedError, MissingParamError } from '@/presentation/errors'
 import { Validation } from '@/validation/protocols'
 import { FindUserByToken } from '@/domain/usecases'
@@ -84,5 +84,12 @@ describe('AuthMiddleware', () => {
     const httpRequest = makeFakeRequest()
     const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse).toEqual(forbidden(new AccessDeniedError()))
+  })
+
+  it('should return 200 on success', async () => {
+    const { sut } = makeSut()
+    const httpRequest = makeFakeRequest()
+    const httpResponse = await sut.handle(httpRequest)
+    expect(httpResponse).toEqual(ok({userId: 'any-id'}))
   })
 })

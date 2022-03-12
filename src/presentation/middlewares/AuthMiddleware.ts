@@ -1,5 +1,5 @@
 import { HttpRequest, HttpResponse, Middleware } from '@/presentation/protocols'
-import { badRequest, forbidden } from '@/presentation/helpers'
+import { badRequest, forbidden, ok } from '@/presentation/helpers'
 import { Validation } from '@/validation/protocols'
 import { FindUserByToken } from '@/domain/usecases'
 import { AccessDeniedError } from '@/presentation/errors'
@@ -21,6 +21,6 @@ export class AuthMiddleware implements Middleware {
     if (!user) {
       return forbidden(new AccessDeniedError())
     }
-    return null
+    return ok({ userId: user.id})
   }
 }
