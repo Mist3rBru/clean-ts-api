@@ -1,16 +1,41 @@
 import { AuthMiddleware } from '@/presentation/middlewares'
-import { forbidden } from '@/presentation/helpers'
-import { AccessDeniedError } from '@/presentation/errors'
+import { Validation } from '@/validation/protocols'
+import { HttpRequest } from '@/presentation/protocols'
 
-const makeSut = (): AuthMiddleware => {
-  const sut = new AuthMiddleware()
-  return sut
+interface SutTypes { 
+  sut: AuthMiddleware
+  validationSpy: Validation
 }
 
+const makeSut = (): SutTypes => {
+  const validationSpy = new ValidationSpy()
+  const sut = new AuthMiddleware(
+    validationSpy,
+  )
+  return {
+    sut,
+    validationSpy
+  }
+}
+
+class ValidationSpy implements Validation {
+  validate(input: any): Error {
+    return null
+  }
+}
+
+const makeFakeRequest = (): HttpRequest => ({
+  headers: {
+    authorization: 'any-token'
+  }
+})
+
 describe('AuthMiddleware', () => {
-  it('should return 403 if no x-access-token exists in headers', async () => {
-    const sut = makeSut()
-    const httpResponse = await sut.handle({})
-    expect(httpResponse).toEqual(forbidden(new AccessDeniedError()))
+  it('should call Validation with correct value', async () => {
+    const { sut, validationSpy } = makeSut()
+    const validateSpy = jest.spyOn(validationSpy, 'validate')
+    const httpRequest = makeFakeRequest()
+    await sut.handle(httpRequest)
+    expect(validateSpy).toBeCalledWith(httpRequest.headers)
   })
 })

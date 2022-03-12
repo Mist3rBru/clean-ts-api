@@ -3,5 +3,5 @@ export interface TokenGenerator {
 }
 
 export interface TokenValidator {
-  validate (token: string): Promise<boolean>
+  validate (token: string): Promise<string>
 }

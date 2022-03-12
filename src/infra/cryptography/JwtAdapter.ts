@@ -10,7 +10,7 @@ export class JwtAdapter implements TokenGenerator, TokenValidator {
     return jwt.sign({ id: value }, this.secret, { expiresIn: '15m' })
   }
 
-  async validate (token: string): Promise<boolean> {
+  async validate (token: string): Promise<string> {
     return jwt.verify(token, this.secret) as any
   }
 }
