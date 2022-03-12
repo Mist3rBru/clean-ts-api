@@ -39,4 +39,13 @@ describe('DbAddSurvey', () => {
     await sut.add(surveyModel)
     expect(addSpy).toBeCalledWith(surveyModel)
   })
+
+  it('should throw if any dependency throws', async () => {
+    const sut = new DbAddSurvey(
+      { add () { throw new Error() } }
+    )
+    const surveyModel = makeSurveyModel()
+    const promise = sut.add(surveyModel)
+    await expect(promise).rejects.toThrow()
+  })
 })
