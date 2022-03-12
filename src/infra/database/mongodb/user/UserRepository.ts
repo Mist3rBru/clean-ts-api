@@ -17,7 +17,7 @@ export class UserRepository implements AddUserRepository, FindUserByEmailReposit
     return user ? MongoHelper.map(user) : null
   }
 
-  async findById (id: string): Promise<UserModel> {
+  async findById (id: any): Promise<UserModel> {
     const userCollection = await MongoHelper.getCollection('users')
     const user = await userCollection.findOne({ _id: id })
     return user ? MongoHelper.map(user) : null

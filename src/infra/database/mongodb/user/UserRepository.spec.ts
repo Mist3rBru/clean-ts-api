@@ -66,5 +66,15 @@ describe('UserRepository', () => {
       const user = await sut.findById('any-id')
       expect(user).toBeNull()
     })
+
+    it('should return user when user is found', async () => {
+      const sut = makeSut()
+      const model = makeFakeUser()
+      const fakeUser = await usersCollection.insertOne(model)
+      const user = await sut.findById(fakeUser.insertedId)
+      expect(user.name).toEqual(model.name)
+      expect(user.email).toEqual(model.email)
+      expect(user.password).toEqual(model.password)
+    })
   })
 })
