@@ -5,7 +5,7 @@ import { Validation } from '@/validation/protocols'
 jest.mock('@/validation/validators/ValidationComposite')
 
 describe('AddSurveyValidation', () => {
-  it('should ', async () => {
+  it('should call ValidationComposite with all validations', async () => {
     makeAddSurveyValidation()
     const validations: Validation[] = []
     for (const field of ['question', 'answers']) {
