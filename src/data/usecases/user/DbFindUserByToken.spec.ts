@@ -60,4 +60,11 @@ describe('DbFindUserByToken', () => {
     await sut.find('any-token')
     expect(findSpy).toBeCalledWith('any-id')
   })
+
+  it('should return null if FindUserByIdRepository returns null', async () => {
+    const { sut, findUserByIdRepositorySpy } = makeSut()
+    jest.spyOn(findUserByIdRepositorySpy, 'findById').mockReturnValueOnce(null)
+    const user = await sut.find('any-token')
+    expect(user).toBeNull()
+  })
 })

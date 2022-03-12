@@ -10,10 +10,9 @@ export class DbFindUserByToken implements FindUserByToken {
 
   async find (token: string, role?: string): Promise<UserModel> {
     const userId = await this.decrypter.decrypt(token)
-    if (!userId) {
-      return null
-    }
-    await this.findUserByIdRepository.findById(userId)
+    if (!userId) return null
+    const user = await this.findUserByIdRepository.findById(userId)
+    if (!user) return null
     return null
   }
 }
