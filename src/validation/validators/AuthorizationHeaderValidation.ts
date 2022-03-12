@@ -1,7 +1,7 @@
 import { InvalidParamError, MissingParamError } from '@/presentation/errors'
 import { Validation } from '@/validation/protocols'
 
-export class CompareFieldsValidation implements Validation {
+export class AuthorizationHeaderValidation implements Validation {
   validate (input: any): Error {
     const authHeader = input.authorization
     if (!authHeader) {
