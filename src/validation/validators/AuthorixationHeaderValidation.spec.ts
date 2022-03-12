@@ -12,4 +12,10 @@ describe('AuthorizationHeaderValidation', () => {
     const error = sut.validate({ authorization: null })
     expect(error).toEqual(new MissingParamError('token'))
   })
+
+  it('should return error if authorization is not bearer type', async () => {
+    const sut = makeSut()
+    const error = sut.validate({ authorization: 'any-token' })
+    expect(error).toEqual(new MissingParamError('bearer token'))
+  })
 })
