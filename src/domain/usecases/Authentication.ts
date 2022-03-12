@@ -6,5 +6,5 @@ export interface AuthenticationModel {
 }
 
 export interface Authentication {
-  auth: (credentials: AuthenticationModel) => Promise<token>
+  auth (credentials: AuthenticationModel): Promise<token>
 }
