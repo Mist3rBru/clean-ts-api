@@ -81,4 +81,11 @@ describe('DbFindUserByToken', () => {
     const user = await sut.find('any-token', 'any-role')
     expect(user).toBeNull()
   })
+
+  it('should return user if user role is equal param role', async () => {
+    const { sut } = makeSut()
+    const fakeUser = makeFakeUser()
+    const user = await sut.find('any-token', 'any-role')
+    expect(user).toEqual(fakeUser)
+  })
 })
