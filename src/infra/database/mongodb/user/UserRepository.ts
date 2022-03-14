@@ -2,6 +2,7 @@ import { AddUserRepository, FindUserByEmailRepository, FindUserByIdRepository } 
 import { AddUserModel } from '@/domain/usecases'
 import { UserModel } from '@/domain/models'
 import { MongoHelper } from '@/infra/database/mongodb'
+import { ObjectId } from 'mongodb'
 
 export class UserRepository implements AddUserRepository, FindUserByEmailRepository, FindUserByIdRepository {
   async add (model: AddUserModel): Promise<UserModel> {
@@ -19,7 +20,7 @@ export class UserRepository implements AddUserRepository, FindUserByEmailReposit
 
   async findById (id: any): Promise<UserModel> {
     const userCollection = await MongoHelper.getCollection('users')
-    const user = await userCollection.findOne({ _id: id })
+    const user = await userCollection.findOne({ _id: new ObjectId(id) })
     return user ? MongoHelper.map(user) : null
   }
 }

@@ -1,7 +1,7 @@
 import { UserRepository, MongoHelper } from '@/infra/database/mongodb'
 import { AddUserModel } from '@/domain/usecases'
 import { env } from '@/main/config'
-import { Collection } from 'mongodb'
+import { Collection, ObjectId } from 'mongodb'
 const uri = env.MONGO_URL
 let usersCollection: Collection
 
@@ -63,7 +63,7 @@ describe('UserRepository', () => {
   describe('findById()', () => {
     it('should return null when no user is found', async () => {
       const sut = makeSut()
-      const user = await sut.findById('any-id')
+      const user = await sut.findById(new ObjectId())
       expect(user).toBeNull()
     })
 
