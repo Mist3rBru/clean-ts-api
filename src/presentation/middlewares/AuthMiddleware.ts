@@ -17,7 +17,8 @@ export class AuthMiddleware implements Middleware {
       if (error) {
         return badRequest(error)
       }
-      const token = request.headers.authorization
+      const bearerToken = request.headers.authorization
+      const token = bearerToken.split(' ')[1]
       const user = await this.findUserByToken.find(token, this.role)
       if (!user) {
         return forbidden(new AccessDeniedError())

@@ -47,7 +47,7 @@ class FindUserByTokenSpy implements FindUserByToken {
 
 const makeFakeRequest = (): HttpRequest => ({
   headers: {
-    authorization: 'any-token'
+    authorization: 'any-protocol any-token'
   }
 })
 
