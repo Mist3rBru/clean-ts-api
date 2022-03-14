@@ -16,7 +16,8 @@ const makeSurveyModel = (): AddSurveyModel => {
     answers: [{
       answer: 'any-answer',
       image: 'any-image'
-    }]
+    }],
+    date: new Date()
   }
 }
 

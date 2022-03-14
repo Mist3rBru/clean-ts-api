@@ -11,12 +11,12 @@ const makeSut = (): SutTypes => {
   const sut = new DbAddSurvey(addSurveyRepositorySpy)
   return {
     sut,
-    addSurveyRepositorySpy,
+    addSurveyRepositorySpy
   }
 }
 
 class AddSurveyRepositorySpy implements AddSurveyRepository {
-  async add(survey: AddSurveyModel): Promise<void> {}
+  async add (survey: AddSurveyModel): Promise<void> {}
 }
 
 const makeSurveyModel = (): AddSurveyModel => {
@@ -25,9 +25,10 @@ const makeSurveyModel = (): AddSurveyModel => {
     answers: [
       {
         answer: 'any-answer',
-        image: 'any-image',
-      },
+        image: 'any-image'
+      }
     ],
+    date: new Date()
   }
 }
 
@@ -42,9 +43,9 @@ describe('DbAddSurvey', () => {
 
   it('should throw if any dependency throws', async () => {
     const sut = new DbAddSurvey({
-      add() {
+      add () {
         throw new Error()
-      },
+      }
     })
     const model = makeSurveyModel()
     const promise = sut.add(model)
