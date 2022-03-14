@@ -1,6 +1,6 @@
 import { DbAddSurvey } from '@/data/usecases'
 import { AddSurveyRepository } from '@/data/protocols'
-import { AddSurveyModel } from '@/domain/usecases'
+import { SurveyModel } from '@/domain/models'
 
 type SutTypes = {
   sut: DbAddSurvey
@@ -16,10 +16,10 @@ const makeSut = (): SutTypes => {
 }
 
 class AddSurveyRepositorySpy implements AddSurveyRepository {
-  async add (survey: AddSurveyModel): Promise<void> {}
+  async add (survey: SurveyModel): Promise<void> {}
 }
 
-const makeSurveyModel = (): AddSurveyModel => {
+const makeSurveyModel = (): SurveyModel => {
   return {
     question: 'any-question',
     answers: [

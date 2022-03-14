@@ -3,7 +3,8 @@ import { MissingParamError } from '@/presentation/errors'
 import { badRequest, noContent } from '@/presentation/helpers'
 import { HttpRequest } from '@/presentation/protocols'
 import { Validation } from '@/validation/protocols'
-import { AddSurvey, AddSurveyModel } from '@/domain/usecases'
+import { AddSurvey } from '@/domain/usecases'
+import { SurveyModel } from '@/domain/models'
 import MockDate from 'mockdate'
 
 type SutTypes = {
@@ -33,11 +34,11 @@ class ValidationSpy implements Validation {
 }
 
 class AddSurveySpy implements AddSurvey {
-  async add (survey: AddSurveyModel): Promise<void> {}
+  async add (survey: SurveyModel): Promise<void> {}
 }
 
 const makeFakeRequest = (): HttpRequest => {
-  const surveyModel: AddSurveyModel = {
+  const surveyModel: SurveyModel = {
     question: 'any-question',
     answers: [{
       answer: 'any-answer',

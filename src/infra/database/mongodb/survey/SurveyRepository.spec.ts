@@ -1,4 +1,4 @@
-import { AddSurveyModel } from '@/domain/usecases'
+import { SurveyModel } from '@/domain/models'
 import { MongoHelper, SurveyRepository } from '@/infra/database/mongodb'
 import { env } from '@/main/config'
 import { Collection } from 'mongodb'
@@ -10,7 +10,7 @@ const makeSut = (): SurveyRepository => {
   return sut
 }
 
-const makeSurveyModel = (): AddSurveyModel => {
+const makeSurveyModel = (): SurveyModel => {
   return {
     question: 'any-question',
     answers: [{

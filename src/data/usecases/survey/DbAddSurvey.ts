@@ -1,4 +1,5 @@
-import { AddSurvey, AddSurveyModel } from '@/domain/usecases'
+import { AddSurvey } from '@/domain/usecases'
+import { SurveyModel } from '@/domain/models'
 import { AddSurveyRepository } from '@/data/protocols'
 
 export class DbAddSurvey implements AddSurvey {
@@ -6,7 +7,7 @@ export class DbAddSurvey implements AddSurvey {
     private readonly addSurveyRepository: AddSurveyRepository
   ) {}
 
-  async add (survey: AddSurveyModel): Promise<void> {
+  async add (survey: SurveyModel): Promise<void> {
     await this.addSurveyRepository.add(survey)
   }
 }
