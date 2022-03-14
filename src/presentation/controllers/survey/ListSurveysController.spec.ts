@@ -73,4 +73,16 @@ describe('ListSurveysController', () => {
     const httpResponse = await sut.handle({})
     expect(httpResponse).toEqual(noContent())
   })
+
+  it('should return 500 if any dependency throws', async () => {
+    const suts = [].concat(
+      new ListSurveysController(
+        { list () { throw new Error() } }
+      )
+    )
+    for (const sut of suts) {
+      const res = await sut.handle()
+      expect(res.statusCode).toBe(500)
+    }
+  })
 })
