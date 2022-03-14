@@ -52,6 +52,10 @@ describe('ListSurveysController', () => {
     MockDate.set(new Date())
   })
 
+  afterAll(async () => {
+    MockDate.reset()
+  })
+
   it('should call ListSurveys', async () => {
     const { sut, listSurveysSpy } = makeSut()
     const listSpy = jest.spyOn(listSurveysSpy, 'list')
