@@ -1,5 +1,5 @@
 import { ListSurveys } from '@/domain/usecases'
-import { ok } from '@/presentation/helpers'
+import { noContent, ok } from '@/presentation/helpers'
 import { Controller, HttpRequest, HttpResponse } from '@/presentation/protocols'
 
 export class ListSurveysController implements Controller {
@@ -9,6 +9,6 @@ export class ListSurveysController implements Controller {
 
   async handle (request: HttpRequest): Promise<HttpResponse> {
     const list = await this.listSurveys.list()
-    return ok(list)
+    return list.length ? ok(list) : noContent()
   }
 }

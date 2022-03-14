@@ -2,7 +2,7 @@ import { ListSurveysController } from '@/presentation/controllers'
 import { ListSurveys } from '@/domain/usecases'
 import { SurveyModel } from '@/domain/models'
 import MockDate from 'mockdate'
-import { ok } from '@/presentation/helpers'
+import { noContent, ok } from '@/presentation/helpers'
 
 type SutTypes = {
   sut: ListSurveysController
@@ -59,9 +59,18 @@ describe('ListSurveysController', () => {
     expect(listSpy).toBeCalled()
   })
 
-  it('should return surveys list on if ListSurveys returns a list', async () => {
+  it('should return 200 and surveys list on if ListSurveys returns a list', async () => {
     const { sut } = makeSut()
     const httpResponse = await sut.handle({})
     expect(httpResponse).toEqual(ok(makeFakeSurveys()))
+  })
+
+  it('should return 204 if ListSurveys returns no list', async () => {
+    const { sut, listSurveysSpy } = makeSut()
+    jest.spyOn(listSurveysSpy, 'list').mockReturnValueOnce(
+      new Promise(resolve => resolve([]))
+    )
+    const httpResponse = await sut.handle({})
+    expect(httpResponse).toEqual(noContent())
   })
 })
