@@ -1,6 +1,7 @@
 import { ListSurveysRepository } from '@/data/protocols'
 import { DbListSurveys } from '@/data/usecases'
 import { SurveyModel } from '@/domain/models'
+import MockDate from 'mockdate'
 
 type SutTypes = {
   sut: DbListSurveys
@@ -46,10 +47,24 @@ const makeFakeSurveys = (): SurveyModel[] => {
 }
 
 describe('DbListSurveys', () => {
+  beforeAll(async () => {
+    MockDate.set(new Date())
+  })
+
+  afterAll(async () => {
+    MockDate.reset()
+  })
+
   it('should call ListSurveysRepository', async () => {
     const { sut, listSurveysRepositorySpy } = makeSut()
     const listSpy = jest.spyOn(listSurveysRepositorySpy, 'list')
     await sut.list()
     expect(listSpy).toBeCalled()
+  })
+
+  it('should return list from ListSurveysRepository', async () => {
+    const { sut } = makeSut()
+    const list = await sut.list()
+    expect(list).toEqual(makeFakeSurveys())
   })
 })
