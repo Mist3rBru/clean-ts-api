@@ -1,25 +1,22 @@
 import { ValidationComposite } from '@/validation/validators'
 import { Validation } from '@/validation/protocols'
 
-interface SutTypes {
+type SutTypes = {
   sut: ValidationComposite
   validationSpies: Validation[]
 }
 
 const makeSut = (): SutTypes => {
-  const validationSpies = [
-    new ValidationSpy(),
-    new ValidationSpy()
-  ]
+  const validationSpies = [new ValidationSpy(), new ValidationSpy()]
   const sut = new ValidationComposite(validationSpies)
   return {
     sut,
-    validationSpies
+    validationSpies,
   }
 }
 
 class ValidationSpy implements Validation {
-  validate (input: any): Error {
+  validate(input: any): Error {
     return null
   }
 }
@@ -36,8 +33,12 @@ describe('ValidationComposite', () => {
 
   it('should return error when first Validation returns error', () => {
     const { sut, validationSpies } = makeSut()
-    jest.spyOn(validationSpies[0], 'validate').mockReturnValueOnce(new Error('0'))
-    jest.spyOn(validationSpies[1], 'validate').mockReturnValueOnce(new Error('1'))
+    jest
+      .spyOn(validationSpies[0], 'validate')
+      .mockReturnValueOnce(new Error('0'))
+    jest
+      .spyOn(validationSpies[1], 'validate')
+      .mockReturnValueOnce(new Error('1'))
     const error = sut.validate('any-input')
     expect(error).toEqual(new Error('0'))
   })

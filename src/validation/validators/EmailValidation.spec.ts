@@ -2,7 +2,7 @@ import { EmailValidation } from '@/validation/validators'
 import { EmailValidator } from '@/validation/protocols'
 import { InvalidParamError } from '@/presentation/errors'
 
-interface SutTypes {
+type SutTypes = {
   sut: EmailValidation
   emailValidatorSpy: EmailValidator
 }
@@ -12,12 +12,12 @@ const makeSut = (): SutTypes => {
   const sut = new EmailValidation('email', emailValidatorSpy)
   return {
     sut,
-    emailValidatorSpy
+    emailValidatorSpy,
   }
 }
 
 class EmailValidatorSpy implements EmailValidator {
-  isValid (email: string): boolean {
+  isValid(email: string): boolean {
     return true
   }
 }
@@ -44,10 +44,11 @@ describe('EmailValidation', () => {
   })
 
   it('should throw if EmailValidator throws', async () => {
-    const sut = new EmailValidation(
-      'email',
-      { isValid () { throw new Error() } }
-    )
+    const sut = new EmailValidation('email', {
+      isValid() {
+        throw new Error()
+      },
+    })
     expect(sut.validate).toThrow()
   })
 })

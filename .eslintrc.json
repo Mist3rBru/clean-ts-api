@@ -18,6 +18,7 @@
   "rules": {
     "@typescript-eslint/method-signature-style": "off",
     "@typescript-eslint/strict-boolean-expressions": "off",
-    "@typescript-eslint/return-await": "off"
+    "@typescript-eslint/return-await": "off",
+    "@typescript-eslint/consistent-type-definitions": "off"
   }
 }

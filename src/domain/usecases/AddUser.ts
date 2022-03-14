@@ -1,6 +1,6 @@
 import { UserModel } from '@/domain/models'
 
-export interface AddUserModel {
+export type AddUserModel = {
   name: string
   email: string
   password: string

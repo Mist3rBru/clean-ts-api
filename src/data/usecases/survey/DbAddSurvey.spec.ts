@@ -2,32 +2,32 @@ import { DbAddSurvey } from '@/data/usecases'
 import { AddSurveyRepository } from '@/data/protocols'
 import { AddSurveyModel } from '@/domain/usecases'
 
-interface SutTypes {
+type SutTypes = {
   sut: DbAddSurvey
   addSurveyRepositorySpy: AddSurveyRepository
 }
 const makeSut = (): SutTypes => {
   const addSurveyRepositorySpy = new AddSurveyRepositorySpy()
-  const sut = new DbAddSurvey(
-    addSurveyRepositorySpy
-  )
+  const sut = new DbAddSurvey(addSurveyRepositorySpy)
   return {
     sut,
-    addSurveyRepositorySpy
+    addSurveyRepositorySpy,
   }
 }
 
 class AddSurveyRepositorySpy implements AddSurveyRepository {
-  async add (survey: AddSurveyModel): Promise<void> {}
+  async add(survey: AddSurveyModel): Promise<void> {}
 }
 
 const makeSurveyModel = (): AddSurveyModel => {
   return {
     question: 'any-question',
-    answers: [{
-      answer: 'any-answer',
-      image: 'any-image'
-    }]
+    answers: [
+      {
+        answer: 'any-answer',
+        image: 'any-image',
+      },
+    ],
   }
 }
 
@@ -41,9 +41,11 @@ describe('DbAddSurvey', () => {
   })
 
   it('should throw if any dependency throws', async () => {
-    const sut = new DbAddSurvey(
-      { add () { throw new Error() } }
-    )
+    const sut = new DbAddSurvey({
+      add() {
+        throw new Error()
+      },
+    })
     const model = makeSurveyModel()
     const promise = sut.add(model)
     await expect(promise).rejects.toThrow()

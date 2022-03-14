@@ -2,7 +2,7 @@ import { Decrypter, FindUserByIdRepository } from '@/data/protocols'
 import { DbFindUserByToken } from '@/data/usecases'
 import { UserModel } from '@/domain/models'
 
-interface SutTypes {
+type SutTypes = {
   sut: DbFindUserByToken
   decrypterSpy: Decrypter
   findUserByIdRepositorySpy: FindUserByIdRepository
@@ -11,25 +11,22 @@ interface SutTypes {
 const makeSut = (): SutTypes => {
   const findUserByIdRepositorySpy = new FindUserByIdRepositorySpy()
   const decrypterSpy = new DecrypterSpy()
-  const sut = new DbFindUserByToken(
-    decrypterSpy,
-    findUserByIdRepositorySpy
-  )
+  const sut = new DbFindUserByToken(decrypterSpy, findUserByIdRepositorySpy)
   return {
     sut,
     decrypterSpy,
-    findUserByIdRepositorySpy
+    findUserByIdRepositorySpy,
   }
 }
 
 class DecrypterSpy implements Decrypter {
-  async decrypt (token: string): Promise<string> {
+  async decrypt(token: string): Promise<string> {
     return 'any-id'
   }
 }
 
 class FindUserByIdRepositorySpy implements FindUserByIdRepository {
-  async findById (id: string): Promise<UserModel> {
+  async findById(id: string): Promise<UserModel> {
     return makeFakeUser()
   }
 }
@@ -39,7 +36,7 @@ const makeFakeUser = (): UserModel => ({
   name: 'any-name',
   email: 'any-email',
   password: 'any-password',
-  role: 'any-role'
+  role: 'any-role',
 })
 
 describe('DbFindUserByToken', () => {
@@ -75,9 +72,9 @@ describe('DbFindUserByToken', () => {
     const { sut, findUserByIdRepositorySpy } = makeSut()
     const fakeUser = makeFakeUser()
     fakeUser.role = null
-    jest.spyOn(findUserByIdRepositorySpy, 'findById').mockReturnValue(
-      new Promise(resolve => resolve(fakeUser))
-    )
+    jest
+      .spyOn(findUserByIdRepositorySpy, 'findById')
+      .mockReturnValue(new Promise((resolve) => resolve(fakeUser)))
     const user = await sut.find('any-token', 'any-role')
     expect(user).toBeNull()
   })

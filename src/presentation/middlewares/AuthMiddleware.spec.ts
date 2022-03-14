@@ -6,7 +6,7 @@ import { Validation } from '@/validation/protocols'
 import { FindUserByToken } from '@/domain/usecases'
 import { UserModel } from '@/domain/models'
 
-interface SutTypes {
+type SutTypes = {
   sut: AuthMiddleware
   validationSpy: Validation
   findUserByTokenSpy: FindUserByToken
@@ -15,31 +15,27 @@ interface SutTypes {
 const makeSut = (): SutTypes => {
   const findUserByTokenSpy = new FindUserByTokenSpy()
   const validationSpy = new ValidationSpy()
-  const sut = new AuthMiddleware(
-    validationSpy,
-    findUserByTokenSpy,
-    'admin'
-  )
+  const sut = new AuthMiddleware(validationSpy, findUserByTokenSpy, 'admin')
   return {
     sut,
     validationSpy,
-    findUserByTokenSpy
+    findUserByTokenSpy,
   }
 }
 
 class ValidationSpy implements Validation {
-  validate (input: any): Error {
+  validate(input: any): Error {
     return null
   }
 }
 
 class FindUserByTokenSpy implements FindUserByToken {
-  async find (token: string, role?: string): Promise<UserModel> {
+  async find(token: string, role?: string): Promise<UserModel> {
     const user = {
       id: 'any-id',
       name: 'any-name',
       email: 'any-email',
-      password: 'any-password'
+      password: 'any-password',
     }
     return user
   }
@@ -47,8 +43,8 @@ class FindUserByTokenSpy implements FindUserByToken {
 
 const makeFakeRequest = (): HttpRequest => ({
   headers: {
-    authorization: 'any-protocol any-token'
-  }
+    authorization: 'any-protocol any-token',
+  },
 })
 
 describe('AuthMiddleware', () => {
@@ -97,13 +93,18 @@ describe('AuthMiddleware', () => {
     const findUserByToken = new FindUserByTokenSpy()
     const suts = [].concat(
       new AuthMiddleware(
-        { validate () { throw new Error() } },
+        {
+          validate() {
+            throw new Error()
+          },
+        },
         findUserByToken
       ),
-      new AuthMiddleware(
-        validation,
-        { find () { throw new Error() } }
-      )
+      new AuthMiddleware(validation, {
+        find() {
+          throw new Error()
+        },
+      })
     )
     for (const sut of suts) {
       const httpRequest = makeFakeRequest()

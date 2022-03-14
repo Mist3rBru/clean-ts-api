@@ -3,10 +3,15 @@ import { badRequest, forbidden, ok } from '@/presentation/helpers'
 import { MissingParamError, EmailInUseError } from '@/presentation/errors'
 import { HttpRequest } from '@/presentation/protocols'
 import { Validation } from '@/validation/protocols'
-import { AddUser, AddUserModel, Authentication, AuthenticationModel } from '@/domain/usecases'
+import {
+  AddUser,
+  AddUserModel,
+  Authentication,
+  AuthenticationModel,
+} from '@/domain/usecases'
 import { UserModel } from '@/domain/models'
 
-interface SutTypes {
+type SutTypes = {
   sut: SignUpController
   validationSpy: Validation
   addUserSpy: AddUser
@@ -17,39 +22,35 @@ const makeSut = (): SutTypes => {
   const validationSpy = new ValidationSpy()
   const addUserSpy = new AddUserSpy()
   const authenticationSpy = new AuthenticationSpy()
-  const sut = new SignUpController(
-    validationSpy,
-    addUserSpy,
-    authenticationSpy
-  )
+  const sut = new SignUpController(validationSpy, addUserSpy, authenticationSpy)
   return {
     sut,
     addUserSpy,
     validationSpy,
-    authenticationSpy
+    authenticationSpy,
   }
 }
 
 class AddUserSpy implements AddUser {
-  async add (model: AddUserModel): Promise<UserModel> {
+  async add(model: AddUserModel): Promise<UserModel> {
     const user = {
       id: 'any-id',
       name: model.name,
       email: model.email,
-      password: 'hashed-password'
+      password: 'hashed-password',
     }
     return user
   }
 }
 
 class ValidationSpy implements Validation {
-  validate (input: any): Error {
+  validate(input: any): Error {
     return null
   }
 }
 
 class AuthenticationSpy implements Authentication {
-  async auth (credentials: AuthenticationModel): Promise<string> {
+  async auth(credentials: AuthenticationModel): Promise<string> {
     return 'any-token'
   }
 }
@@ -59,8 +60,8 @@ const makeFakeRequest = (): HttpRequest => ({
     name: 'any-name',
     email: 'any-email',
     password: 'any-password',
-    passwordConfirmation: 'any-password'
-  }
+    passwordConfirmation: 'any-password',
+  },
 })
 
 describe('Signup Controller', () => {
@@ -113,20 +114,28 @@ describe('Signup Controller', () => {
     const authenticationSpy = new AuthenticationSpy()
     const suts = [].concat(
       new SignUpController(
-        { validate () { throw new Error() } },
+        {
+          validate() {
+            throw new Error()
+          },
+        },
         addUserSpy,
         authenticationSpy
       ),
       new SignUpController(
         validationSpy,
-        { add () { throw new Error() } },
+        {
+          add() {
+            throw new Error()
+          },
+        },
         authenticationSpy
       ),
-      new SignUpController(
-        validationSpy,
-        addUserSpy,
-        { auth () { throw new Error() } }
-      )
+      new SignUpController(validationSpy, addUserSpy, {
+        auth() {
+          throw new Error()
+        },
+      })
     )
     for (const sut of suts) {
       const httpRequest = makeFakeRequest()

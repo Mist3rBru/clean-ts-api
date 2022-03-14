@@ -3,7 +3,7 @@ import { Controller, HttpRequest, HttpResponse } from '@/presentation/protocols'
 import { ok, serverError } from '@/presentation/helpers'
 import { LogErrorRepository } from '@/data/protocols'
 
-interface SutTypes {
+type SutTypes = {
   sut: LogControllerDecorator
   controllerSpy: Controller
   logErrorRepositorySpy: LogErrorRepository
@@ -12,29 +12,26 @@ interface SutTypes {
 const makeSut = (): SutTypes => {
   const logErrorRepositorySpy = new LogErrorRepositorySpy()
   const controllerSpy = new ControllerSpy()
-  const sut = new LogControllerDecorator(
-    controllerSpy,
-    logErrorRepositorySpy
-  )
+  const sut = new LogControllerDecorator(controllerSpy, logErrorRepositorySpy)
   return {
     sut,
     controllerSpy,
-    logErrorRepositorySpy
+    logErrorRepositorySpy,
   }
 }
 
 class ControllerSpy implements Controller {
-  async handle (request: HttpRequest): Promise<HttpResponse> {
+  async handle(request: HttpRequest): Promise<HttpResponse> {
     const httpResponse: HttpResponse = {
       statusCode: 200,
-      body: request.body
+      body: request.body,
     }
-    return new Promise(resolve => resolve(httpResponse))
+    return new Promise((resolve) => resolve(httpResponse))
   }
 }
 
 class ControllerSpyWithError implements Controller {
-  async handle (request: HttpRequest): Promise<HttpResponse> {
+  async handle(request: HttpRequest): Promise<HttpResponse> {
     const fakeError = new Error()
     fakeError.stack = 'any-stack'
     return serverError(fakeError)
@@ -42,13 +39,13 @@ class ControllerSpyWithError implements Controller {
 }
 
 class LogErrorRepositorySpy implements LogErrorRepository {
-  async log (stack: string): Promise<void> {
-    return new Promise(resolve => resolve())
+  async log(stack: string): Promise<void> {
+    return new Promise((resolve) => resolve())
   }
 }
 
 const makeRequest = (): HttpRequest => ({
-  body: { test: 'any' }
+  body: { test: 'any' },
 })
 
 describe('LogControllerDecorator', () => {
