@@ -21,6 +21,27 @@ const makeSurveyModel = (): SurveyModel => {
   }
 }
 
+const makeFakeSurveys = (): SurveyModel[] => {
+  return [
+    {
+      question: 'question01',
+      answers: [{
+        image: 'image01',
+        answer: 'answer01'
+      }],
+      date: new Date()
+    },
+    {
+      question: 'question02',
+      answers: [{
+        image: 'image02',
+        answer: 'answer02'
+      }],
+      date: new Date()
+    }
+  ]
+}
+
 describe('SurveyRepository', () => {
   beforeAll(async () => {
     await MongoHelper.connect(uri)
@@ -42,5 +63,15 @@ describe('SurveyRepository', () => {
     const survey = await surveyCollection.findOne({ question: model.question })
     expect(survey.question).toBe(model.question)
     expect(survey.answers).toEqual(model.answers)
+  })
+
+  it('should list surveys from survey collection', async () => {
+    const surveysList = makeFakeSurveys()
+    await surveyCollection.insertMany(surveysList)
+    const sut = makeSut()
+    const list = await sut.list()
+    expect(list.length).toBe(2)
+    expect(list[0].question).toBe(surveysList[0].question)
+    expect(list[1].question).toBe(surveysList[1].question)
   })
 })
