@@ -45,5 +45,27 @@ describe('Survey Routes', () => {
       const dbSurvey = await surveyCollection.findOne({ question: 'any-question' })
       expect(dbSurvey).toBeTruthy()
     })
+
+    it('should return 403 if user has not a valid role', async () => {
+      const { insertedId } = await usersCollection.insertOne({
+        name: 'any-name',
+        email: 'any-email',
+        password: 'any-password',
+        role: 'invalid-role'
+      })
+
+      const token = sign({ id: insertedId }, env.TOKEN_SECRET)
+      await request(app)
+        .post('/api/survey')
+        .set('authorization', 'Bearer ' + token)
+        .send({
+          question: 'any-question',
+          answers: [{
+            image: 'any-image',
+            answer: 'any-answer'
+          }]
+        })
+        .expect(403)
+    })
   })
 })
