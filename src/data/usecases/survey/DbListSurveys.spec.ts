@@ -67,4 +67,16 @@ describe('DbListSurveys', () => {
     const list = await sut.list()
     expect(list).toEqual(makeFakeSurveys())
   })
+
+  it('should throw if any dependency throws', async () => {
+    const suts = [].concat(
+      new DbListSurveys(
+        { list () { throw new Error() } }
+      )
+    )
+    for (const sut of suts) {
+      const promise = sut.list()
+      await expect(promise).rejects.toThrow()
+    }
+  })
 })
