@@ -17,7 +17,7 @@
     "test:unit": "npm test -- --watch -c jest-unit-config.js",
     "test:int": "npm test -- --watch -c jest-integration-config.js",
     "test:ci": "npm test -- --coverage",
-    "test:coveralls": "npm run test:ci -- && coveralls < coverage/lcov.info"
+    "test:coveralls": "npm run test:ci && coveralls < coverage/lcov.info"
   },
   "devDependencies": {
     "@shelf/jest-mongodb": "^2.2.1",
