@@ -15,18 +15,18 @@ const makeSut = (): SutTypes => {
   return {
     sut,
     decrypterSpy,
-    findUserByIdRepositorySpy,
+    findUserByIdRepositorySpy
   }
 }
 
 class DecrypterSpy implements Decrypter {
-  async decrypt(token: string): Promise<string> {
+  async decrypt (token: string): Promise<string> {
     return 'any-id'
   }
 }
 
 class FindUserByIdRepositorySpy implements FindUserByIdRepository {
-  async findById(id: string): Promise<UserModel> {
+  async findById (id: string): Promise<UserModel> {
     return makeFakeUser()
   }
 }
@@ -36,7 +36,7 @@ const makeFakeUser = (): UserModel => ({
   name: 'any-name',
   email: 'any-email',
   password: 'any-password',
-  role: 'any-role',
+  role: 'any-role'
 })
 
 describe('DbFindUserByToken', () => {

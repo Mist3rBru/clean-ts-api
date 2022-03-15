@@ -12,12 +12,12 @@ const makeSut = (): SutTypes => {
   const sut = new EmailValidation('email', emailValidatorSpy)
   return {
     sut,
-    emailValidatorSpy,
+    emailValidatorSpy
   }
 }
 
 class EmailValidatorSpy implements EmailValidator {
-  isValid(email: string): boolean {
+  isValid (email: string): boolean {
     return true
   }
 }
@@ -45,9 +45,9 @@ describe('EmailValidation', () => {
 
   it('should throw if EmailValidator throws', async () => {
     const sut = new EmailValidation('email', {
-      isValid() {
+      isValid () {
         throw new Error()
-      },
+      }
     })
     expect(sut.validate).toThrow()
   })

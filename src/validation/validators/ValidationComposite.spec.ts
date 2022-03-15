@@ -11,12 +11,12 @@ const makeSut = (): SutTypes => {
   const sut = new ValidationComposite(validationSpies)
   return {
     sut,
-    validationSpies,
+    validationSpies
   }
 }
 
 class ValidationSpy implements Validation {
-  validate(input: any): Error {
+  validate (input: any): Error {
     return null
   }
 }

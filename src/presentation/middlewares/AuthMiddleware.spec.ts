@@ -19,23 +19,23 @@ const makeSut = (): SutTypes => {
   return {
     sut,
     validationSpy,
-    findUserByTokenSpy,
+    findUserByTokenSpy
   }
 }
 
 class ValidationSpy implements Validation {
-  validate(input: any): Error {
+  validate (input: any): Error {
     return null
   }
 }
 
 class FindUserByTokenSpy implements FindUserByToken {
-  async find(token: string, role?: string): Promise<UserModel> {
+  async find (token: string, role?: string): Promise<UserModel> {
     const user = {
       id: 'any-id',
       name: 'any-name',
       email: 'any-email',
-      password: 'any-password',
+      password: 'any-password'
     }
     return user
   }
@@ -43,8 +43,8 @@ class FindUserByTokenSpy implements FindUserByToken {
 
 const makeFakeRequest = (): HttpRequest => ({
   headers: {
-    authorization: 'any-protocol any-token',
-  },
+    authorization: 'any-protocol any-token'
+  }
 })
 
 describe('AuthMiddleware', () => {
@@ -94,16 +94,16 @@ describe('AuthMiddleware', () => {
     const suts = [].concat(
       new AuthMiddleware(
         {
-          validate() {
+          validate () {
             throw new Error()
-          },
+          }
         },
         findUserByToken
       ),
       new AuthMiddleware(validation, {
-        find() {
+        find () {
           throw new Error()
-        },
+        }
       })
     )
     for (const sut of suts) {
