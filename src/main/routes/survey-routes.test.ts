@@ -86,5 +86,13 @@ describe('Survey Routes', () => {
         .send()
         .expect(200)
     })
+
+    it('should return 400 on make request without access token', async () => {
+      await surveyCollection.insertMany(makeFakeSurveys())
+      await request(app)
+        .get('/api/survey')
+        .send()
+        .expect(400)
+    })
   })
 })
