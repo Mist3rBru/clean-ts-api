@@ -1,7 +1,7 @@
 import { DbFindUserByToken } from '@/data/usecases'
 import { JwtAdapter } from '@/infra/cryptography'
 import { UserRepository } from '@/infra/database/mongodb'
-import { env } from '@/main/config'
+import { env } from '@/main/config/env'
 
 export const makeDbFindUserByToken = (): DbFindUserByToken => {
   const findUserByIdRepository = new UserRepository()

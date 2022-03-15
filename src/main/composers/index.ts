@@ -4,6 +4,7 @@ export * from './controllers/login/login-controller'
 export * from './controllers/login/login-validation'
 export * from './controllers/add-survey/add-survey-controller'
 export * from './controllers/add-survey/add-survey-validation'
+export * from './controllers/list-surveys/list-surveys'
 
 export * from './middlewares/authentication/auth-middleware'
 export * from './middlewares/authentication/auth-validation'
