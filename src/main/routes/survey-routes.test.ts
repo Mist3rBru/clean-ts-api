@@ -55,12 +55,12 @@ describe('Survey Routes', () => {
     it('should return 204 on register success', async () => {
       const { insertedId } = await usersCollection.insertOne(makeFakeUser('admin'))
       const adminToken = sign({ id: insertedId }, env.TOKEN_SECRET)
-      const res = await request(app)
+      await request(app)
         .post('/api/survey')
         .set('authorization', 'Bearer ' + adminToken)
         .send(makeFakeSurveys()[0])
+        .expect(204)
       const dbSurvey = await surveyCollection.findOne({ question: 'any-question' })
-      console.log(res.body)
       expect(dbSurvey).toBeTruthy()
     })
 
@@ -72,6 +72,19 @@ describe('Survey Routes', () => {
         .set('authorization', 'Bearer ' + defaultToken)
         .send(makeFakeSurveys()[0])
         .expect(403)
+    })
+  })
+
+  describe('GET /api/survey', () => {
+    it('should return 200 on list success', async () => {
+      await surveyCollection.insertMany(makeFakeSurveys())
+      const { insertedId } = await usersCollection.insertOne(makeFakeUser())
+      const defaultToken = sign({ id: insertedId }, env.TOKEN_SECRET)
+      await request(app)
+        .get('/api/survey')
+        .set('authorization', 'Bearer ' + defaultToken)
+        .send()
+        .expect(200)
     })
   })
 })
