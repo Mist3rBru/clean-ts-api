@@ -30,7 +30,7 @@ class ValidationSpy implements Validation {
 }
 
 class FindUserByTokenSpy implements FindUserByToken {
-  async find (token: string, role?: string): Promise<UserModel> {
+  async findByToken (token: string, role?: string): Promise<UserModel> {
     const user = {
       id: 'any-id',
       name: 'any-name',
@@ -67,7 +67,7 @@ describe('AuthMiddleware', () => {
 
   it('should call FindUserByToken with correct value', async () => {
     const { sut, findUserByTokenSpy } = makeSut()
-    const findSpy = jest.spyOn(findUserByTokenSpy, 'find')
+    const findSpy = jest.spyOn(findUserByTokenSpy, 'findByToken')
     const httpRequest = makeFakeRequest()
     await sut.handle(httpRequest)
     expect(findSpy).toBeCalledWith('any-token', 'admin')
@@ -75,7 +75,7 @@ describe('AuthMiddleware', () => {
 
   it('should return 403 if FindUserByToken returns null', async () => {
     const { sut, findUserByTokenSpy } = makeSut()
-    jest.spyOn(findUserByTokenSpy, 'find').mockReturnValueOnce(null)
+    jest.spyOn(findUserByTokenSpy, 'findByToken').mockReturnValueOnce(null)
     const httpRequest = makeFakeRequest()
     const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse).toEqual(forbidden(new AccessDeniedError()))
@@ -101,7 +101,7 @@ describe('AuthMiddleware', () => {
         findUserByToken
       ),
       new AuthMiddleware(validation, {
-        find () {
+        findByToken () {
           throw new Error()
         }
       })

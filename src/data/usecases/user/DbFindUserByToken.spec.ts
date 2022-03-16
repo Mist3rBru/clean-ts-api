@@ -43,28 +43,28 @@ describe('DbFindUserByToken', () => {
   it('should call Decrypter with correct value', async () => {
     const { sut, decrypterSpy } = makeSut()
     const decryptSpy = jest.spyOn(decrypterSpy, 'decrypt')
-    await sut.find('any-token')
+    await sut.findByToken('any-token')
     expect(decryptSpy).toBeCalledWith('any-token')
   })
 
   it('should return null if Decrypter returns null', async () => {
     const { sut, decrypterSpy } = makeSut()
     jest.spyOn(decrypterSpy, 'decrypt').mockReturnValueOnce(null)
-    const user = await sut.find('any-token')
+    const user = await sut.findByToken('any-token')
     expect(user).toBeNull()
   })
 
   it('should call FindUserByIdRepository with correct value', async () => {
     const { sut, findUserByIdRepositorySpy } = makeSut()
     const findSpy = jest.spyOn(findUserByIdRepositorySpy, 'findById')
-    await sut.find('any-token')
+    await sut.findByToken('any-token')
     expect(findSpy).toBeCalledWith('any-id')
   })
 
   it('should return null if FindUserByIdRepository returns null', async () => {
     const { sut, findUserByIdRepositorySpy } = makeSut()
     jest.spyOn(findUserByIdRepositorySpy, 'findById').mockReturnValueOnce(null)
-    const user = await sut.find('any-token')
+    const user = await sut.findByToken('any-token')
     expect(user).toBeNull()
   })
 
@@ -75,21 +75,21 @@ describe('DbFindUserByToken', () => {
     jest
       .spyOn(findUserByIdRepositorySpy, 'findById')
       .mockReturnValue(new Promise((resolve) => resolve(fakeUser)))
-    const user = await sut.find('any-token', 'any-role')
+    const user = await sut.findByToken('any-token', 'any-role')
     expect(user).toBeNull()
   })
 
   it('should return user if user role is equal param role', async () => {
     const { sut } = makeSut()
     const fakeUser = makeFakeUser()
-    const user = await sut.find('any-token', 'any-role')
+    const user = await sut.findByToken('any-token', 'any-role')
     expect(user).toEqual(fakeUser)
   })
 
   it('should return user if no param role is provided', async () => {
     const { sut } = makeSut()
     const fakeUser = makeFakeUser()
-    const user = await sut.find('any-token')
+    const user = await sut.findByToken('any-token')
     expect(user).toEqual(fakeUser)
   })
 })
