@@ -56,4 +56,16 @@ describe('DbFindSurveyById', () => {
     const survey = await sut.findById('any-id')
     expect(survey).toEqual(makeFakeSurvey())
   })
+
+  it('should throw if any depende', async () => {
+    const suts = [].concat(
+      new DbFindSurveyById(
+        { findById () { throw new Error() } }
+      )
+    )
+    for (const sut of suts) {
+      const promise = sut.findById()
+      await expect(promise).rejects.toThrow()
+    }
+  })
 })
