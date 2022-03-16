@@ -7,5 +7,6 @@ export * from './database/user/FindUserByIdRepository'
 
 export * from './database/survey/AddSurveyRepository'
 export * from './database/survey/ListSurveysRepository'
+export * from './database/survey/FindSurveyByIdRepository'
 
 export * from './database/LogErrorRepository'
