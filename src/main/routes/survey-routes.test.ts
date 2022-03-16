@@ -1,5 +1,4 @@
-import { SurveyModel } from '@/domain/models'
-import { AddUserModel } from '@/domain/usecases'
+import { AddSurveyModel, AddUserModel } from '@/domain/usecases'
 import { MongoHelper } from '@/infra/database/mongodb'
 import { app, env } from '@/main/config'
 import { sign } from 'jsonwebtoken'
@@ -15,7 +14,7 @@ const makeFakeUser = (role: string = null): AddUserModel => ({
   role: role
 })
 
-const makeFakeSurveys = (): SurveyModel[] => {
+const makeFakeSurveys = (): AddSurveyModel[] => {
   return [
     {
       date: new Date(),

@@ -1,4 +1,4 @@
-import { SurveyModel } from '@/domain/models'
+import { AddSurveyModel } from '@/domain/usecases'
 import { MongoHelper, SurveyRepository } from '@/infra/database/mongodb'
 import { env } from '@/main/config'
 import { Collection } from 'mongodb'
@@ -10,18 +10,7 @@ const makeSut = (): SurveyRepository => {
   return sut
 }
 
-const makeSurveyModel = (): SurveyModel => {
-  return {
-    question: 'any-question',
-    answers: [{
-      answer: 'any-answer',
-      image: 'any-image'
-    }],
-    date: new Date()
-  }
-}
-
-const makeFakeSurveys = (): SurveyModel[] => {
+const makeFakeSurveys = (): AddSurveyModel[] => {
   return [
     {
       question: 'question01',
@@ -58,7 +47,7 @@ describe('SurveyRepository', () => {
 
   it('should register a survey on MongoDB', async () => {
     const sut = makeSut()
-    const model = makeSurveyModel()
+    const model = makeFakeSurveys()[0]
     await sut.add(model)
     const survey = await surveyCollection.findOne({ question: model.question })
     expect(survey.question).toBe(model.question)

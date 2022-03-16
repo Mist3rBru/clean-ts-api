@@ -28,6 +28,7 @@ class ListSurveysRepositorySpy implements ListSurveysRepository {
 const makeFakeSurveys = (): SurveyModel[] => {
   return [
     {
+      id: '01',
       question: 'question01',
       answers: [{
         image: 'image01',
@@ -36,6 +37,7 @@ const makeFakeSurveys = (): SurveyModel[] => {
       date: new Date()
     },
     {
+      id: '02',
       question: 'question02',
       answers: [{
         image: 'image02',

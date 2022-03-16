@@ -3,7 +3,7 @@ import { MissingParamError } from '@/presentation/errors'
 import { badRequest, noContent } from '@/presentation/helpers'
 import { HttpRequest } from '@/presentation/protocols'
 import { Validation } from '@/validation/protocols'
-import { AddSurvey } from '@/domain/usecases'
+import { AddSurvey, AddSurveyModel } from '@/domain/usecases'
 import { SurveyModel } from '@/domain/models'
 import MockDate from 'mockdate'
 
@@ -38,7 +38,7 @@ class AddSurveySpy implements AddSurvey {
 }
 
 const makeFakeRequest = (): HttpRequest => {
-  const surveyModel: SurveyModel = {
+  const surveyModel: AddSurveyModel = {
     question: 'any-question',
     answers: [{
       answer: 'any-answer',
