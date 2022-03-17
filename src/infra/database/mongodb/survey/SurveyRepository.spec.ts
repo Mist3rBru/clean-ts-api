@@ -34,10 +34,10 @@ const makeFakeSurveys = (): AddSurveyModel[] => {
 describe('SurveyRepository', () => {
   beforeAll(async () => {
     await MongoHelper.connect(uri)
+    surveyCollection = await MongoHelper.getCollection('survey')
   })
 
   beforeEach(async () => {
-    surveyCollection = await MongoHelper.getCollection('survey')
     await surveyCollection.deleteMany({})
   })
 
@@ -45,22 +45,36 @@ describe('SurveyRepository', () => {
     await MongoHelper.disconnect()
   })
 
-  it('should register a survey on MongoDB', async () => {
-    const sut = makeSut()
-    const model = makeFakeSurveys()[0]
-    await sut.add(model)
-    const survey = await surveyCollection.findOne({ question: model.question })
-    expect(survey.question).toBe(model.question)
-    expect(survey.answers).toEqual(model.answers)
+  describe('Add()', () => {
+    it('should register a survey on MongoDB', async () => {
+      const sut = makeSut()
+      const model = makeFakeSurveys()[0]
+      await sut.add(model)
+      const survey = await surveyCollection.findOne({ question: model.question })
+      expect(survey.question).toBe(model.question)
+      expect(survey.answers).toEqual(model.answers)
+    })
   })
 
-  it('should list surveys from survey collection', async () => {
-    const surveysList = makeFakeSurveys()
-    await surveyCollection.insertMany(surveysList)
-    const sut = makeSut()
-    const list = await sut.list()
-    expect(list.length).toBe(2)
-    expect(list[0].question).toBe(surveysList[0].question)
-    expect(list[1].question).toBe(surveysList[1].question)
+  describe('list()', () => {
+    it('should list surveys from survey collection', async () => {
+      const surveysList = makeFakeSurveys()
+      await surveyCollection.insertMany(surveysList)
+      const sut = makeSut()
+      const list = await sut.list()
+      expect(list.length).toBe(2)
+      expect(list[0].question).toBe(surveysList[0].question)
+      expect(list[1].question).toBe(surveysList[1].question)
+    })
+  })
+
+  describe('findById()', () => {
+    it('should return a existent survey', async () => {
+      const surveysList = makeFakeSurveys()
+      const { insertedId } = await surveyCollection.insertOne(surveysList[0])
+      const sut = makeSut()
+      const survey = await sut.findById(insertedId.toString())
+      expect(survey).toBeTruthy()
+    })
   })
 })
