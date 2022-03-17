@@ -20,8 +20,8 @@ const makeFakeSurveys = (): SaveSurveyResultModel[] => {
       date: new Date()
     },
     {
-      surveyId: 'survey02',
-      userId: 'user02',
+      surveyId: 'survey01',
+      userId: 'user01',
       answer: 'answer02',
       date: new Date()
     }
@@ -42,10 +42,23 @@ describe('SurveyResultRepository', () => {
     await MongoHelper.disconnect()
   })
 
-  it('should create and return a survey result', async () => {
-    const model = makeFakeSurveys()[0]
-    const sut = makeSut()
-    const survey = await sut.save(model)
-    expect(survey).toBeTruthy()
+  describe('save()', () => {
+    it('should create and return survey result', async () => {
+      const model = makeFakeSurveys()[0]
+      const sut = makeSut()
+      const survey = await sut.save(model)
+      expect(survey).toBeTruthy()
+    })
+
+    it('should update and return updated survey', async () => {
+      const modelList = makeFakeSurveys()
+      const sut = makeSut()
+      const res = await sut.save(modelList[0])
+      const survey = await sut.save(modelList[1])
+      expect(res.id).toEqual(survey.id)
+      expect(survey.userId).toBe(modelList[0].userId)
+      expect(survey.surveyId).toBe(modelList[0].surveyId)
+      expect(survey.answer).toBe(modelList[1].answer)
+    })
   })
 })
