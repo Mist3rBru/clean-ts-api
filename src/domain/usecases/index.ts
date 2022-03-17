@@ -1,7 +1,9 @@
-export * from './AddUser'
-export * from './FindUserByToken'
-export * from './Authentication'
-export * from './AddSurvey'
-export * from './ListSurveys'
-export * from './FindSurveyById'
-export * from './SaveSurveyResult'
+export * from './user/AddUser'
+export * from './user/FindUserByToken'
+export * from './user/Authentication'
+
+export * from './survey/AddSurvey'
+export * from './survey/ListSurveys'
+export * from './survey/FindSurveyById'
+
+export * from './survey-result/SaveSurveyResult'
