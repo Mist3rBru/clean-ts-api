@@ -10,6 +10,7 @@ import {
   AuthenticationParams
 } from '@/domain/usecases'
 import { UserModel } from '@/domain/models'
+import { mockUserModel } from '@/tests/domain/mocks'
 
 type SutTypes = {
   sut: SignUpController
@@ -33,13 +34,7 @@ const makeSut = (): SutTypes => {
 
 class AddUserSpy implements AddUser {
   async add (model: AddUserParams): Promise<UserModel> {
-    const user = {
-      id: 'any-id',
-      name: model.name,
-      email: model.email,
-      password: 'hashed-password'
-    }
-    return user
+    return mockUserModel()
   }
 }
 

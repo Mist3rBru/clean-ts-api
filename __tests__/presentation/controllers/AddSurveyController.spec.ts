@@ -1,9 +1,10 @@
+import { mockAddSurveyParams } from '@/tests/domain/mocks'
 import { AddSurveyController } from '@/presentation/controllers'
 import { MissingParamError } from '@/presentation/errors'
 import { badRequest, noContent } from '@/presentation/helpers'
 import { HttpRequest } from '@/presentation/protocols'
 import { Validation } from '@/validation/protocols'
-import { AddSurvey, AddSurveyModel } from '@/domain/usecases'
+import { AddSurvey } from '@/domain/usecases'
 import { SurveyModel } from '@/domain/models'
 import MockDate from 'mockdate'
 
@@ -16,10 +17,7 @@ type SutTypes = {
 const makeSut = (): SutTypes => {
   const addSurveySpy = new AddSurveySpy()
   const validationSpy = new ValidationSpy()
-  const sut = new AddSurveyController(
-    validationSpy,
-    addSurveySpy
-  )
+  const sut = new AddSurveyController(validationSpy, addSurveySpy)
   return {
     sut,
     validationSpy,
@@ -37,19 +35,9 @@ class AddSurveySpy implements AddSurvey {
   async add (survey: SurveyModel): Promise<void> {}
 }
 
-const makeFakeRequest = (): HttpRequest => {
-  const surveyModel: AddSurveyModel = {
-    question: 'any-question',
-    answers: [{
-      answer: 'any-answer',
-      image: 'any-image'
-    }],
-    date: new Date()
-  }
-  return {
-    body: surveyModel
-  }
-}
+const makeFakeRequest = (): HttpRequest => ({
+  body: mockAddSurveyParams()
+})
 
 describe('AddSurveyController', () => {
   beforeAll(async () => {
@@ -72,8 +60,7 @@ describe('AddSurveyController', () => {
     const { sut, validationSpy } = makeSut()
     const fakeError = new MissingParamError('any-param')
     jest.spyOn(validationSpy, 'validate').mockReturnValueOnce(fakeError)
-    const httpRequest = makeFakeRequest()
-    const httpResponse = await sut.handle(httpRequest)
+    const httpResponse = await sut.handle(makeFakeRequest())
     expect(httpResponse).toEqual(badRequest(fakeError))
   })
 
@@ -96,8 +83,7 @@ describe('AddSurveyController', () => {
       ),
       new AddSurveyController(
         validation,
-        { add () { throw new Error() } }
-      )
+        { add () { throw new Error() } })
     )
     for (const sut of suts) {
       const httpRequest = makeFakeRequest()
@@ -108,8 +94,7 @@ describe('AddSurveyController', () => {
 
   it('should return 204 on success', async () => {
     const { sut } = makeSut()
-    const httpRequest = makeFakeRequest()
-    const httpResponse = await sut.handle(httpRequest)
+    const httpResponse = await sut.handle(makeFakeRequest())
     expect(httpResponse).toEqual(noContent())
   })
 })

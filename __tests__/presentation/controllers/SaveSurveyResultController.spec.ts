@@ -4,6 +4,7 @@ import { InvalidParamError } from '@/presentation/errors'
 import { forbidden, ok } from '@/presentation/helpers'
 import { HttpRequest } from '@/presentation/protocols'
 import { SaveSurveyResultController } from '@/presentation/controllers'
+import { mockSurveyModel, mockSurveyResultModel } from '@/tests/domain/mocks'
 import MockDate from 'mockdate'
 
 type SutTypes = {
@@ -28,13 +29,13 @@ const makeSut = (): SutTypes => {
 
 class FindSurveyByIdSpy implements FindSurveyById {
   async findById (id: string): Promise<SurveyModel> {
-    return makeFakeSurvey()
+    return mockSurveyModel()
   }
 }
 
 class SaveSurveyResultSpy implements SaveSurveyResult {
   async save (model: SaveSurveyResultParams): Promise<SurveyResultModel> {
-    return makeFakeSurveyResult()
+    return mockSurveyResultModel()
   }
 }
 
@@ -46,26 +47,6 @@ const makeFakeRequest = (): HttpRequest => ({
     answer: 'any-answer'
   },
   userId: 'any-user-id'
-})
-
-const makeFakeSurvey = (): SurveyModel => ({
-  id: 'any-id',
-  question: 'any-question',
-  answers: [
-    {
-      image: 'any-image',
-      answer: 'any-answer'
-    }
-  ],
-  date: new Date()
-})
-
-const makeFakeSurveyResult = (): SurveyResultModel => ({
-  id: 'any-id',
-  surveyId: 'any-survey-id',
-  userId: 'any-user-id',
-  answer: 'any-answer',
-  date: new Date()
 })
 
 describe('SaveSurveyResultController', () => {
@@ -116,7 +97,7 @@ describe('SaveSurveyResultController', () => {
   it('should return 200 on success', async () => {
     const { sut } = makeSut()
     const httpResponse = await sut.handle(makeFakeRequest())
-    expect(httpResponse).toEqual(ok(makeFakeSurveyResult()))
+    expect(httpResponse).toEqual(ok(mockSurveyResultModel()))
   })
 
   it('should return 500 if any dependency throws', async () => {

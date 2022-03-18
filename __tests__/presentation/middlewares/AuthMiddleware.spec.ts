@@ -5,6 +5,7 @@ import { AccessDeniedError, MissingParamError } from '@/presentation/errors'
 import { Validation } from '@/validation/protocols'
 import { FindUserByToken } from '@/domain/usecases'
 import { UserModel } from '@/domain/models'
+import { mockUserModel } from '@/tests/domain/mocks'
 
 type SutTypes = {
   sut: AuthMiddleware
@@ -31,13 +32,7 @@ class ValidationSpy implements Validation {
 
 class FindUserByTokenSpy implements FindUserByToken {
   async findByToken (token: string, role?: string): Promise<UserModel> {
-    const user = {
-      id: 'any-id',
-      name: 'any-name',
-      email: 'any-email',
-      password: 'any-password'
-    }
-    return user
+    return mockUserModel()
   }
 }
 

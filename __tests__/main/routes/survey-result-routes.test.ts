@@ -1,4 +1,4 @@
-import { AddSurveyModel, AddUserParams } from '@/domain/usecases'
+import { mockAddUserParams, mockAddSurveyParams } from '@/tests/domain/mocks'
 import { MongoHelper } from '@/infra/database/mongodb'
 import { app, env } from '@/main/config'
 import { sign } from 'jsonwebtoken'
@@ -9,24 +9,6 @@ let usersCollection: Collection
 let accessToken: string
 let surveyId: string
 
-const makeFakeUser = (role: string = null): AddUserParams => ({
-  name: 'any-name',
-  email: 'any-email',
-  password: 'any-password',
-  role: role
-})
-
-const makeFakeSurvey = (): AddSurveyModel => ({
-  date: new Date(),
-  question: 'any-question',
-  answers: [
-    {
-      image: 'any-image',
-      answer: 'any-answer'
-    }
-  ]
-})
-
 describe('Survey Routes', () => {
   beforeAll(async () => {
     await MongoHelper.connect(env.MONGO_URL)
@@ -36,10 +18,10 @@ describe('Survey Routes', () => {
     await usersCollection.deleteMany({})
     await surveyCollection.deleteMany({})
 
-    const surveyResult = await surveyCollection.insertOne(makeFakeSurvey())
+    const surveyResult = await surveyCollection.insertOne(mockAddSurveyParams())
     surveyId = surveyResult.insertedId.toString()
 
-    const userResult = await usersCollection.insertOne(makeFakeUser())
+    const userResult = await usersCollection.insertOne(mockAddUserParams())
     accessToken = sign({ id: userResult.insertedId }, env.TOKEN_SECRET)
   })
 
