@@ -14,7 +14,7 @@ const makeFakeUser = (): AddUserParams => ({
   name: 'any-name',
   email: 'any-email',
   password: 'any-password',
-  role: 'any-role',
+  role: 'any-role'
 })
 
 describe('UserRepository', () => {

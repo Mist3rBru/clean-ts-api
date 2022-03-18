@@ -1,6 +1,6 @@
 module.exports = {
   // bail: true,
-  roots: ['<rootDir>/src'],
+  roots: ['<rootDir>/__tests__'],
   collectCoverage: true,
   collectCoverageFrom: [
     'src/**/*.ts',

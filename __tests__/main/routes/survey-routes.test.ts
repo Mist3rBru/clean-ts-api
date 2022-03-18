@@ -11,7 +11,7 @@ const makeFakeUser = (role: string = null): AddUserParams => ({
   name: 'any-name',
   email: 'any-email',
   password: 'any-password',
-  role: role,
+  role: role
 })
 
 const makeFakeSurveys = (): AddSurveyModel[] => {
@@ -22,9 +22,9 @@ const makeFakeSurveys = (): AddSurveyModel[] => {
       answers: [
         {
           image: 'any-image',
-          answer: 'any-answer',
-        },
-      ],
+          answer: 'any-answer'
+        }
+      ]
     },
     {
       date: new Date(),
@@ -32,10 +32,10 @@ const makeFakeSurveys = (): AddSurveyModel[] => {
       answers: [
         {
           image: 'other-image',
-          answer: 'other-answer',
-        },
-      ],
-    },
+          answer: 'other-answer'
+        }
+      ]
+    }
   ]
 }
 
@@ -67,7 +67,7 @@ describe('Survey Routes', () => {
         .send(makeFakeSurveys()[0])
         .expect(204)
       const dbSurvey = await surveyCollection.findOne({
-        question: 'any-question',
+        question: 'any-question'
       })
       expect(dbSurvey).toBeTruthy()
     })

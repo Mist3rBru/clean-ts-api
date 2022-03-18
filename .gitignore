@@ -1,8 +1,7 @@
+coverage
+data
+dist
 node_modules
 .vscode
-coverage
-dist
 globalConfig.json
-package-lock.json
-data
 !/src/data

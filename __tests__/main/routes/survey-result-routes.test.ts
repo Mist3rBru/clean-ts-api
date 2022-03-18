@@ -13,7 +13,7 @@ const makeFakeUser = (role: string = null): AddUserParams => ({
   name: 'any-name',
   email: 'any-email',
   password: 'any-password',
-  role: role,
+  role: role
 })
 
 const makeFakeSurvey = (): AddSurveyModel => ({
@@ -22,9 +22,9 @@ const makeFakeSurvey = (): AddSurveyModel => ({
   answers: [
     {
       image: 'any-image',
-      answer: 'any-answer',
-    },
-  ],
+      answer: 'any-answer'
+    }
+  ]
 })
 
 describe('Survey Routes', () => {

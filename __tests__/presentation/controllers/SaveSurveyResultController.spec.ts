@@ -1,13 +1,9 @@
 import { SurveyModel, SurveyResultModel } from '@/domain/models'
-import {
-  FindSurveyById,
-  SaveSurveyResult,
-  SaveSurveyResultParams,
-} from '@/domain/usecases'
+import { FindSurveyById, SaveSurveyResult, SaveSurveyResultParams } from '@/domain/usecases'
 import { InvalidParamError } from '@/presentation/errors'
 import { forbidden, ok } from '@/presentation/helpers'
 import { HttpRequest } from '@/presentation/protocols'
-import { SaveSurveyResultController } from './SaveSurveyResultController'
+import { SaveSurveyResultController } from '@/presentation/controllers'
 import MockDate from 'mockdate'
 
 type SutTypes = {
@@ -26,30 +22,30 @@ const makeSut = (): SutTypes => {
   return {
     sut,
     findSurveyByIdSpy,
-    saveSurveyResultSpy,
+    saveSurveyResultSpy
   }
 }
 
 class FindSurveyByIdSpy implements FindSurveyById {
-  async findById(id: string): Promise<SurveyModel> {
+  async findById (id: string): Promise<SurveyModel> {
     return makeFakeSurvey()
   }
 }
 
 class SaveSurveyResultSpy implements SaveSurveyResult {
-  async save(model: SaveSurveyResultParams): Promise<SurveyResultModel> {
+  async save (model: SaveSurveyResultParams): Promise<SurveyResultModel> {
     return makeFakeSurveyResult()
   }
 }
 
 const makeFakeRequest = (): HttpRequest => ({
   params: {
-    surveyId: 'any-survey-id',
+    surveyId: 'any-survey-id'
   },
   body: {
-    answer: 'any-answer',
+    answer: 'any-answer'
   },
-  userId: 'any-user-id',
+  userId: 'any-user-id'
 })
 
 const makeFakeSurvey = (): SurveyModel => ({
@@ -58,10 +54,10 @@ const makeFakeSurvey = (): SurveyModel => ({
   answers: [
     {
       image: 'any-image',
-      answer: 'any-answer',
-    },
+      answer: 'any-answer'
+    }
   ],
-  date: new Date(),
+  date: new Date()
 })
 
 const makeFakeSurveyResult = (): SurveyResultModel => ({
@@ -69,7 +65,7 @@ const makeFakeSurveyResult = (): SurveyResultModel => ({
   surveyId: 'any-survey-id',
   userId: 'any-user-id',
   answer: 'any-answer',
-  date: new Date(),
+  date: new Date()
 })
 
 describe('SaveSurveyResultController', () => {
@@ -99,7 +95,7 @@ describe('SaveSurveyResultController', () => {
     const { sut } = makeSut()
     const httpRequest = {
       params: { surveyId: 'any-survey-id' },
-      body: { answer: 'invalid-answer' },
+      body: { answer: 'invalid-answer' }
     }
     const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse).toEqual(forbidden(new InvalidParamError('answer')))
@@ -113,7 +109,7 @@ describe('SaveSurveyResultController', () => {
       userId: 'any-user-id',
       surveyId: 'any-survey-id',
       answer: 'any-answer',
-      date: new Date(),
+      date: new Date()
     })
   })
 
@@ -129,16 +125,16 @@ describe('SaveSurveyResultController', () => {
     const suts = [].concat(
       new SaveSurveyResultController(
         {
-          findById() {
+          findById () {
             throw new Error()
-          },
+          }
         },
         saveSurveyResult
       ),
       new SaveSurveyResultController(findSurveyById, {
-        save() {
+        save () {
           throw new Error()
-        },
+        }
       })
     )
     for (const sut of suts) {

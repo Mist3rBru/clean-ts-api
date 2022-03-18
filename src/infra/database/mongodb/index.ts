@@ -1,9 +1,5 @@
-export * from './helpers/MongoHelper'
-
-export * from './log/LogRepository'
-
-export * from './user/UserRepository'
-
-export * from './survey/SurveyRepository'
-
-export * from './survey-result/SurveyResultRepository'
+export * from './MongoHelper'
+export * from './LogRepository'
+export * from './UserRepository'
+export * from './SurveyRepository'
+export * from './SurveyResultRepository'
