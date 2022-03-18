@@ -1,10 +1,10 @@
 import { token } from '@/data/protocols'
 
-export type AuthenticationModel = {
+export type AuthenticationParams = {
   email: string
   password: string
 }
 
 export interface Authentication {
-  auth (credentials: AuthenticationModel): Promise<token>
+  auth(credentials: AuthenticationParams): Promise<token>
 }

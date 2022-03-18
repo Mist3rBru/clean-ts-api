@@ -3,9 +3,9 @@ import {
   FindUserByEmailRepository,
   HashComparator,
   token,
-  Encrypter
+  Encrypter,
 } from '@/data/protocols'
-import { AuthenticationModel } from '@/domain/usecases'
+import { AuthenticationParams } from '@/domain/usecases'
 import { UserModel } from '@/domain/models'
 
 type SutTypes = {
@@ -28,36 +28,36 @@ const makeSut = (): SutTypes => {
     sut,
     findUserByEmailRepositorySpy,
     hashComparatorSpy,
-    encrypterSpy
+    encrypterSpy,
   }
 }
 
 class FindUserByEmailRepositorySpy implements FindUserByEmailRepository {
-  async findByEmail (email: string): Promise<UserModel> {
+  async findByEmail(email: string): Promise<UserModel> {
     return {
       id: 'any-id',
       name: 'any-name',
       email: email,
-      password: 'hashed-password'
+      password: 'hashed-password',
     }
   }
 }
 
 class HashComparatorSpy implements HashComparator {
-  async compare (value: string, hash: string): Promise<boolean> {
+  async compare(value: string, hash: string): Promise<boolean> {
     return new Promise((resolve) => resolve(true))
   }
 }
 
 class EncrypterSpy implements Encrypter {
-  async encrypt (value: string): Promise<token> {
+  async encrypt(value: string): Promise<token> {
     return new Promise((resolve) => resolve('any-token'))
   }
 }
 
-const makeFakeCredentials = (): AuthenticationModel => ({
+const makeFakeCredentials = (): AuthenticationParams => ({
   email: 'any-email',
-  password: 'any-password'
+  password: 'any-password',
 })
 
 describe('DbAuthentication', () => {
@@ -119,9 +119,9 @@ describe('DbAuthentication', () => {
     const suts = [].concat(
       new DbAuthentication(
         {
-          findByEmail () {
+          findByEmail() {
             throw new Error()
-          }
+          },
         },
         hashComparator,
         encrypter
@@ -129,16 +129,16 @@ describe('DbAuthentication', () => {
       new DbAuthentication(
         findUserByEmailRepository,
         {
-          compare () {
+          compare() {
             throw new Error()
-          }
+          },
         },
         encrypter
       ),
       new DbAuthentication(findUserByEmailRepository, hashComparator, {
-        encrypt () {
+        encrypt() {
           throw new Error()
-        }
+        },
       })
     )
     for (const sut of suts) {

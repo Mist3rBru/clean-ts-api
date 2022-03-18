@@ -1,4 +1,4 @@
-import { AddSurveyModel, AddUserModel } from '@/domain/usecases'
+import { AddSurveyModel, AddUserParams } from '@/domain/usecases'
 import { MongoHelper } from '@/infra/database/mongodb'
 import { app, env } from '@/main/config'
 import { sign } from 'jsonwebtoken'
@@ -7,11 +7,11 @@ import request from 'supertest'
 let surveyCollection: Collection
 let usersCollection: Collection
 
-const makeFakeUser = (role: string = null): AddUserModel => ({
+const makeFakeUser = (role: string = null): AddUserParams => ({
   name: 'any-name',
   email: 'any-email',
   password: 'any-password',
-  role: role
+  role: role,
 })
 
 const makeFakeSurveys = (): AddSurveyModel[] => {
@@ -19,18 +19,23 @@ const makeFakeSurveys = (): AddSurveyModel[] => {
     {
       date: new Date(),
       question: 'any-question',
-      answers: [{
-        image: 'any-image',
-        answer: 'any-answer'
-      }]
-    }, {
+      answers: [
+        {
+          image: 'any-image',
+          answer: 'any-answer',
+        },
+      ],
+    },
+    {
       date: new Date(),
       question: 'other-question',
-      answers: [{
-        image: 'other-image',
-        answer: 'other-answer'
-      }]
-    }
+      answers: [
+        {
+          image: 'other-image',
+          answer: 'other-answer',
+        },
+      ],
+    },
   ]
 }
 
@@ -52,19 +57,25 @@ describe('Survey Routes', () => {
 
   describe('POST /api/survey', () => {
     it('should return 204 on register success', async () => {
-      const { insertedId } = await usersCollection.insertOne(makeFakeUser('admin'))
+      const { insertedId } = await usersCollection.insertOne(
+        makeFakeUser('admin')
+      )
       const adminToken = sign({ id: insertedId }, env.TOKEN_SECRET)
       await request(app)
         .post('/api/survey')
         .set('authorization', 'Bearer ' + adminToken)
         .send(makeFakeSurveys()[0])
         .expect(204)
-      const dbSurvey = await surveyCollection.findOne({ question: 'any-question' })
+      const dbSurvey = await surveyCollection.findOne({
+        question: 'any-question',
+      })
       expect(dbSurvey).toBeTruthy()
     })
 
     it('should return 403 if user has not a valid role', async () => {
-      const { insertedId } = await usersCollection.insertOne(makeFakeUser('invalid-role'))
+      const { insertedId } = await usersCollection.insertOne(
+        makeFakeUser('invalid-role')
+      )
       const defaultToken = sign({ id: insertedId }, env.TOKEN_SECRET)
       await request(app)
         .post('/api/survey')
@@ -88,10 +99,7 @@ describe('Survey Routes', () => {
 
     it('should return 400 on make request without access token', async () => {
       await surveyCollection.insertMany(makeFakeSurveys())
-      await request(app)
-        .get('/api/survey')
-        .send()
-        .expect(400)
+      await request(app).get('/api/survey').send().expect(400)
     })
   })
 })

@@ -1,5 +1,5 @@
 import { UserRepository, MongoHelper } from '@/infra/database/mongodb'
-import { AddUserModel } from '@/domain/usecases'
+import { AddUserParams } from '@/domain/usecases'
 import { env } from '@/main/config'
 import { Collection, ObjectId } from 'mongodb'
 const uri = env.MONGO_URL
@@ -10,11 +10,11 @@ const makeSut = (): UserRepository => {
   return sut
 }
 
-const makeFakeUser = (): AddUserModel => ({
+const makeFakeUser = (): AddUserParams => ({
   name: 'any-name',
   email: 'any-email',
   password: 'any-password',
-  role: 'any-role'
+  role: 'any-role',
 })
 
 describe('UserRepository', () => {

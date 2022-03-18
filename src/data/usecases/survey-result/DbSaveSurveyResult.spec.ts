@@ -2,7 +2,7 @@ import { DbSaveSurveyResult } from '@/data/usecases'
 import { SaveSurveyResultRepository } from '@/data/protocols'
 import { SurveyResultModel } from '@/domain/models'
 import MockDate from 'mockdate'
-import { SaveSurveyResultModel } from '@/domain/usecases'
+import { SaveSurveyResultParams } from '@/domain/usecases'
 
 type SutTypes = {
   sut: DbSaveSurveyResult
@@ -11,26 +11,24 @@ type SutTypes = {
 
 const makeSut = (): SutTypes => {
   const saveSurveyResultRepositorySpy = new SaveSurveyResultRepositorySpy()
-  const sut = new DbSaveSurveyResult(
-    saveSurveyResultRepositorySpy
-  )
+  const sut = new DbSaveSurveyResult(saveSurveyResultRepositorySpy)
   return {
     sut,
-    saveSurveyResultRepositorySpy
+    saveSurveyResultRepositorySpy,
   }
 }
 
 class SaveSurveyResultRepositorySpy implements SaveSurveyResultRepository {
-  async save (survey: SaveSurveyResultModel): Promise<SurveyResultModel> {
+  async save(survey: SaveSurveyResultParams): Promise<SurveyResultModel> {
     return Object.assign({}, survey, { id: 'any-id' })
   }
 }
 
-const makeFakeSurvey = (): SaveSurveyResultModel => ({
+const makeFakeSurvey = (): SaveSurveyResultParams => ({
   userId: '01',
   surveyId: '02',
   answer: 'any-answer',
-  date: new Date()
+  date: new Date(),
 })
 
 describe('DbSaveSurveyResult', () => {
@@ -61,9 +59,11 @@ describe('DbSaveSurveyResult', () => {
 
   it('should throw if any dependency throws', async () => {
     const suts = [].concat(
-      new DbSaveSurveyResult(
-        { save () { throw new Error() } }
-      )
+      new DbSaveSurveyResult({
+        save() {
+          throw new Error()
+        },
+      })
     )
     for (const sut of suts) {
       const promise = sut.save()

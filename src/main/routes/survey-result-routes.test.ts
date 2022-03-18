@@ -1,4 +1,4 @@
-import { AddSurveyModel, AddUserModel } from '@/domain/usecases'
+import { AddSurveyModel, AddUserParams } from '@/domain/usecases'
 import { MongoHelper } from '@/infra/database/mongodb'
 import { app, env } from '@/main/config'
 import { sign } from 'jsonwebtoken'
@@ -9,20 +9,22 @@ let usersCollection: Collection
 let accessToken: string
 let surveyId: string
 
-const makeFakeUser = (role: string = null): AddUserModel => ({
+const makeFakeUser = (role: string = null): AddUserParams => ({
   name: 'any-name',
   email: 'any-email',
   password: 'any-password',
-  role: role
+  role: role,
 })
 
 const makeFakeSurvey = (): AddSurveyModel => ({
   date: new Date(),
   question: 'any-question',
-  answers: [{
-    image: 'any-image',
-    answer: 'any-answer'
-  }]
+  answers: [
+    {
+      image: 'any-image',
+      answer: 'any-answer',
+    },
+  ],
 })
 
 describe('Survey Routes', () => {

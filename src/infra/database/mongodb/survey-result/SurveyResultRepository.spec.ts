@@ -1,5 +1,5 @@
 import { SurveyResultRepository } from './SurveyResultRepository'
-import { SaveSurveyResultModel } from '@/domain/usecases'
+import { SaveSurveyResultParams } from '@/domain/usecases'
 import { MongoHelper } from '@/infra/database/mongodb'
 import { env } from '@/main/config'
 import { Collection } from 'mongodb'
@@ -11,20 +11,20 @@ const makeSut = (): SurveyResultRepository => {
   return sut
 }
 
-const makeFakeSurveys = (): SaveSurveyResultModel[] => {
+const makeFakeSurveys = (): SaveSurveyResultParams[] => {
   return [
     {
       surveyId: 'survey01',
       userId: 'user01',
       answer: 'answer01',
-      date: new Date()
+      date: new Date(),
     },
     {
       surveyId: 'survey01',
       userId: 'user01',
       answer: 'answer02',
-      date: new Date()
-    }
+      date: new Date(),
+    },
   ]
 }
 

@@ -2,7 +2,7 @@ import { LoginController } from '@/presentation/controllers'
 import { ok, unauthorized } from '@/presentation/helpers'
 import { HttpRequest } from '@/presentation/protocols'
 import { Validation } from '@/validation/protocols'
-import { Authentication, AuthenticationModel } from '@/domain/usecases'
+import { Authentication, AuthenticationParams } from '@/domain/usecases'
 
 type SutTypes = {
   sut: LoginController
@@ -17,18 +17,18 @@ const makeSut = (): SutTypes => {
   return {
     sut,
     authenticationSpy,
-    validationSpy
+    validationSpy,
   }
 }
 
 class AuthenticationSpy implements Authentication {
-  async auth (credentials: AuthenticationModel): Promise<string> {
+  async auth(credentials: AuthenticationParams): Promise<string> {
     return 'any-token'
   }
 }
 
 class ValidationSpy implements Validation {
-  validate (input: any): Error {
+  validate(input: any): Error {
     return null
   }
 }
@@ -36,8 +36,8 @@ class ValidationSpy implements Validation {
 const makeFakeRequest = (): HttpRequest => ({
   body: {
     email: 'any-email',
-    password: 'any-password'
-  }
+    password: 'any-password',
+  },
 })
 
 describe('LoginController', () => {
@@ -86,16 +86,16 @@ describe('LoginController', () => {
     const suts = [].concat(
       new LoginController(
         {
-          auth () {
+          auth() {
             throw new Error()
-          }
+          },
         },
         new ValidationSpy()
       ),
       new LoginController(new AuthenticationSpy(), {
-        validate () {
+        validate() {
           throw new Error()
-        }
+        },
       })
     )
     for (const sut of suts) {

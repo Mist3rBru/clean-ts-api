@@ -1,7 +1,12 @@
 import { DbAddUser } from '@/data/usecases'
-import { HashGenerator, AddUserRepository, hash, FindUserByEmailRepository } from '@/data/protocols'
+import {
+  HashGenerator,
+  AddUserRepository,
+  hash,
+  FindUserByEmailRepository,
+} from '@/data/protocols'
 import { UserModel } from '@/domain/models'
-import { AddUserModel } from '@/domain/usecases'
+import { AddUserParams } from '@/domain/usecases'
 
 type SutTypes = {
   sut: DbAddUser
@@ -20,35 +25,37 @@ const makeSut = (): SutTypes => {
   return {
     sut,
     hashGeneratorSpy,
-    userRepositorySpy
+    userRepositorySpy,
   }
 }
 
 class HashGeneratorSpy implements HashGenerator {
-  async generate (value: string): Promise<hash> {
+  async generate(value: string): Promise<hash> {
     return 'any-hash'
   }
 }
 
-class UserRepositorySpy implements AddUserRepository, FindUserByEmailRepository {
-  async add (model: AddUserModel): Promise<UserModel> {
+class UserRepositorySpy
+  implements AddUserRepository, FindUserByEmailRepository
+{
+  async add(model: AddUserParams): Promise<UserModel> {
     return {
       id: 'any-id',
       name: model.name,
       email: model.email,
-      password: 'hashed-password'
+      password: 'hashed-password',
     }
   }
 
-  async findByEmail (email: string): Promise<UserModel> {
+  async findByEmail(email: string): Promise<UserModel> {
     return null
   }
 }
 
-const makeFakeUser = (): AddUserModel => ({
+const makeFakeUser = (): AddUserParams => ({
   name: 'any-name',
   email: 'any-email',
-  password: 'any-password'
+  password: 'any-password',
 })
 
 describe('DbAddUser', () => {
@@ -56,9 +63,11 @@ describe('DbAddUser', () => {
     const { sut, userRepositorySpy } = makeSut()
     const model = makeFakeUser()
     const fakeUser = Object.assign({}, model, { id: 'any-id' })
-    jest.spyOn(userRepositorySpy, 'findByEmail').mockImplementationOnce(
-      async () => { return new Promise(resolve => resolve(fakeUser)) }
-    )
+    jest
+      .spyOn(userRepositorySpy, 'findByEmail')
+      .mockImplementationOnce(async () => {
+        return new Promise((resolve) => resolve(fakeUser))
+      })
     const user = await sut.add(model)
     expect(user).toBeNull()
   })
@@ -79,7 +88,7 @@ describe('DbAddUser', () => {
     expect(addSpy).toHaveBeenCalledWith({
       name: userModel.name,
       email: userModel.email,
-      password: 'any-hash'
+      password: 'any-hash',
     })
   })
 
@@ -91,7 +100,7 @@ describe('DbAddUser', () => {
       id: 'any-id',
       name: userModel.name,
       email: userModel.email,
-      password: 'hashed-password'
+      password: 'hashed-password',
     })
   })
 
@@ -100,20 +109,28 @@ describe('DbAddUser', () => {
     const addUserRepositorySpy = new UserRepositorySpy()
     const suts = [].concat(
       new DbAddUser(
-        { generate: () => { throw new Error() } },
+        {
+          generate: () => {
+            throw new Error()
+          },
+        },
         addUserRepositorySpy,
         addUserRepositorySpy
       ),
       new DbAddUser(
         hashGeneratorSpy,
-        { add: () => { throw new Error() } },
+        {
+          add: () => {
+            throw new Error()
+          },
+        },
         addUserRepositorySpy
       ),
-      new DbAddUser(
-        hashGeneratorSpy,
-        addUserRepositorySpy,
-        { findByEmail: () => { throw new Error() } }
-      )
+      new DbAddUser(hashGeneratorSpy, addUserRepositorySpy, {
+        findByEmail: () => {
+          throw new Error()
+        },
+      })
     )
     for (const sut of suts) {
       const userModel = makeFakeUser()

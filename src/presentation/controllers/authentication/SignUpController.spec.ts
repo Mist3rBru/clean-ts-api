@@ -5,9 +5,9 @@ import { HttpRequest } from '@/presentation/protocols'
 import { Validation } from '@/validation/protocols'
 import {
   AddUser,
-  AddUserModel,
+  AddUserParams,
   Authentication,
-  AuthenticationModel
+  AuthenticationParams,
 } from '@/domain/usecases'
 import { UserModel } from '@/domain/models'
 
@@ -27,30 +27,30 @@ const makeSut = (): SutTypes => {
     sut,
     addUserSpy,
     validationSpy,
-    authenticationSpy
+    authenticationSpy,
   }
 }
 
 class AddUserSpy implements AddUser {
-  async add (model: AddUserModel): Promise<UserModel> {
+  async add(model: AddUserParams): Promise<UserModel> {
     const user = {
       id: 'any-id',
       name: model.name,
       email: model.email,
-      password: 'hashed-password'
+      password: 'hashed-password',
     }
     return user
   }
 }
 
 class ValidationSpy implements Validation {
-  validate (input: any): Error {
+  validate(input: any): Error {
     return null
   }
 }
 
 class AuthenticationSpy implements Authentication {
-  async auth (credentials: AuthenticationModel): Promise<string> {
+  async auth(credentials: AuthenticationParams): Promise<string> {
     return 'any-token'
   }
 }
@@ -60,8 +60,8 @@ const makeFakeRequest = (): HttpRequest => ({
     name: 'any-name',
     email: 'any-email',
     password: 'any-password',
-    passwordConfirmation: 'any-password'
-  }
+    passwordConfirmation: 'any-password',
+  },
 })
 
 describe('Signup Controller', () => {
@@ -115,9 +115,9 @@ describe('Signup Controller', () => {
     const suts = [].concat(
       new SignUpController(
         {
-          validate () {
+          validate() {
             throw new Error()
-          }
+          },
         },
         addUserSpy,
         authenticationSpy
@@ -125,16 +125,16 @@ describe('Signup Controller', () => {
       new SignUpController(
         validationSpy,
         {
-          add () {
+          add() {
             throw new Error()
-          }
+          },
         },
         authenticationSpy
       ),
       new SignUpController(validationSpy, addUserSpy, {
-        auth () {
+        auth() {
           throw new Error()
-        }
+        },
       })
     )
     for (const sut of suts) {
