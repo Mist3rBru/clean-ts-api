@@ -1,7 +1,8 @@
-import { SaveSurveyResultParams } from '@/domain/usecases'
 import { SurveyResultRepository, MongoHelper } from '@/infra/database/mongodb'
 import { env } from '@/main/config'
+import { mockSaveSurveyResultParams, mockSaveSurveyResultParamsList } from '@/tests/domain/mocks'
 import { Collection } from 'mongodb'
+import MockDate from 'mockdate'
 const uri = env.MONGO_URL
 let surveyCollection: Collection
 
@@ -10,25 +11,9 @@ const makeSut = (): SurveyResultRepository => {
   return sut
 }
 
-const makeFakeSurveys = (): SaveSurveyResultParams[] => {
-  return [
-    {
-      surveyId: 'survey01',
-      userId: 'user01',
-      answer: 'answer01',
-      date: new Date()
-    },
-    {
-      surveyId: 'survey01',
-      userId: 'user01',
-      answer: 'answer02',
-      date: new Date()
-    }
-  ]
-}
-
 describe('SurveyResultRepository', () => {
   beforeAll(async () => {
+    MockDate.set(new Date())
     await MongoHelper.connect(uri)
     surveyCollection = await MongoHelper.getCollection('survey')
   })
@@ -38,19 +23,19 @@ describe('SurveyResultRepository', () => {
   })
 
   afterAll(async () => {
+    MockDate.reset()
     await MongoHelper.disconnect()
   })
 
   describe('save()', () => {
     it('should create and return survey result', async () => {
-      const model = makeFakeSurveys()[0]
       const sut = makeSut()
-      const survey = await sut.save(model)
+      const survey = await sut.save(mockSaveSurveyResultParams())
       expect(survey).toBeTruthy()
     })
 
     it('should update and return updated survey', async () => {
-      const modelList = makeFakeSurveys()
+      const modelList = mockSaveSurveyResultParamsList()
       const sut = makeSut()
       const res = await sut.save(modelList[0])
       const survey = await sut.save(modelList[1])

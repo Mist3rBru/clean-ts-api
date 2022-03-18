@@ -1,6 +1,6 @@
 import { UserRepository, MongoHelper } from '@/infra/database/mongodb'
-import { AddUserParams } from '@/domain/usecases'
 import { env } from '@/main/config'
+import { mockAddUserParams } from '@/tests/domain/mocks'
 import { Collection, ObjectId } from 'mongodb'
 const uri = env.MONGO_URL
 let usersCollection: Collection
@@ -9,13 +9,6 @@ const makeSut = (): UserRepository => {
   const sut = new UserRepository()
   return sut
 }
-
-const makeFakeUser = (): AddUserParams => ({
-  name: 'any-name',
-  email: 'any-email',
-  password: 'any-password',
-  role: 'any-role'
-})
 
 describe('UserRepository', () => {
   beforeAll(async () => {
@@ -34,7 +27,7 @@ describe('UserRepository', () => {
   describe('add()', () => {
     it('should return user when registered on MongoDB', async () => {
       const sut = makeSut()
-      const model = makeFakeUser()
+      const model = mockAddUserParams()
       const user = await sut.add(model)
       expect(user.name).toEqual(model.name)
       expect(user.email).toEqual(model.email)
@@ -51,7 +44,7 @@ describe('UserRepository', () => {
 
     it('should return user when user is found', async () => {
       const sut = makeSut()
-      const model = makeFakeUser()
+      const model = mockAddUserParams()
       await usersCollection.insertOne(model)
       const user = await sut.findByEmail(model.email)
       expect(user.name).toEqual(model.name)
@@ -69,7 +62,7 @@ describe('UserRepository', () => {
 
     it('should return user when user is found', async () => {
       const sut = makeSut()
-      const model = makeFakeUser()
+      const model = mockAddUserParams()
       const fakeUser = await usersCollection.insertOne(model)
       const user = await sut.findById(fakeUser.insertedId)
       expect(user.name).toEqual(model.name)

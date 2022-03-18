@@ -1,3 +1,4 @@
+import { mockSurveyList } from '@/tests/domain/mocks'
 import { ListSurveysController } from '@/presentation/controllers'
 import { ListSurveys } from '@/domain/usecases'
 import { SurveyModel } from '@/domain/models'
@@ -22,31 +23,8 @@ const makeSut = (): SutTypes => {
 
 class ListSurveysSpy implements ListSurveys {
   async list (): Promise<SurveyModel[]> {
-    return makeFakeSurveys()
+    return mockSurveyList()
   }
-}
-
-const makeFakeSurveys = (): SurveyModel[] => {
-  return [
-    {
-      id: '01',
-      question: 'question01',
-      answers: [{
-        image: 'image01',
-        answer: 'answer01'
-      }],
-      date: new Date()
-    },
-    {
-      id: '02',
-      question: 'question02',
-      answers: [{
-        image: 'image02',
-        answer: 'answer02'
-      }],
-      date: new Date()
-    }
-  ]
 }
 
 describe('ListSurveysController', () => {
@@ -68,7 +46,7 @@ describe('ListSurveysController', () => {
   it('should return 200 and surveys list on if ListSurveys returns a list', async () => {
     const { sut } = makeSut()
     const httpResponse = await sut.handle({})
-    expect(httpResponse).toEqual(ok(makeFakeSurveys()))
+    expect(httpResponse).toEqual(ok(mockSurveyList()))
   })
 
   it('should return 204 if ListSurveys returns no list', async () => {
