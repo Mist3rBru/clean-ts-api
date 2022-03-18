@@ -1,6 +1,7 @@
 import { AuthMiddleware } from '@/presentation/middlewares'
 import { Middleware } from '@/presentation/protocols'
-import { makeAuthMiddlewareValidation, makeDbFindUserByToken } from '@/main/composers'
+import { makeDbFindUserByToken } from '@/main/composers/usecases'
+import { makeAuthMiddlewareValidation } from '@/main/composers/middlewares'
 
 export const makeAuthMiddleware = (role?: string): Middleware => {
   const findUserByToken = makeDbFindUserByToken()

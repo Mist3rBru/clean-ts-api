@@ -1,4 +1,6 @@
-import { makeDbAddUser, makeDbAuthentication, makeLogControllerDecorator, makeSignUpValidation } from '@/main/composers'
+import { makeSignUpValidation } from '@/main/composers/controllers'
+import { makeLogControllerDecorator } from '@/main/composers/decorators'
+import { makeDbAddUser, makeDbAuthentication } from '@/main/composers/usecases'
 import { SignUpController } from '@/presentation/controllers'
 import { Controller } from '@/presentation/protocols'
 

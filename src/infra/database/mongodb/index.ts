@@ -5,3 +5,5 @@ export * from './log/LogRepository'
 export * from './user/UserRepository'
 
 export * from './survey/SurveyRepository'
+
+export * from './survey-result/SurveyResultRepository'

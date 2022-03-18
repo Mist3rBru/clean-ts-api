@@ -1,4 +1,4 @@
-import { makeAuthMiddlewareValidation } from '@/main/composers'
+import { makeAuthMiddlewareValidation } from '@/main/composers/middlewares'
 import { Validation } from '@/validation/protocols'
 import { AuthorizationHeaderValidation, ValidationComposite } from '@/validation/validators'
 

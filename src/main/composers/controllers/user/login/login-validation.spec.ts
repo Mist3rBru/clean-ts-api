@@ -1,4 +1,4 @@
-import { makeLoginValidation } from '@/main/composers'
+import { makeLoginValidation } from '@/main/composers/controllers'
 import { Validation } from '@/validation/protocols'
 import { EmailValidation, EmailValidatorAdapter, RequiredFieldValidation, ValidationComposite } from '@/validation/validators'
 

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import { makeAddSurveyController, makeAuthMiddleware, makeListSurveysController } from '@/main/composers'
+import { makeAddSurveyController, makeListSurveysController } from '@/main/composers/controllers'
+import { makeAuthMiddleware } from '@/main/composers/middlewares'
 import { adaptController, adaptMiddleware } from '@/main/adapters'
 import { Router } from 'express'
 

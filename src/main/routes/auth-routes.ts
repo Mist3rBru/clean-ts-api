@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import { makeLoginController, makeSignUpController } from '@/main/composers'
+import { makeLoginController, makeSignUpController } from '@/main/composers/controllers'
 import { adaptController } from '@/main/adapters'
 import { Router } from 'express'
 

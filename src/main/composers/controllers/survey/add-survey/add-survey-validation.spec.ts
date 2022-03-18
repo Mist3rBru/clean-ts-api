@@ -1,4 +1,4 @@
-import { makeAddSurveyValidation } from '@/main/composers'
+import { makeAddSurveyValidation } from '@/main/composers/controllers'
 import { RequiredFieldValidation, ValidationComposite } from '@/validation/validators'
 import { Validation } from '@/validation/protocols'
 

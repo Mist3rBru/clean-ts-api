@@ -1,7 +1,7 @@
 import { DbListSurveys } from '@/data/usecases'
 import { ListSurveysController } from '@/presentation/controllers'
 import { Controller } from '@/presentation/protocols'
-import { makeLogControllerDecorator } from '@/main/composers'
+import { makeLogControllerDecorator } from '@/main/composers/decorators'
 import { SurveyRepository } from '@/infra/database/mongodb'
 
 export const makeListSurveysController = (): Controller => {
