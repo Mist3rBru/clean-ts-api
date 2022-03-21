@@ -2,17 +2,17 @@ import { Authentication, AuthenticationParams } from '@/domain/usecases'
 import {
   FindUserByEmailRepository,
   HashComparator,
-  Encrypter,
+  Encrypter
 } from '@/data/protocols'
 
 export class DbAuthentication implements Authentication {
-  constructor(
+  constructor (
     private readonly findUserByEmailRepository: FindUserByEmailRepository,
     private readonly hashComparator: HashComparator,
     private readonly encrypter: Encrypter
   ) {}
 
-  async auth(credentials: AuthenticationParams): Promise<string> {
+  async auth (credentials: AuthenticationParams): Promise<string> {
     const { email, password } = credentials
     const user = await this.findUserByEmailRepository.findByEmail(email)
     const isValid =
