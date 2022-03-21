@@ -85,7 +85,7 @@ describe('DbAddUser', () => {
     )
     for (const sut of suts) {
       const promise = sut.add(mockAddUserParams())
-      void expect(promise).rejects.toThrow()
+      await expect(promise).rejects.toThrow()
     }
   })
 })
