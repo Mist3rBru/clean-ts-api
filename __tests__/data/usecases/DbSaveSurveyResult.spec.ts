@@ -1,8 +1,7 @@
 import { DbSaveSurveyResult } from '@/data/usecases'
 import { SaveSurveyResultRepository } from '@/data/protocols'
-import { SurveyResultModel } from '@/domain/models'
-import { SaveSurveyResultParams } from '@/domain/usecases'
-import { mockSaveSurveyResultParams, mockSurveyResultModel } from '@/tests/domain/mocks'
+import { mockSaveSurveyResultParams } from '@/tests/domain/mocks'
+import { mockSaveSurveyResultRepository } from '@/tests/data/mocks'
 import MockDate from 'mockdate'
 
 type SutTypes = {
@@ -11,17 +10,11 @@ type SutTypes = {
 }
 
 const makeSut = (): SutTypes => {
-  const saveSurveyResultRepositorySpy = new SaveSurveyResultRepositorySpy()
+  const saveSurveyResultRepositorySpy = mockSaveSurveyResultRepository()
   const sut = new DbSaveSurveyResult(saveSurveyResultRepositorySpy)
   return {
     sut,
     saveSurveyResultRepositorySpy
-  }
-}
-
-class SaveSurveyResultRepositorySpy implements SaveSurveyResultRepository {
-  async save (survey: SaveSurveyResultParams): Promise<SurveyResultModel> {
-    return mockSurveyResultModel()
   }
 }
 

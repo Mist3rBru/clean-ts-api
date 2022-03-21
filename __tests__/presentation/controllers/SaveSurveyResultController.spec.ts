@@ -1,11 +1,11 @@
-import { SurveyModel, SurveyResultModel } from '@/domain/models'
-import { FindSurveyById, SaveSurveyResult, SaveSurveyResultParams } from '@/domain/usecases'
+import { FindSurveyById, SaveSurveyResult } from '@/domain/usecases'
 import { InvalidParamError } from '@/presentation/errors'
 import { forbidden, ok } from '@/presentation/helpers'
 import { HttpRequest } from '@/presentation/protocols'
 import { SaveSurveyResultController } from '@/presentation/controllers'
-import { mockSurveyModel, mockSurveyResultModel } from '@/tests/domain/mocks'
+import { mockSaveSurveyResult, mockFindSurveyById } from '@/tests/presentation/mocks'
 import MockDate from 'mockdate'
+import { mockSurveyResultModel } from '@/tests/domain/mocks'
 
 type SutTypes = {
   sut: SaveSurveyResultController
@@ -14,8 +14,8 @@ type SutTypes = {
 }
 
 const makeSut = (): SutTypes => {
-  const saveSurveyResultSpy = new SaveSurveyResultSpy()
-  const findSurveyByIdSpy = new FindSurveyByIdSpy()
+  const saveSurveyResultSpy = mockSaveSurveyResult()
+  const findSurveyByIdSpy = mockFindSurveyById()
   const sut = new SaveSurveyResultController(
     findSurveyByIdSpy,
     saveSurveyResultSpy
@@ -24,18 +24,6 @@ const makeSut = (): SutTypes => {
     sut,
     findSurveyByIdSpy,
     saveSurveyResultSpy
-  }
-}
-
-class FindSurveyByIdSpy implements FindSurveyById {
-  async findById (id: string): Promise<SurveyModel> {
-    return mockSurveyModel()
-  }
-}
-
-class SaveSurveyResultSpy implements SaveSurveyResult {
-  async save (model: SaveSurveyResultParams): Promise<SurveyResultModel> {
-    return mockSurveyResultModel()
   }
 }
 
@@ -101,8 +89,8 @@ describe('SaveSurveyResultController', () => {
   })
 
   it('should return 500 if any dependency throws', async () => {
-    const findSurveyById = new FindSurveyByIdSpy()
-    const saveSurveyResult = new SaveSurveyResultSpy()
+    const findSurveyById = mockFindSurveyById()
+    const saveSurveyResult = mockSaveSurveyResult()
     const suts = [].concat(
       new SaveSurveyResultController(
         {

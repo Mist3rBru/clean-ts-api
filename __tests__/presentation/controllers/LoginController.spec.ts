@@ -3,6 +3,7 @@ import { ok, unauthorized } from '@/presentation/helpers'
 import { HttpRequest } from '@/presentation/protocols'
 import { Validation } from '@/validation/protocols'
 import { Authentication, AuthenticationParams } from '@/domain/usecases'
+import { mockAuthentication, mockValidation } from '@/tests/presentation/mocks'
 
 type SutTypes = {
   sut: LoginController
@@ -11,8 +12,8 @@ type SutTypes = {
 }
 
 const makeSut = (): SutTypes => {
-  const validationSpy = new ValidationSpy()
-  const authenticationSpy = new AuthenticationSpy()
+  const validationSpy = mockValidation()
+  const authenticationSpy = mockAuthentication()
   const sut = new LoginController(authenticationSpy, validationSpy)
   return {
     sut,

@@ -1,7 +1,7 @@
 import { DbFindSurveyById } from '@/data/usecases'
 import { FindSurveyByIdRepository } from '@/data/protocols'
-import { SurveyModel } from '@/domain/models'
-import { mockSurveyModel } from '@/tests/domain/mocks/mock-survey'
+import { mockSurveyModel } from '@/tests/domain/mocks'
+import { mockFindSurveyByIdRepository } from '@/tests/data/mocks'
 import MockDate from 'mockdate'
 
 type SutTypes = {
@@ -10,19 +10,13 @@ type SutTypes = {
 }
 
 const makeSut = (): SutTypes => {
-  const findSurveyByIdRepositorySpy = new FindSurveyByIdRepositorySpy()
+  const findSurveyByIdRepositorySpy = mockFindSurveyByIdRepository()
   const sut = new DbFindSurveyById(
     findSurveyByIdRepositorySpy
   )
   return {
     sut,
     findSurveyByIdRepositorySpy
-  }
-}
-
-class FindSurveyByIdRepositorySpy implements FindSurveyByIdRepository {
-  async findById (id: string): Promise<SurveyModel> {
-    return mockSurveyModel()
   }
 }
 

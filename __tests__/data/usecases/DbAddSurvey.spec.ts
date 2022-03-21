@@ -1,7 +1,7 @@
 import { DbAddSurvey } from '@/data/usecases'
 import { AddSurveyRepository } from '@/data/protocols'
-import { SurveyModel } from '@/domain/models'
 import { mockSurveyModel } from '@/tests/domain/mocks'
+import { mockAddSurveyRepository } from '@/tests/data/mocks'
 
 type SutTypes = {
   sut: DbAddSurvey
@@ -9,16 +9,12 @@ type SutTypes = {
 }
 
 const makeSut = (): SutTypes => {
-  const addSurveyRepositorySpy = new AddSurveyRepositorySpy()
+  const addSurveyRepositorySpy = mockAddSurveyRepository()
   const sut = new DbAddSurvey(addSurveyRepositorySpy)
   return {
     sut,
     addSurveyRepositorySpy
   }
-}
-
-class AddSurveyRepositorySpy implements AddSurveyRepository {
-  async add (survey: SurveyModel): Promise<void> {}
 }
 
 describe('DbAddSurvey', () => {

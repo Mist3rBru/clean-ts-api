@@ -5,7 +5,7 @@ import { badRequest, noContent } from '@/presentation/helpers'
 import { HttpRequest } from '@/presentation/protocols'
 import { Validation } from '@/validation/protocols'
 import { AddSurvey } from '@/domain/usecases'
-import { SurveyModel } from '@/domain/models'
+import { mockAddSurvey, mockValidation } from '@/tests/presentation/mocks'
 import MockDate from 'mockdate'
 
 type SutTypes = {
@@ -15,24 +15,14 @@ type SutTypes = {
 }
 
 const makeSut = (): SutTypes => {
-  const addSurveySpy = new AddSurveySpy()
-  const validationSpy = new ValidationSpy()
+  const addSurveySpy = mockAddSurvey()
+  const validationSpy = mockValidation()
   const sut = new AddSurveyController(validationSpy, addSurveySpy)
   return {
     sut,
     validationSpy,
     addSurveySpy
   }
-}
-
-class ValidationSpy implements Validation {
-  validate (input: any): Error {
-    return null
-  }
-}
-
-class AddSurveySpy implements AddSurvey {
-  async add (survey: SurveyModel): Promise<void> {}
 }
 
 const makeFakeRequest = (): HttpRequest => ({
@@ -74,8 +64,8 @@ describe('AddSurveyController', () => {
   })
 
   it('should return 500 if any dependency throws', async () => {
-    const addSurvey = new AddSurveySpy()
-    const validation = new ValidationSpy()
+    const addSurvey = mockAddSurvey()
+    const validation = mockValidation()
     const suts = [].concat(
       new AddSurveyController(
         { validate () { throw new Error() } },

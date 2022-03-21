@@ -1,19 +1,19 @@
 import {
   HashGenerator,
   AddUserRepository,
-  FindUserByEmailRepository,
+  FindUserByEmailRepository
 } from '@/data/protocols'
 import { AddUser, AddUserParams } from '@/domain/usecases'
 import { UserModel } from '@/domain/models'
 
 export class DbAddUser implements AddUser {
-  constructor(
+  constructor (
     private readonly hashGenerator: HashGenerator,
     private readonly addUserRepository: AddUserRepository,
     private readonly findUserByEmailRepository: FindUserByEmailRepository
   ) {}
 
-  async add(model: AddUserParams): Promise<UserModel> {
+  async add (model: AddUserParams): Promise<UserModel> {
     const alreadyExists = await this.findUserByEmailRepository.findByEmail(
       model.email
     )

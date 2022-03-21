@@ -1,8 +1,8 @@
 import { ListSurveysRepository } from '@/data/protocols'
 import { DbListSurveys } from '@/data/usecases'
-import { SurveyModel } from '@/domain/models'
-import MockDate from 'mockdate'
 import { mockSurveyList } from '@/tests/domain/mocks'
+import { mockListSurveysRepository } from '@/tests/data/mocks'
+import MockDate from 'mockdate'
 
 type SutTypes = {
   sut: DbListSurveys
@@ -10,19 +10,13 @@ type SutTypes = {
 }
 
 const makeSut = (): SutTypes => {
-  const listSurveysRepositorySpy = new ListSurveysRepositorySpy()
+  const listSurveysRepositorySpy = mockListSurveysRepository()
   const sut = new DbListSurveys(
     listSurveysRepositorySpy
   )
   return {
     sut,
     listSurveysRepositorySpy
-  }
-}
-
-class ListSurveysRepositorySpy implements ListSurveysRepository {
-  async list (): Promise<SurveyModel[]> {
-    return mockSurveyList()
   }
 }
 

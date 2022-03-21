@@ -3,15 +3,8 @@ import { badRequest, forbidden, ok } from '@/presentation/helpers'
 import { MissingParamError, EmailInUseError } from '@/presentation/errors'
 import { HttpRequest } from '@/presentation/protocols'
 import { Validation } from '@/validation/protocols'
-import {
-  AddUser,
-  AddUserParams,
-  Authentication,
-  AuthenticationParams
-} from '@/domain/usecases'
-import { UserModel } from '@/domain/models'
-import { mockUserModel } from '@/tests/domain/mocks'
-
+import { AddUser, Authentication } from '@/domain/usecases'
+import { mockValidation, mockAddUser, mockAuthentication } from '@/tests/presentation/mocks'
 type SutTypes = {
   sut: SignUpController
   validationSpy: Validation
@@ -20,33 +13,15 @@ type SutTypes = {
 }
 
 const makeSut = (): SutTypes => {
-  const validationSpy = new ValidationSpy()
-  const addUserSpy = new AddUserSpy()
-  const authenticationSpy = new AuthenticationSpy()
+  const validationSpy = mockValidation()
+  const addUserSpy = mockAddUser()
+  const authenticationSpy = mockAuthentication()
   const sut = new SignUpController(validationSpy, addUserSpy, authenticationSpy)
   return {
     sut,
     addUserSpy,
     validationSpy,
     authenticationSpy
-  }
-}
-
-class AddUserSpy implements AddUser {
-  async add (model: AddUserParams): Promise<UserModel> {
-    return mockUserModel()
-  }
-}
-
-class ValidationSpy implements Validation {
-  validate (input: any): Error {
-    return null
-  }
-}
-
-class AuthenticationSpy implements Authentication {
-  async auth (credentials: AuthenticationParams): Promise<string> {
-    return 'any-token'
   }
 }
 
@@ -104,9 +79,9 @@ describe('Signup Controller', () => {
   })
 
   it('should return 500 if any dependency throws', async () => {
-    const addUserSpy = new AddUserSpy()
-    const validationSpy = new ValidationSpy()
-    const authenticationSpy = new AuthenticationSpy()
+    const addUserSpy = mockAddUser()
+    const validationSpy = mockValidation()
+    const authenticationSpy = mockAuthentication()
     const suts = [].concat(
       new SignUpController(
         {

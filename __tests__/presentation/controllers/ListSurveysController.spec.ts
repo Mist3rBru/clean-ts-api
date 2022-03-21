@@ -1,9 +1,9 @@
 import { mockSurveyList } from '@/tests/domain/mocks'
 import { ListSurveysController } from '@/presentation/controllers'
 import { ListSurveys } from '@/domain/usecases'
-import { SurveyModel } from '@/domain/models'
 import MockDate from 'mockdate'
 import { noContent, ok } from '@/presentation/helpers'
+import { mockListSurveys } from '@/tests/presentation/mocks'
 
 type SutTypes = {
   sut: ListSurveysController
@@ -11,19 +11,13 @@ type SutTypes = {
 }
 
 const makeSut = (): SutTypes => {
-  const listSurveysSpy = new ListSurveysSpy()
+  const listSurveysSpy = mockListSurveys()
   const sut = new ListSurveysController(
     listSurveysSpy
   )
   return {
     sut,
     listSurveysSpy
-  }
-}
-
-class ListSurveysSpy implements ListSurveys {
-  async list (): Promise<SurveyModel[]> {
-    return mockSurveyList()
   }
 }
 

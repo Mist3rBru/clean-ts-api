@@ -4,8 +4,7 @@ import { badRequest, forbidden, ok } from '@/presentation/helpers'
 import { AccessDeniedError, MissingParamError } from '@/presentation/errors'
 import { Validation } from '@/validation/protocols'
 import { FindUserByToken } from '@/domain/usecases'
-import { UserModel } from '@/domain/models'
-import { mockUserModel } from '@/tests/domain/mocks'
+import { mockValidation, mockFindUserByToken } from '@/tests/presentation/mocks'
 
 type SutTypes = {
   sut: AuthMiddleware
@@ -14,25 +13,13 @@ type SutTypes = {
 }
 
 const makeSut = (): SutTypes => {
-  const findUserByTokenSpy = new FindUserByTokenSpy()
-  const validationSpy = new ValidationSpy()
+  const findUserByTokenSpy = mockFindUserByToken()
+  const validationSpy = mockValidation()
   const sut = new AuthMiddleware(validationSpy, findUserByTokenSpy, 'admin')
   return {
     sut,
     validationSpy,
     findUserByTokenSpy
-  }
-}
-
-class ValidationSpy implements Validation {
-  validate (input: any): Error {
-    return null
-  }
-}
-
-class FindUserByTokenSpy implements FindUserByToken {
-  async findByToken (token: string, role?: string): Promise<UserModel> {
-    return mockUserModel()
   }
 }
 
@@ -84,8 +71,8 @@ describe('AuthMiddleware', () => {
   })
 
   it('should return 500 if any dependency throws', async () => {
-    const validation = new ValidationSpy()
-    const findUserByToken = new FindUserByTokenSpy()
+    const validation = mockValidation()
+    const findUserByToken = mockFindUserByToken()
     const suts = [].concat(
       new AuthMiddleware(
         {

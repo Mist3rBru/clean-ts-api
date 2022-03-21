@@ -1,7 +1,7 @@
 import { Decrypter, FindUserByIdRepository } from '@/data/protocols'
 import { DbFindUserByToken } from '@/data/usecases'
-import { UserModel } from '@/domain/models'
 import { mockUserModel } from '@/tests/domain/mocks'
+import { mockDecrypter, mockFindUserByIdRepository } from '@/tests/data/mocks'
 
 type SutTypes = {
   sut: DbFindUserByToken
@@ -10,25 +10,13 @@ type SutTypes = {
 }
 
 const makeSut = (): SutTypes => {
-  const findUserByIdRepositorySpy = new FindUserByIdRepositorySpy()
-  const decrypterSpy = new DecrypterSpy()
+  const findUserByIdRepositorySpy = mockFindUserByIdRepository()
+  const decrypterSpy = mockDecrypter()
   const sut = new DbFindUserByToken(decrypterSpy, findUserByIdRepositorySpy)
   return {
     sut,
     decrypterSpy,
     findUserByIdRepositorySpy
-  }
-}
-
-class DecrypterSpy implements Decrypter {
-  async decrypt (token: string): Promise<string> {
-    return 'any-id'
-  }
-}
-
-class FindUserByIdRepositorySpy implements FindUserByIdRepository {
-  async findById (id: string): Promise<UserModel> {
-    return mockUserModel('any-role')
   }
 }
 

@@ -1,50 +1,37 @@
 import { DbAddUser } from '@/data/usecases'
-import { HashGenerator, AddUserRepository, hash, FindUserByEmailRepository } from '@/data/protocols'
-import { UserModel } from '@/domain/models'
-import { AddUserParams } from '@/domain/usecases'
+import { HashGenerator, AddUserRepository, FindUserByEmailRepository } from '@/data/protocols'
 import { mockAddUserParams, mockUserModel } from '@/tests/domain/mocks'
+import { mockHashGenerator, mockAddUserRepository, mockFindUserByEmailRepository } from '@/tests/data/mocks'
 
 type SutTypes = {
   sut: DbAddUser
   hashGeneratorSpy: HashGenerator
-  userRepositorySpy: AddUserRepository & FindUserByEmailRepository
+  addUserRepositorySpy: AddUserRepository
+  findUserByEmailRepository: FindUserByEmailRepository
 }
 
 const makeSut = (): SutTypes => {
-  const userRepositorySpy = new UserRepositorySpy()
-  const hashGeneratorSpy = new HashGeneratorSpy()
+  const findUserByEmailRepository = mockFindUserByEmailRepository()
+  jest.spyOn(findUserByEmailRepository, 'findByEmail').mockReturnValue(null)
+  const addUserRepositorySpy = mockAddUserRepository()
+  const hashGeneratorSpy = mockHashGenerator()
   const sut = new DbAddUser(
     hashGeneratorSpy,
-    userRepositorySpy,
-    userRepositorySpy
+    addUserRepositorySpy,
+    findUserByEmailRepository
   )
   return {
     sut,
     hashGeneratorSpy,
-    userRepositorySpy
-  }
-}
-
-class HashGeneratorSpy implements HashGenerator {
-  async generate (value: string): Promise<hash> {
-    return 'hashed-password'
-  }
-}
-
-class UserRepositorySpy implements AddUserRepository, FindUserByEmailRepository {
-  async add (model: AddUserParams): Promise<UserModel> {
-    return mockUserModel()
-  }
-
-  async findByEmail (email: string): Promise<UserModel> {
-    return null
+    addUserRepositorySpy,
+    findUserByEmailRepository
   }
 }
 
 describe('DbAddUser', () => {
   it('should return null when user is already registered', async () => {
-    const { sut, userRepositorySpy } = makeSut()
-    jest.spyOn(userRepositorySpy, 'findByEmail').mockImplementationOnce(
+    const { sut, findUserByEmailRepository } = makeSut()
+    jest.spyOn(findUserByEmailRepository, 'findByEmail').mockImplementationOnce(
       async () => mockUserModel()
     )
     const user = await sut.add(mockAddUserParams())
@@ -60,8 +47,8 @@ describe('DbAddUser', () => {
   })
 
   it('should call AddUserRepository with correct values', async () => {
-    const { sut, userRepositorySpy } = makeSut()
-    const addSpy = jest.spyOn(userRepositorySpy, 'add')
+    const { sut, addUserRepositorySpy } = makeSut()
+    const addSpy = jest.spyOn(addUserRepositorySpy, 'add')
     const model = mockAddUserParams()
     await sut.add(model)
     expect(addSpy).toHaveBeenCalledWith(Object.assign(model, { password: 'hashed-password' }))
@@ -75,28 +62,26 @@ describe('DbAddUser', () => {
   })
 
   it('should throw if any dependency throws', async () => {
-    const hashGeneratorSpy = new HashGeneratorSpy()
-    const addUserRepositorySpy = new UserRepositorySpy()
+    const hashGeneratorSpy = mockHashGenerator()
+    const addUserRepositorySpy = mockAddUserRepository()
+    const findUserByEmailRepository = mockFindUserByEmailRepository()
+    jest.spyOn(findUserByEmailRepository, 'findByEmail').mockReturnValue(null)
     const suts = [].concat(
       new DbAddUser(
         { generate: () => { throw new Error() } },
         addUserRepositorySpy,
-        addUserRepositorySpy
+        findUserByEmailRepository
       ),
       new DbAddUser(
         hashGeneratorSpy,
-        {
-          add: () => {
-            throw new Error()
-          }
-        },
-        addUserRepositorySpy
+        { add: () => { throw new Error() } },
+        findUserByEmailRepository
       ),
-      new DbAddUser(hashGeneratorSpy, addUserRepositorySpy, {
-        findByEmail: () => {
-          throw new Error()
-        }
-      })
+      new DbAddUser(
+        hashGeneratorSpy,
+        addUserRepositorySpy,
+        { findByEmail: () => { throw new Error() } }
+      )
     )
     for (const sut of suts) {
       const promise = sut.add(mockAddUserParams())
