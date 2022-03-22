@@ -1,5 +1,7 @@
+import { cors, jsonParser, contentType, noCache } from '@/main/middlewares'
+import SwaggerConfig from '@/main/docs'
+import { serve, setup } from 'swagger-ui-express'
 import express, { Express, Router } from 'express'
-import { cors, jsonParser, contentType } from '@/main/middlewares'
 import { readdirSync } from 'fs'
 import { resolve } from 'path'
 
@@ -10,8 +12,13 @@ class App {
   constructor () {
     this.express = express()
     this.router = express.Router()
+    this._docs()
     this._middlewares()
     this._routes()
+  }
+
+  _docs (): void {
+    this.express.use('/docs', noCache, serve, setup(SwaggerConfig))
   }
 
   _middlewares (): void {
@@ -23,10 +30,9 @@ class App {
 
   _routes (): void {
     this.express.use('/api', this.router)
-    readdirSync(resolve(__dirname, '../routes'))
-      .map(async file => {
-        (await import(`../routes/${file}`)).default(this.router)
-      })
+    readdirSync(resolve(__dirname, '../routes')).map(async (file) => {
+      (await import(`../routes/${file}`)).default(this.router)
+    })
   }
 }
 
