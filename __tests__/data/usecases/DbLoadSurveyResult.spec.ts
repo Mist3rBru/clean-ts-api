@@ -25,4 +25,16 @@ describe('DbLoadSurveyResult', () => {
     await sut.load('any-survey-id', 'any-user-id')
     expect(loadSpy).toBeCalledWith('any-survey-id', 'any-user-id')
   })
+
+  it('should throw if any dependency throws', async () => {
+    const suts = [].concat(
+      new DbLoadSurveyResult(
+        { load () { throw new Error() } }
+      )
+    )
+    for (const sut of suts) {
+      const promise = sut.load('any-survey-id', 'any-user-id')
+      await expect(promise).rejects.toThrow()
+    }
+  })
 })
