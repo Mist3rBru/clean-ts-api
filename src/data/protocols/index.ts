@@ -10,6 +10,6 @@ export * from './database/survey/ListSurveysRepository'
 export * from './database/survey/FindSurveyByIdRepository'
 
 export * from './database/survey-result/AddSurveyResultRepository'
-export * from './database/survey-result/FindSurveyResultByIdRepository'
+export * from './database/survey-result/LoadSurveyResultRepository'
 
 export * from './database/LogErrorRepository'

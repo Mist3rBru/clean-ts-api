@@ -1,23 +1,23 @@
 import { DbAddSurveyResult } from '@/data/usecases'
-import { FindSurveyResultByIdRepository, AddSurveyResultRepository } from '@/data/protocols'
+import { LoadSurveyResultRepository, AddSurveyResultRepository } from '@/data/protocols'
 import { mockAddSurveyResultParams } from '@/tests/domain/mocks'
-import { mockFindSurveyResultByIdRepository, mockAddSurveyResultRepository } from '@/tests/data/mocks'
+import { mockLoadSurveyResultRepository, mockAddSurveyResultRepository } from '@/tests/data/mocks'
 import MockDate from 'mockdate'
 
 type SutTypes = {
   sut: DbAddSurveyResult
   addSurveyResultRepositorySpy: AddSurveyResultRepository
-  findSurveyResultByIdRepositorySpy: FindSurveyResultByIdRepository
+  loadSurveyResultRepositorySpy: LoadSurveyResultRepository
 }
 
 const makeSut = (): SutTypes => {
-  const findSurveyResultByIdRepositorySpy = mockFindSurveyResultByIdRepository()
+  const loadSurveyResultRepositorySpy = mockLoadSurveyResultRepository()
   const addSurveyResultRepositorySpy = mockAddSurveyResultRepository()
-  const sut = new DbAddSurveyResult(addSurveyResultRepositorySpy, findSurveyResultByIdRepositorySpy)
+  const sut = new DbAddSurveyResult(addSurveyResultRepositorySpy, loadSurveyResultRepositorySpy)
   return {
     sut,
     addSurveyResultRepositorySpy,
-    findSurveyResultByIdRepositorySpy
+    loadSurveyResultRepositorySpy
   }
 }
 
@@ -47,16 +47,16 @@ describe('DbSaveSurveyResult', () => {
   })
 
   it('should throw if any dependency throws', async () => {
-    const findSurveyResultByIdRepository = mockFindSurveyResultByIdRepository()
+    const loadSurveyResultRepositorySpy = mockLoadSurveyResultRepository()
     const addSurveyResultRepository = mockAddSurveyResultRepository()
     const suts = [].concat(
       new DbAddSurveyResult(
         { add () { throw new Error() } },
-        findSurveyResultByIdRepository
+        loadSurveyResultRepositorySpy
       ),
       new DbAddSurveyResult(
         addSurveyResultRepository,
-        { findById () { throw new Error() } }
+        { load () { throw new Error() } }
       )
     )
     for (const sut of suts) {
