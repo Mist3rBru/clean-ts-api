@@ -1,12 +1,12 @@
-import { FindSurveyById, SaveSurveyResult } from '@/domain/usecases'
+import { FindSurveyById, AddSurveyResult } from '@/domain/usecases'
 import { InvalidParamError } from '@/presentation/errors'
 import { forbidden, ok, serverError } from '@/presentation/helpers'
 import { Controller, HttpRequest, HttpResponse } from '@/presentation/protocols'
 
-export class SaveSurveyResultController implements Controller {
+export class AddSurveyResultController implements Controller {
   constructor (
     private readonly findSurveyById: FindSurveyById,
-    private readonly saveSurveyResult: SaveSurveyResult
+    private readonly addSurveyResult: AddSurveyResult
   ) {}
 
   async handle (request: HttpRequest): Promise<HttpResponse> {
@@ -22,7 +22,7 @@ export class SaveSurveyResultController implements Controller {
       if (!answers.includes(answer)) {
         return forbidden(new InvalidParamError('answer'))
       }
-      const updatedSurvey = await this.saveSurveyResult.save({
+      const updatedSurvey = await this.addSurveyResult.add({
         userId: userId,
         surveyId: surveyId,
         answer: answer,

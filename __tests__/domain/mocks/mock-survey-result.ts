@@ -1,32 +1,25 @@
 import { SurveyResultModel } from '@/domain/models'
-import { SaveSurveyResultParams } from '@/domain/usecases'
+import { AddSurveyResultParams } from '@/domain/usecases'
 
-export const mockSaveSurveyResultParams = (): SaveSurveyResultParams => ({
+export const mockAddSurveyResultParams = (): AddSurveyResultParams => ({
   userId: 'any-user-id',
   surveyId: 'any-survey-id',
   answer: 'any-answer',
   date: new Date()
 })
 
-export const mockSaveSurveyResultParamsList = (): SaveSurveyResultParams[] => ([
-  {
-    userId: 'any-user-id',
-    surveyId: 'any-survey-id',
+export const mockSurveyResultModel = (): SurveyResultModel => ({
+  surveyId: 'any-survey-id',
+  question: 'any-question,',
+  answers: [{
     answer: 'any-answer',
-    date: new Date()
+    count: 4,
+    percent: 40
   },
   {
-    userId: 'any-user-id',
-    surveyId: 'any-survey-id',
     answer: 'other-answer',
-    date: new Date()
-  }
-])
-
-export const mockSurveyResultModel = (): SurveyResultModel => ({
-  id: 'any-id',
-  surveyId: 'any-survey-id',
-  userId: 'any-user-id',
-  answer: 'any-answer',
+    count: 6,
+    percent: 60
+  }],
   date: new Date()
 })

@@ -1,22 +1,22 @@
-import { FindSurveyById, SaveSurveyResult } from '@/domain/usecases'
+import { FindSurveyById, AddSurveyResult } from '@/domain/usecases'
 import { InvalidParamError } from '@/presentation/errors'
 import { forbidden, ok } from '@/presentation/helpers'
 import { HttpRequest } from '@/presentation/protocols'
-import { SaveSurveyResultController } from '@/presentation/controllers'
-import { mockSaveSurveyResult, mockFindSurveyById } from '@/tests/presentation/mocks'
+import { AddSurveyResultController } from '@/presentation/controllers'
+import { mockAddSurveyResult, mockFindSurveyById } from '@/tests/presentation/mocks'
 import MockDate from 'mockdate'
 import { mockSurveyResultModel } from '@/tests/domain/mocks'
 
 type SutTypes = {
-  sut: SaveSurveyResultController
+  sut: AddSurveyResultController
   findSurveyByIdSpy: FindSurveyById
-  saveSurveyResultSpy: SaveSurveyResult
+  saveSurveyResultSpy: AddSurveyResult
 }
 
 const makeSut = (): SutTypes => {
-  const saveSurveyResultSpy = mockSaveSurveyResult()
+  const saveSurveyResultSpy = mockAddSurveyResult()
   const findSurveyByIdSpy = mockFindSurveyById()
-  const sut = new SaveSurveyResultController(
+  const sut = new AddSurveyResultController(
     findSurveyByIdSpy,
     saveSurveyResultSpy
   )
@@ -72,9 +72,9 @@ describe('SaveSurveyResultController', () => {
 
   it('should call SaveSurveyResult with correct values', async () => {
     const { sut, saveSurveyResultSpy } = makeSut()
-    const saveSpy = jest.spyOn(saveSurveyResultSpy, 'save')
+    const addSpy = jest.spyOn(saveSurveyResultSpy, 'add')
     await sut.handle(makeFakeRequest())
-    expect(saveSpy).toHaveBeenCalledWith({
+    expect(addSpy).toHaveBeenCalledWith({
       userId: 'any-user-id',
       surveyId: 'any-survey-id',
       answer: 'any-answer',
@@ -90,18 +90,18 @@ describe('SaveSurveyResultController', () => {
 
   it('should return 500 if any dependency throws', async () => {
     const findSurveyById = mockFindSurveyById()
-    const saveSurveyResult = mockSaveSurveyResult()
+    const addSurveyResult = mockAddSurveyResult()
     const suts = [].concat(
-      new SaveSurveyResultController(
+      new AddSurveyResultController(
         {
           findById () {
             throw new Error()
           }
         },
-        saveSurveyResult
+        addSurveyResult
       ),
-      new SaveSurveyResultController(findSurveyById, {
-        save () {
+      new AddSurveyResultController(findSurveyById, {
+        add () {
           throw new Error()
         }
       })

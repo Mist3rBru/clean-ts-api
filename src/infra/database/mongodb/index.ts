@@ -1,4 +1,5 @@
 export * from './MongoHelper'
+export * from './QueryBuilder'
 export * from './LogRepository'
 export * from './UserRepository'
 export * from './SurveyRepository'

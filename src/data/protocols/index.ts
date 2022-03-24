@@ -9,6 +9,7 @@ export * from './database/survey/AddSurveyRepository'
 export * from './database/survey/ListSurveysRepository'
 export * from './database/survey/FindSurveyByIdRepository'
 
-export * from './database/survey-result/SaveSurveyResultRepository'
+export * from './database/survey-result/AddSurveyResultRepository'
+export * from './database/survey-result/FindSurveyResultByIdRepository'
 
 export * from './database/LogErrorRepository'

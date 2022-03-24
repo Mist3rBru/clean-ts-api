@@ -1,10 +1,10 @@
-import { SurveyResultRepository, MongoHelper } from '@/infra/database/mongodb'
 import { env } from '@/main/config'
-import { mockSaveSurveyResultParams, mockSaveSurveyResultParamsList } from '@/tests/domain/mocks'
+import { SurveyResultRepository, MongoHelper } from '@/infra/database/mongodb'
+import { mockAddSurveyResultParams } from '@/tests/domain/mocks'
 import { Collection } from 'mongodb'
 import MockDate from 'mockdate'
 const uri = env.MONGO_URL
-let surveyCollection: Collection
+let surveyResultCollection: Collection
 
 const makeSut = (): SurveyResultRepository => {
   const sut = new SurveyResultRepository()
@@ -15,11 +15,11 @@ describe('SurveyResultRepository', () => {
   beforeAll(async () => {
     MockDate.set(new Date())
     await MongoHelper.connect(uri)
-    surveyCollection = await MongoHelper.getCollection('survey')
+    surveyResultCollection = await MongoHelper.getCollection('survey_results')
   })
 
   beforeEach(async () => {
-    await surveyCollection.deleteMany({})
+    await surveyResultCollection.deleteMany({})
   })
 
   afterAll(async () => {
@@ -27,22 +27,25 @@ describe('SurveyResultRepository', () => {
     await MongoHelper.disconnect()
   })
 
-  describe('save()', () => {
-    it('should create and return survey result', async () => {
+  describe('add()', () => {
+    it('should add a survey result if it is new', async () => {
       const sut = makeSut()
-      const survey = await sut.save(mockSaveSurveyResultParams())
+      const model = mockAddSurveyResultParams()
+      await sut.add(model)
+      const survey = await surveyResultCollection.findOne({ surveyId: model.surveyId, userId: model.userId })
       expect(survey).toBeTruthy()
     })
 
     it('should update and return updated survey', async () => {
-      const modelList = mockSaveSurveyResultParamsList()
+      const model = mockAddSurveyResultParams()
+      model.answer = 'other-answer'
+      const updatedModel = model
+      await surveyResultCollection.insertOne(model)
       const sut = makeSut()
-      const res = await sut.save(modelList[0])
-      const survey = await sut.save(modelList[1])
-      expect(res.id).toEqual(survey.id)
-      expect(survey.userId).toBe(modelList[0].userId)
-      expect(survey.surveyId).toBe(modelList[0].surveyId)
-      expect(survey.answer).toBe(modelList[1].answer)
+      await sut.add(updatedModel)
+      const survey = await surveyResultCollection.find({ surveyId: model.surveyId }).toArray()
+      expect(survey).toBeTruthy()
+      expect(survey.length).toBe(1)
     })
   })
 })

@@ -6,4 +6,4 @@ export * from './survey/AddSurvey'
 export * from './survey/ListSurveys'
 export * from './survey/FindSurveyById'
 
-export * from './survey-result/SaveSurveyResult'
+export * from './survey-result/AddSurveyResult'

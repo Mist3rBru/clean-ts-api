@@ -4,4 +4,4 @@ export * from './authentication/LoginController'
 export * from './survey/AddSurveyController'
 export * from './survey/ListSurveysController'
 
-export * from './survey-result/SaveSurveyResultController'
+export * from './survey-result/AddSurveyResultController'
