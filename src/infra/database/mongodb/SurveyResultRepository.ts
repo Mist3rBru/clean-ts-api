@@ -27,9 +27,7 @@ export class SurveyResultRepository implements AddSurveyResultRepository, LoadSu
   async load (surveyId: string, userId: string): Promise<SurveyResultModel> {
     const surveyResultCollection = await MongoHelper.getCollection('survey_results')
     const query = new QueryBuilder()
-      .match({
-        surveyId: surveyId
-      })
+      .match({ surveyId })
       .group({
         _id: 0,
         data: {
@@ -65,7 +63,7 @@ export class SurveyResultRepository implements AddSurveyResultRepository, LoadSu
         },
         currentAccountAnswer: {
           $push: {
-            $cond: [{ $eq: ['$data.accountId', userId] }, '$data.answer', '$invalid']
+            $cond: [{ $eq: ['$data.userId', userId] }, '$data.answer', '$invalid']
           }
         }
       })
@@ -199,6 +197,7 @@ export class SurveyResultRepository implements AddSurveyResultRepository, LoadSu
       })
       .build()
     const surveyResult = await surveyResultCollection.aggregate<SurveyResultModel>(query).toArray()
-    return surveyResult.length ? surveyResult[0] : null
+    console.log(surveyResult)
+    return surveyResult[0]
   }
 }

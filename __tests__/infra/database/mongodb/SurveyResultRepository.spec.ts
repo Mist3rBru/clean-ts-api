@@ -1,6 +1,6 @@
 import { env } from '@/main/config'
 import { SurveyResultRepository, MongoHelper } from '@/infra/database/mongodb'
-import { mockAddSurveyResultParams } from '@/tests/domain/mocks'
+import { mockAddSurveyResultParams, mockSurveyModel, mockUserModel } from '@/tests/domain/mocks'
 import { Collection } from 'mongodb'
 import MockDate from 'mockdate'
 const uri = env.MONGO_URL
@@ -32,8 +32,8 @@ describe('SurveyResultRepository', () => {
       const sut = makeSut()
       const model = mockAddSurveyResultParams()
       await sut.add(model)
-      const survey = await surveyResultCollection.findOne({ surveyId: model.surveyId, userId: model.userId })
-      expect(survey).toBeTruthy()
+      const surveyResult = await surveyResultCollection.findOne({ surveyId: model.surveyId, userId: model.userId })
+      expect(surveyResult).toBeTruthy()
     })
 
     it('should update and return updated survey', async () => {
@@ -43,9 +43,51 @@ describe('SurveyResultRepository', () => {
       await surveyResultCollection.insertOne(model)
       const sut = makeSut()
       await sut.add(updatedModel)
-      const survey = await surveyResultCollection.find({ surveyId: model.surveyId }).toArray()
-      expect(survey).toBeTruthy()
-      expect(survey.length).toBe(1)
+      const surveyResult = await surveyResultCollection.find({ surveyId: model.surveyId }).toArray()
+      expect(surveyResult).toBeTruthy()
+      expect(surveyResult.length).toBe(1)
+      expect(surveyResult[0].answer).toBe(updatedModel.answer)
+    })
+  })
+
+  describe('load()', () => {
+    it('should load survey result', async () => {
+      const survey = mockSurveyModel()
+      const user = mockUserModel()
+      const query = [
+        {
+          surveyId: survey.id,
+          userId: user.id,
+          answer: survey.answers[0].answer,
+          date: new Date()
+        }, {
+          surveyId: survey.id,
+          userId: user.id,
+          answer: survey.answers[0].answer,
+          date: new Date()
+        }, {
+          surveyId: survey.id,
+          userId: user.id,
+          answer: survey.answers[1].answer,
+          date: new Date()
+        }, {
+          surveyId: survey.id,
+          userId: user.id,
+          answer: survey.answers[1].answer,
+          date: new Date()
+        }
+      ]
+      await surveyResultCollection.insertMany(query)
+      const sut = makeSut()
+      const surveyResult = await sut.load(survey.id, user.id)
+      expect(surveyResult).toBeTruthy()
+      expect(surveyResult.surveyId).toBe(survey.id)
+      expect(surveyResult.answers[0].count).toBe(2)
+      expect(surveyResult.answers[0].percent).toBe(50)
+      expect(surveyResult.answers[1].count).toBe(2)
+      expect(surveyResult.answers[1].percent).toBe(50)
+      expect(surveyResult.answers[2].count).toBe(0)
+      expect(surveyResult.answers[2].percent).toBe(0)
     })
   })
 })

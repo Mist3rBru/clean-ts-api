@@ -7,6 +7,9 @@ export const mockSurveyModel = (): SurveyModel => ({
   answers: [{
     image: 'any-image',
     answer: 'any-answer'
+  }, {
+    image: 'other-image',
+    answer: 'other-answer'
   }],
   date: new Date()
 })
@@ -36,6 +39,9 @@ export const mockAddSurveyParams = (): AddSurveyParams => ({
   answers: [{
     image: 'any-image',
     answer: 'any-answer'
+  }, {
+    image: 'other-image',
+    answer: 'other-answer'
   }],
   date: new Date()
 })
