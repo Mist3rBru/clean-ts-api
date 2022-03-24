@@ -1,6 +1,7 @@
 import { LoadSurveyResultRepository } from '@/data/protocols'
 import { DbLoadSurveyResult } from '@/data/usecases'
 import { mockLoadSurveyResultRepository } from '@/tests/data/mocks'
+import { mockSurveyResultModel } from '../../domain/mocks'
 
 type SutTypes = {
   sut: DbLoadSurveyResult
@@ -36,5 +37,11 @@ describe('DbLoadSurveyResult', () => {
       const promise = sut.load('any-survey-id', 'any-user-id')
       await expect(promise).rejects.toThrow()
     }
+  })
+
+  it('should return SurveyResult on success', async () => {
+    const { sut } = makeSut()
+    const survey = await sut.load('any-survey-id', 'any-user-id')
+    expect(survey).toEqual(mockSurveyResultModel())
   })
 })
