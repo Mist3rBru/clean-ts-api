@@ -1,22 +1,26 @@
-import { LoadSurveyResultRepository } from '@/data/protocols'
+import { FindSurveyByIdRepository, LoadSurveyResultRepository } from '@/data/protocols'
 import { DbLoadSurveyResult } from '@/data/usecases'
-import { mockLoadSurveyResultRepository } from '@/tests/data/mocks'
+import { mockFindSurveyByIdRepository, mockLoadSurveyResultRepository } from '@/tests/data/mocks'
 import { mockSurveyResultModel } from '@/tests/domain/mocks'
 import MockDate from 'mockdate'
 
 type SutTypes = {
   sut: DbLoadSurveyResult
   loadSurveyResultRepositorySpy: LoadSurveyResultRepository
+  findSurveyByIdRepositorySpy: FindSurveyByIdRepository
 }
 
 const makeSut = (): SutTypes => {
+  const findSurveyByIdRepositorySpy = mockFindSurveyByIdRepository()
   const loadSurveyResultRepositorySpy = mockLoadSurveyResultRepository()
   const sut = new DbLoadSurveyResult(
-    loadSurveyResultRepositorySpy
+    loadSurveyResultRepositorySpy,
+    findSurveyByIdRepositorySpy
   )
   return {
     sut,
-    loadSurveyResultRepositorySpy
+    loadSurveyResultRepositorySpy,
+    findSurveyByIdRepositorySpy
   }
 }
 
@@ -29,17 +33,31 @@ describe('DbLoadSurveyResult', () => {
     MockDate.reset()
   })
 
-  it('should call FindSurveyResultByIdRepository with correct values', async () => {
+  it('should call LoadSurveyResultRepository with correct values', async () => {
     const { sut, loadSurveyResultRepositorySpy } = makeSut()
     const loadSpy = jest.spyOn(loadSurveyResultRepositorySpy, 'load')
     await sut.load('any-survey-id', 'any-user-id')
     expect(loadSpy).toBeCalledWith('any-survey-id', 'any-user-id')
   })
 
+  it('should call FindSurveyByIdRepository if LoadSurveyResultRepository returns null', async () => {
+    const { sut, loadSurveyResultRepositorySpy, findSurveyByIdRepositorySpy } = makeSut()
+    jest.spyOn(loadSurveyResultRepositorySpy, 'load').mockReturnValueOnce(null)
+    const loadSpy = jest.spyOn(findSurveyByIdRepositorySpy, 'findById')
+    await sut.load('any-survey-id', 'any-user-id')
+    expect(loadSpy).toBeCalledWith('any-survey-id')
+  })
+
   it('should throw if any dependency throws', async () => {
+    const findSurveyByIdRepository = mockFindSurveyByIdRepository()
     const suts = [].concat(
       new DbLoadSurveyResult(
-        { load () { throw new Error() } }
+        { load () { throw new Error() } },
+        findSurveyByIdRepository
+      ),
+      new DbLoadSurveyResult(
+        { load () { return null } },
+        { findById () { throw new Error() } }
       )
     )
     for (const sut of suts) {
