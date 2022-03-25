@@ -3,14 +3,15 @@ import { SurveyResultModel } from '@/domain/models'
 import { AddSurveyResultParams } from '@/domain/usecases'
 import { MongoHelper, QueryBuilder } from '@/infra/database/mongodb'
 import round from 'mongo-round'
+import { ObjectId } from 'mongodb'
 
 export class SurveyResultRepository implements AddSurveyResultRepository, LoadSurveyResultRepository {
   async add (model: AddSurveyResultParams): Promise<void> {
     const surveyResultsCollection = await MongoHelper.getCollection('survey_results')
     await surveyResultsCollection.findOneAndUpdate(
       {
-        surveyId: model.surveyId,
-        userId: model.userId
+        surveyId: new ObjectId(model.surveyId),
+        userId: new ObjectId(model.userId)
       },
       {
         $set: {
@@ -27,7 +28,9 @@ export class SurveyResultRepository implements AddSurveyResultRepository, LoadSu
   async load (surveyId: string, userId: string): Promise<SurveyResultModel> {
     const surveyResultCollection = await MongoHelper.getCollection('survey_results')
     const query = new QueryBuilder()
-      .match({ surveyId })
+      .match({
+        surveyId: new ObjectId(surveyId)
+      })
       .group({
         _id: 0,
         data: {
@@ -63,7 +66,11 @@ export class SurveyResultRepository implements AddSurveyResultRepository, LoadSu
         },
         currentAccountAnswer: {
           $push: {
-            $cond: [{ $eq: ['$data.userId', userId] }, '$data.answer', '$invalid']
+            $cond: [
+              { $eq: ['$data.userId', new ObjectId(userId)] },
+              '$data.answer',
+              '$invalid'
+            ]
           }
         }
       })
@@ -197,7 +204,6 @@ export class SurveyResultRepository implements AddSurveyResultRepository, LoadSu
       })
       .build()
     const surveyResult = await surveyResultCollection.aggregate<SurveyResultModel>(query).toArray()
-    console.log(surveyResult)
-    return surveyResult[0]
+    return surveyResult.length ? surveyResult[0] : null
   }
 }

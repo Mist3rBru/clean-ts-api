@@ -1,29 +1,44 @@
 import { env } from '@/main/config'
+import { SurveyModel } from '@/domain/models'
 import { SurveyResultRepository, MongoHelper } from '@/infra/database/mongodb'
-import { mockAddSurveyResultParams, mockSurveyModel, mockUserModel } from '@/tests/domain/mocks'
-import { Collection } from 'mongodb'
-import MockDate from 'mockdate'
+import { mockAddSurveyParams, mockAddSurveyResultParams, mockAddUserParams } from '@/tests/domain/mocks'
+import { Collection, ObjectId } from 'mongodb'
 const uri = env.MONGO_URL
 let surveyResultCollection: Collection
+let surveyCollection: Collection
+let usersCollection: Collection
 
 const makeSut = (): SurveyResultRepository => {
   const sut = new SurveyResultRepository()
   return sut
 }
 
+const mockSurvey = async (): Promise<SurveyModel> => {
+  const res = await surveyCollection.insertOne(mockAddSurveyParams())
+  const survey = await surveyCollection.findOne({ _id: res.insertedId })
+  return MongoHelper.map(survey)
+}
+
+const mockUserId = async (): Promise<string> => {
+  const res = await usersCollection.insertOne(mockAddUserParams())
+  return res.insertedId.toHexString()
+}
+
 describe('SurveyResultRepository', () => {
   beforeAll(async () => {
-    MockDate.set(new Date())
     await MongoHelper.connect(uri)
     surveyResultCollection = await MongoHelper.getCollection('survey_results')
+    surveyCollection = await MongoHelper.getCollection('surveys')
+    usersCollection = await MongoHelper.getCollection('users')
   })
 
   beforeEach(async () => {
     await surveyResultCollection.deleteMany({})
+    await surveyCollection.deleteMany({})
+    await usersCollection.deleteMany({})
   })
 
   afterAll(async () => {
-    MockDate.reset()
     await MongoHelper.disconnect()
   })
 
@@ -32,7 +47,10 @@ describe('SurveyResultRepository', () => {
       const sut = makeSut()
       const model = mockAddSurveyResultParams()
       await sut.add(model)
-      const surveyResult = await surveyResultCollection.findOne({ surveyId: model.surveyId, userId: model.userId })
+      const surveyResult = await surveyResultCollection.findOne({
+        surveyId: new ObjectId(model.surveyId),
+        userId: new ObjectId(model.userId)
+      })
       expect(surveyResult).toBeTruthy()
     })
 
@@ -51,43 +69,41 @@ describe('SurveyResultRepository', () => {
   })
 
   describe('load()', () => {
-    it('should load survey result', async () => {
-      const survey = mockSurveyModel()
-      const user = mockUserModel()
+    it('should load survey results', async () => {
+      const survey = await mockSurvey()
+      const userId = await mockUserId()
       const query = [
         {
-          surveyId: survey.id,
-          userId: user.id,
+          surveyId: new ObjectId(survey.id),
+          userId: new ObjectId(userId),
           answer: survey.answers[0].answer,
           date: new Date()
         }, {
-          surveyId: survey.id,
-          userId: user.id,
+          surveyId: new ObjectId(survey.id),
+          userId: new ObjectId(userId),
           answer: survey.answers[0].answer,
           date: new Date()
         }, {
-          surveyId: survey.id,
-          userId: user.id,
+          surveyId: new ObjectId(survey.id),
+          userId: new ObjectId(userId),
           answer: survey.answers[1].answer,
           date: new Date()
         }, {
-          surveyId: survey.id,
-          userId: user.id,
+          surveyId: new ObjectId(survey.id),
+          userId: new ObjectId(userId),
           answer: survey.answers[1].answer,
           date: new Date()
         }
       ]
       await surveyResultCollection.insertMany(query)
       const sut = makeSut()
-      const surveyResult = await sut.load(survey.id, user.id)
+      const surveyResult = await sut.load(survey.id, userId)
       expect(surveyResult).toBeTruthy()
       expect(surveyResult.surveyId).toBe(survey.id)
       expect(surveyResult.answers[0].count).toBe(2)
       expect(surveyResult.answers[0].percent).toBe(50)
       expect(surveyResult.answers[1].count).toBe(2)
       expect(surveyResult.answers[1].percent).toBe(50)
-      expect(surveyResult.answers[2].count).toBe(0)
-      expect(surveyResult.answers[2].percent).toBe(0)
     })
   })
 })
