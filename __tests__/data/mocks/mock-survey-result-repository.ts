@@ -13,8 +13,7 @@ export const mockAddSurveyResultRepository = (): AddSurveyResultRepository => {
 export const mockLoadSurveyResultRepository = (): LoadSurveyResultRepository => {
   class LoadSurveyResultRepositorySpy implements LoadSurveyResultRepository {
     async load (surveyId: string, userId: string): Promise<SurveyResultModel> {
-      const mock = mockSurveyResultModel()
-      return Object.assign(mock, { surveyId })
+      return mockSurveyResultModel()
     }
   }
   return new LoadSurveyResultRepositorySpy()

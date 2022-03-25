@@ -2,14 +2,14 @@ import { SurveyResultModel } from '@/domain/models'
 import { AddSurveyResultParams } from '@/domain/usecases'
 
 export const mockAddSurveyResultParams = (): AddSurveyResultParams => ({
-  userId: 'any-user-id',
-  surveyId: 'any-survey-id',
+  userId: 'ded3e2a46879db2bfc7f19d7',
+  surveyId: 'd58e57670afae38d70f8546f',
   answer: 'any-answer',
   date: new Date()
 })
 
 export const mockSurveyResultModel = (): SurveyResultModel => ({
-  surveyId: 'any-survey-id',
+  surveyId: 'd58e57670afae38d70f8546f',
   question: 'any-question,',
   answers: [{
     answer: 'any-answer',
