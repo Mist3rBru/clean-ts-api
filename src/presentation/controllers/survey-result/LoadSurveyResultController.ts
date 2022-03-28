@@ -1,6 +1,7 @@
 import { Controller, HttpRequest, HttpResponse } from '@/presentation/protocols'
 import { FindSurveyById, LoadSurveyResult } from '@/domain/usecases'
-import { ok, serverError } from '@/presentation/helpers'
+import { forbidden, ok, serverError } from '@/presentation/helpers'
+import { InvalidParamError } from '@/presentation/errors'
 
 export class LoadSurveyResultController implements Controller {
   constructor (
@@ -12,7 +13,10 @@ export class LoadSurveyResultController implements Controller {
     try {
       const { userId } = request
       const { surveyId } = request.params
-      await this.findSurveyById.findById(surveyId)
+      const exists = await this.findSurveyById.findById(surveyId)
+      if (!exists) {
+        return forbidden(new InvalidParamError('surveyId'))
+      }
       const surveyResult = await this.loadSurveyResult.load(surveyId, userId)
       return ok(surveyResult)
     } catch (error) {

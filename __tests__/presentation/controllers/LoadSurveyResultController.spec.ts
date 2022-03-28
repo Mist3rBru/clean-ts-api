@@ -1,9 +1,11 @@
 import { FindSurveyById, LoadSurveyResult } from '@/domain/usecases'
 import { LoadSurveyResultController } from '@/presentation/controllers'
-import { ok } from '@/presentation/helpers'
+import { forbidden, ok } from '@/presentation/helpers'
 import { HttpRequest } from '@/presentation/protocols'
 import { mockFindSurveyById, mockLoadSurveyResult } from '@/tests/presentation/mocks'
 import { mockSurveyResultModel } from '@/tests/domain/mocks'
+import { InvalidParamError } from '@/presentation/errors'
+import MockDate from 'mockdate'
 
 type SutTypes = {
   sut: LoadSurveyResultController
@@ -33,11 +35,26 @@ const mockRequest = (): HttpRequest => ({
 })
 
 describe('LoadSurveyResultController', () => {
+  beforeAll(async () => {
+    MockDate.set(new Date())
+  })
+
+  afterAll(async () => {
+    MockDate.reset()
+  })
+
   it('should call FindSurveyById with correct values', async () => {
     const { sut, findSurveyByIdSpy } = makeSut()
     const findSpy = jest.spyOn(findSurveyByIdSpy, 'findById')
     await sut.handle(mockRequest())
     expect(findSpy).toBeCalledWith('any-survey-id')
+  })
+
+  it('should return 403 if FindSurveyById returns null', async () => {
+    const { sut, findSurveyByIdSpy } = makeSut()
+    jest.spyOn(findSurveyByIdSpy, 'findById').mockReturnValueOnce(null)
+    const httpResponse = await sut.handle(mockRequest())
+    expect(httpResponse).toEqual(forbidden(new InvalidParamError('surveyId')))
   })
 
   it('should call LoadSurveyResult with correct values', async () => {
