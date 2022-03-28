@@ -1,22 +1,26 @@
-import { LoadSurveyResult } from '@/domain/usecases'
+import { FindSurveyById, LoadSurveyResult } from '@/domain/usecases'
 import { LoadSurveyResultController } from '@/presentation/controllers'
 import { ok } from '@/presentation/helpers'
 import { HttpRequest } from '@/presentation/protocols'
-import { mockLoadSurveyResult } from '@/tests/presentation/mocks'
+import { mockFindSurveyById, mockLoadSurveyResult } from '@/tests/presentation/mocks'
 import { mockSurveyResultModel } from '@/tests/domain/mocks'
 
 type SutTypes = {
   sut: LoadSurveyResultController
+  findSurveyByIdSpy: FindSurveyById
   loadSurveyResultSpy: LoadSurveyResult
 }
 
 const makeSut = (): SutTypes => {
+  const findSurveyByIdSpy = mockFindSurveyById()
   const loadSurveyResultSpy = mockLoadSurveyResult()
   const sut = new LoadSurveyResultController(
+    findSurveyByIdSpy,
     loadSurveyResultSpy
   )
   return {
     sut,
+    findSurveyByIdSpy,
     loadSurveyResultSpy
   }
 }
@@ -29,6 +33,13 @@ const mockRequest = (): HttpRequest => ({
 })
 
 describe('LoadSurveyResultController', () => {
+  it('should call FindSurveyById with correct values', async () => {
+    const { sut, findSurveyByIdSpy } = makeSut()
+    const findSpy = jest.spyOn(findSurveyByIdSpy, 'findById')
+    await sut.handle(mockRequest())
+    expect(findSpy).toBeCalledWith('any-survey-id')
+  })
+
   it('should call LoadSurveyResult with correct values', async () => {
     const { sut, loadSurveyResultSpy } = makeSut()
     const loadSpy = jest.spyOn(loadSurveyResultSpy, 'load')
@@ -43,8 +54,15 @@ describe('LoadSurveyResultController', () => {
   })
 
   it('should return 500 if any dependency throws', async () => {
+    const findSurveyById = mockFindSurveyById()
+    const loadSurveyResult = mockLoadSurveyResult()
     const suts = [].concat(
       new LoadSurveyResultController(
+        { findById () { throw new Error() } },
+        loadSurveyResult
+      ),
+      new LoadSurveyResultController(
+        findSurveyById,
         { load () { throw new Error() } }
       )
     )
