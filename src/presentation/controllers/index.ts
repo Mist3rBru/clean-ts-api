@@ -5,3 +5,4 @@ export * from './survey/AddSurveyController'
 export * from './survey/ListSurveysController'
 
 export * from './survey-result/AddSurveyResultController'
+export * from './survey-result/LoadSurveyResultController'
