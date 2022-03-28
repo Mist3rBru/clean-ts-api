@@ -70,5 +70,12 @@ describe('Survey Routes', () => {
         .send('')
         .expect(403)
     })
+
+    it('should return 400 if no access token is provided', async () => {
+      await request(app)
+        .get(`/api/survey/${surveyId}/results`)
+        .send('')
+        .expect(400)
+    })
   })
 })
