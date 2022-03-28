@@ -53,4 +53,14 @@ describe('Survey Routes', () => {
         .expect(400)
     })
   })
+
+  describe('GET /api/survey/:surveyId/results', () => {
+    it('should return 200 on success', async () => {
+      await request(app)
+        .get(`/api/survey/${surveyId}/results`)
+        .set('authorization', 'Bearer ' + accessToken)
+        .send('')
+        .expect(200)
+    })
+  })
 })
