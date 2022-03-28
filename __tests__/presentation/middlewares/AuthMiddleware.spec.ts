@@ -19,21 +19,21 @@ const makeSut = (): SutTypes => {
   return {
     sut,
     validationSpy,
-    findUserByTokenSpy
+    findUserByTokenSpy,
   }
 }
 
-const makeFakeRequest = (): HttpRequest => ({
+const mockRequest = (): HttpRequest => ({
   headers: {
-    authorization: 'any-protocol any-token'
-  }
+    authorization: 'any-protocol any-token',
+  },
 })
 
 describe('AuthMiddleware', () => {
   it('should call Validation with correct value', async () => {
     const { sut, validationSpy } = makeSut()
     const validateSpy = jest.spyOn(validationSpy, 'validate')
-    const httpRequest = makeFakeRequest()
+    const httpRequest = mockRequest()
     await sut.handle(httpRequest)
     expect(validateSpy).toBeCalledWith(httpRequest.headers)
   })
@@ -42,7 +42,7 @@ describe('AuthMiddleware', () => {
     const { sut, validationSpy } = makeSut()
     const fakeError = new MissingParamError('token')
     jest.spyOn(validationSpy, 'validate').mockReturnValueOnce(fakeError)
-    const httpRequest = makeFakeRequest()
+    const httpRequest = mockRequest()
     const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse).toEqual(badRequest(fakeError))
   })
@@ -50,7 +50,7 @@ describe('AuthMiddleware', () => {
   it('should call FindUserByToken with correct value', async () => {
     const { sut, findUserByTokenSpy } = makeSut()
     const findSpy = jest.spyOn(findUserByTokenSpy, 'findByToken')
-    const httpRequest = makeFakeRequest()
+    const httpRequest = mockRequest()
     await sut.handle(httpRequest)
     expect(findSpy).toBeCalledWith('any-token', 'admin')
   })
@@ -58,14 +58,14 @@ describe('AuthMiddleware', () => {
   it('should return 403 if FindUserByToken returns null', async () => {
     const { sut, findUserByTokenSpy } = makeSut()
     jest.spyOn(findUserByTokenSpy, 'findByToken').mockReturnValueOnce(null)
-    const httpRequest = makeFakeRequest()
+    const httpRequest = mockRequest()
     const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse).toEqual(forbidden(new AccessDeniedError()))
   })
 
   it('should return 200 on success', async () => {
     const { sut } = makeSut()
-    const httpRequest = makeFakeRequest()
+    const httpRequest = mockRequest()
     const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse).toEqual(ok({ userId: 'any-id' }))
   })
@@ -76,20 +76,20 @@ describe('AuthMiddleware', () => {
     const suts = [].concat(
       new AuthMiddleware(
         {
-          validate () {
+          validate() {
             throw new Error()
-          }
+          },
         },
         findUserByToken
       ),
       new AuthMiddleware(validation, {
-        findByToken () {
+        findByToken() {
           throw new Error()
-        }
+        },
       })
     )
     for (const sut of suts) {
-      const httpRequest = makeFakeRequest()
+      const httpRequest = mockRequest()
       const httpResponse = await sut.handle(httpRequest)
       expect(httpResponse.statusCode).toBe(500)
     }
