@@ -62,5 +62,13 @@ describe('Survey Routes', () => {
         .send('')
         .expect(200)
     })
+
+    it('should return 403 if invalid surveyId is provided', async () => {
+      await request(app)
+        .get('/api/survey/e9843ebf8cbdab606ca67d73/results')
+        .set('authorization', 'Bearer ' + accessToken)
+        .send('')
+        .expect(403)
+    })
   })
 })
