@@ -1,6 +1,6 @@
 import { Controller, HttpRequest, HttpResponse } from '@/presentation/protocols'
 import { LoadSurveyResult } from '@/domain/usecases'
-import { ok } from '@/presentation/helpers'
+import { ok, serverError } from '@/presentation/helpers'
 
 export class LoadSurveyResultController implements Controller {
   constructor (
@@ -8,9 +8,13 @@ export class LoadSurveyResultController implements Controller {
   ) {}
 
   async handle (request: HttpRequest): Promise<HttpResponse> {
-    const { userId } = request
-    const { surveyId } = request.params
-    const surveyResult = await this.loadSurveyResult.load(surveyId, userId)
-    return ok(surveyResult)
+    try {
+      const { userId } = request
+      const { surveyId } = request.params
+      const surveyResult = await this.loadSurveyResult.load(surveyId, userId)
+      return ok(surveyResult)
+    } catch (error) {
+      return serverError(error)
+    }
   }
 }

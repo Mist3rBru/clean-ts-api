@@ -41,4 +41,16 @@ describe('LoadSurveyResultController', () => {
     const httpResponse = await sut.handle(mockRequest())
     expect(httpResponse).toEqual(ok(mockSurveyResultModel()))
   })
+
+  it('should return 500 if any dependency throws', async () => {
+    const suts = [].concat(
+      new LoadSurveyResultController(
+        { load () { throw new Error() } }
+      )
+    )
+    for (const sut of suts) {
+      const httpResponse = await sut.handle(mockRequest())
+      expect(httpResponse.statusCode).toBe(500)
+    }
+  })
 })
