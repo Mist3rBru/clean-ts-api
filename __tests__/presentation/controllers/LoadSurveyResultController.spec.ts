@@ -1,7 +1,9 @@
 import { LoadSurveyResult } from '@/domain/usecases'
 import { LoadSurveyResultController } from '@/presentation/controllers'
+import { ok } from '@/presentation/helpers'
 import { HttpRequest } from '@/presentation/protocols'
 import { mockLoadSurveyResult } from '@/tests/presentation/mocks'
+import { mockSurveyResultModel } from '@/tests/domain/mocks'
 
 type SutTypes = {
   sut: LoadSurveyResultController
@@ -32,5 +34,11 @@ describe('LoadSurveyResultController', () => {
     const loadSpy = jest.spyOn(loadSurveyResultSpy, 'load')
     await sut.handle(mockRequest())
     expect(loadSpy).toBeCalledWith('any-survey-id', 'any-user-id')
+  })
+
+  it('should return survey result on success', async () => {
+    const { sut } = makeSut()
+    const httpResponse = await sut.handle(mockRequest())
+    expect(httpResponse).toEqual(ok(mockSurveyResultModel()))
   })
 })
