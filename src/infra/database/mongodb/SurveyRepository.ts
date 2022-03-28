@@ -27,6 +27,6 @@ implements
   async findById (id: string): Promise<SurveyModel> {
     const userCollection = await MongoHelper.getCollection('survey')
     const survey = await userCollection.findOne(new ObjectId(id))
-    return MongoHelper.map(survey)
+    return survey ? MongoHelper.map(survey) : null
   }
 }
