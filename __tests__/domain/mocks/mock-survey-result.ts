@@ -15,12 +15,14 @@ export const mockSurveyResultModel = (): SurveyResultModel => ({
   answers: [{
     answer: faker.random.word(),
     count: faker.datatype.number({ min: 0, max: 1000 }),
-    percent: faker.datatype.number({ min: 0, max: 100 })
+    percent: faker.datatype.number({ min: 0, max: 100 }),
+    isCurrentUserAnswer: faker.datatype.boolean()
   },
   {
     answer: faker.random.word(),
     count: faker.datatype.number({ min: 0, max: 1000 }),
-    percent: faker.datatype.number({ min: 0, max: 100 })
+    percent: faker.datatype.number({ min: 0, max: 100 }),
+    isCurrentUserAnswer: faker.datatype.boolean()
   }],
   date: faker.date.recent()
 })
@@ -32,13 +34,15 @@ export const mockEmptySurveyResultModel = (): SurveyResultModel => ({
     image: faker.image.imageUrl(),
     answer: faker.random.word(),
     count: 0,
-    percent: 0
+    percent: 0,
+    isCurrentUserAnswer: faker.datatype.boolean()
   },
   {
     image: faker.image.imageUrl(),
     answer: faker.random.word(),
     count: 0,
-    percent: 0
+    percent: 0,
+    isCurrentUserAnswer: faker.datatype.boolean()
   }],
   date: faker.date.recent()
 })

@@ -70,39 +70,32 @@ describe('SurveyResultRepository', () => {
   describe('load()', () => {
     it('should load survey results', async () => {
       const survey = await mockSurvey()
-      const userId = await mockUserId()
+      const userIdOne = await mockUserId()
+      const userIdTwo = await mockUserId()
       const query = [
         {
           surveyId: new ObjectId(survey.id),
-          userId: new ObjectId(userId),
+          userId: new ObjectId(userIdOne),
           answer: survey.answers[0].answer,
           date: new Date()
         }, {
           surveyId: new ObjectId(survey.id),
-          userId: new ObjectId(userId),
+          userId: new ObjectId(userIdTwo),
           answer: survey.answers[0].answer,
-          date: new Date()
-        }, {
-          surveyId: new ObjectId(survey.id),
-          userId: new ObjectId(userId),
-          answer: survey.answers[1].answer,
-          date: new Date()
-        }, {
-          surveyId: new ObjectId(survey.id),
-          userId: new ObjectId(userId),
-          answer: survey.answers[1].answer,
           date: new Date()
         }
       ]
       await surveyResultCollection.insertMany(query)
       const sut = makeSut()
-      const surveyResult = await sut.load(survey.id, userId)
+      const surveyResult = await sut.load(survey.id, userIdOne)
       expect(surveyResult).toBeTruthy()
       expect(surveyResult.surveyId).toBe(survey.id)
       expect(surveyResult.answers[0].count).toBe(2)
-      expect(surveyResult.answers[0].percent).toBe(50)
-      expect(surveyResult.answers[1].count).toBe(2)
-      expect(surveyResult.answers[1].percent).toBe(50)
+      expect(surveyResult.answers[0].percent).toBe(100)
+      expect(surveyResult.answers[0].isCurrentUserAnswer).toBe(true)
+      expect(surveyResult.answers[1].count).toBe(0)
+      expect(surveyResult.answers[1].percent).toBe(0)
+      expect(surveyResult.answers[1].isCurrentUserAnswer).toBe(false)
     })
   })
 })

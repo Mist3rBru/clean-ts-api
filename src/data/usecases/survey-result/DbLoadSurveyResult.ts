@@ -17,7 +17,8 @@ export class DbLoadSurveyResult implements LoadSurveyResult {
         question: survey.question,
         answers: survey.answers.map(answer => Object.assign({}, answer, {
           count: 0,
-          percent: 0
+          percent: 0,
+          isCurrentUserAnswer: false
         })),
         date: survey.date
       }

@@ -64,7 +64,7 @@ export class SurveyResultRepository implements AddSurveyResultRepository, LoadSu
         count: {
           $sum: 1
         },
-        currentAccountAnswer: {
+        currentUserAnswer: {
           $push: {
             $cond: [
               { $eq: ['$data.userId', new ObjectId(userId)] },
@@ -107,10 +107,10 @@ export class SurveyResultRepository implements AddSurveyResultRepository, LoadSu
                     else: 0
                   }
                 },
-                isCurrentAccountAnswerCount: {
+                isCurrentUserAnswerCount: {
                   $cond: [{
                     $eq: ['$$item.answer', {
-                      $arrayElemAt: ['$currentAccountAnswer', 0]
+                      $arrayElemAt: ['$currentUserAnswer', 0]
                     }]
                   }, 1, 0]
                 }
@@ -161,8 +161,8 @@ export class SurveyResultRepository implements AddSurveyResultRepository, LoadSu
         percent: {
           $sum: '$answers.percent'
         },
-        isCurrentAccountAnswerCount: {
-          $sum: '$answers.isCurrentAccountAnswerCount'
+        isCurrentUserAnswerCount: {
+          $sum: '$answers.isCurrentUserAnswerCount'
         }
       })
       .project({
@@ -175,8 +175,8 @@ export class SurveyResultRepository implements AddSurveyResultRepository, LoadSu
           image: '$_id.image',
           count: round('$count'),
           percent: round('$percent'),
-          isCurrentAccountAnswer: {
-            $eq: ['$isCurrentAccountAnswerCount', 1]
+          isCurrentUserAnswer: {
+            $eq: ['$isCurrentUserAnswerCount', 1]
           }
         }
       })
