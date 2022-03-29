@@ -1,5 +1,5 @@
 import { AddUser, FindUserByToken, Authentication, AddUserParams, AuthenticationParams } from '@/domain/usecases'
-import { UserModel } from '@/domain/models'
+import { AuthenticationModel, UserModel } from '@/domain/models'
 import { mockUserModel } from '@/tests/domain/mocks'
 import faker from '@faker-js/faker'
 
@@ -25,9 +25,13 @@ export class FindUserByTokenSpy implements FindUserByToken {
 
 export class AuthenticationSpy implements Authentication {
   credentials: AuthenticationParams
-  token = faker.datatype.uuid()
-  async auth (credentials: AuthenticationParams): Promise<string> {
+  authModel = {
+    accessToken: faker.datatype.uuid(),
+    userName: faker.name.findName()
+  }
+
+  async auth (credentials: AuthenticationParams): Promise<AuthenticationModel> {
     this.credentials = credentials
-    return this.token
+    return this.authModel
   }
 }

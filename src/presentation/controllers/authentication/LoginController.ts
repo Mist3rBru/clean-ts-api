@@ -16,11 +16,11 @@ export class LoginController implements Controller {
       if (error) {
         return badRequest(error)
       }
-      const token = await this.authentication.auth(credentials)
-      if (!token) {
+      const authModel = await this.authentication.auth(credentials)
+      if (!authModel) {
         return unauthorized()
       }
-      return ok({ token })
+      return ok(authModel)
     } catch (error) {
       return serverError(error)
     }

@@ -69,9 +69,12 @@ describe('DbAuthentication', () => {
   })
 
   it('should return token valid credentials are provided', async () => {
-    const { sut, encrypterSpy } = makeSut()
-    const token = await sut.auth(mockCredentials())
-    expect(token).toBe(encrypterSpy.token)
+    const { sut, encrypterSpy, findUserByEmailRepositorySpy } = makeSut()
+    const authModel = await sut.auth(mockCredentials())
+    expect(authModel).toEqual({
+      accessToken: encrypterSpy.token,
+      userName: findUserByEmailRepositorySpy.user.name
+    })
   })
 
   it('should throw if any dependency throws', async () => {

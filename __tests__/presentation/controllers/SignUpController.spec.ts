@@ -106,6 +106,6 @@ describe('Signup Controller', () => {
   it('should return 200 if user be signed up', async () => {
     const { sut, authenticationSpy } = makeSut()
     const httpResponse = await sut.handle(mockRequest())
-    expect(httpResponse).toEqual(ok({ token: authenticationSpy.token }))
+    expect(httpResponse).toEqual(ok(authenticationSpy.authModel))
   })
 })
