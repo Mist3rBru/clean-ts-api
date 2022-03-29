@@ -13,12 +13,17 @@ class App {
     this.express = express()
     this.router = express.Router()
     this._docs()
+    this._files()
     this._middlewares()
     this._routes()
   }
 
   _docs (): void {
     this.express.use('/docs', noCache, serve, setup(SwaggerConfig))
+  }
+
+  _files (): void {
+    this.express.use('/files', express.static(resolve(__dirname, '../../static')))
   }
 
   _middlewares (): void {
