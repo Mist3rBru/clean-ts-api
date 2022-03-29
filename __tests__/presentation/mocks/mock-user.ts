@@ -1,30 +1,33 @@
 import { AddUser, FindUserByToken, Authentication, AddUserParams, AuthenticationParams } from '@/domain/usecases'
 import { UserModel } from '@/domain/models'
 import { mockUserModel } from '@/tests/domain/mocks'
+import faker from '@faker-js/faker'
 
-export const mockAddUser = (): AddUser => {
-  class AddUserSpy implements AddUser {
-    async add (model: AddUserParams): Promise<UserModel> {
-      return mockUserModel()
-    }
+export class AddUserSpy implements AddUser {
+  model: AddUserParams
+  user = mockUserModel()
+  async add (model: AddUserParams): Promise<UserModel> {
+    this.model = model
+    return this.user
   }
-  return new AddUserSpy()
 }
 
-export const mockFindUserByToken = (): FindUserByToken => {
-  class FindUserByTokenSpy implements FindUserByToken {
-    async findByToken (token: string, role?: string): Promise<UserModel> {
-      return mockUserModel()
-    }
+export class FindUserByTokenSpy implements FindUserByToken {
+  token: string
+  role?: string
+  user = mockUserModel()
+  async findByToken (token: string, role?: string): Promise<UserModel> {
+    this.token = token
+    this.role = role
+    return this.user
   }
-  return new FindUserByTokenSpy()
 }
 
-export const mockAuthentication = (): Authentication => {
-  class AuthenticationSpy implements Authentication {
-    async auth (credentials: AuthenticationParams): Promise<string> {
-      return 'any-token'
-    }
+export class AuthenticationSpy implements Authentication {
+  credentials: AuthenticationParams
+  token = faker.datatype.uuid()
+  async auth (credentials: AuthenticationParams): Promise<string> {
+    this.credentials = credentials
+    return this.token
   }
-  return new AuthenticationSpy()
 }

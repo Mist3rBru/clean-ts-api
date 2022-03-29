@@ -2,27 +2,27 @@ import { SurveyModel } from '@/domain/models'
 import { AddSurvey, ListSurveys, FindSurveyById, AddSurveyParams } from '@/domain/usecases'
 import { mockSurveyModel, mockSurveyList } from '@/tests/domain/mocks'
 
-export const mockAddSurvey = (): AddSurvey => {
-  class AddSurveySpy implements AddSurvey {
-    async add (survey: AddSurveyParams): Promise<void> {}
+export class AddSurveySpy implements AddSurvey {
+  survey: AddSurveyParams
+  async add (survey: AddSurveyParams): Promise<void> {
+    this.survey = survey
   }
-  return new AddSurveySpy()
 }
 
-export const mockListSurveys = (): ListSurveys => {
-  class ListSurveysSpy implements ListSurveys {
-    async list (): Promise<SurveyModel[]> {
-      return mockSurveyList()
-    }
+export class ListSurveysSpy implements ListSurveys {
+  count = 0
+  surveyList = mockSurveyList()
+  async list (): Promise<SurveyModel[]> {
+    this.count++
+    return this.surveyList
   }
-  return new ListSurveysSpy()
 }
 
-export const mockFindSurveyById = (): FindSurveyById => {
-  class FindSurveyByIdSpy implements FindSurveyById {
-    async findById (id: string): Promise<SurveyModel> {
-      return mockSurveyModel()
-    }
+export class FindSurveyByIdSpy implements FindSurveyById {
+  id: string
+  survey = mockSurveyModel()
+  async findById (id: string): Promise<SurveyModel> {
+    this.id = id
+    return this.survey
   }
-  return new FindSurveyByIdSpy()
 }

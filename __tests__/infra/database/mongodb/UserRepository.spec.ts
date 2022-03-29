@@ -6,8 +6,7 @@ const uri = env.MONGO_URL
 let usersCollection: Collection
 
 const makeSut = (): UserRepository => {
-  const sut = new UserRepository()
-  return sut
+  return new UserRepository()
 }
 
 describe('UserRepository', () => {

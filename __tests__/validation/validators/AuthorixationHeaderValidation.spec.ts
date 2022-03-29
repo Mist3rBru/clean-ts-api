@@ -2,8 +2,7 @@ import { InvalidParamError, MissingParamError } from '@/presentation/errors'
 import { AuthorizationHeaderValidation } from '@/validation/validators'
 
 const makeSut = (): AuthorizationHeaderValidation => {
-  const sut = new AuthorizationHeaderValidation()
-  return sut
+  return new AuthorizationHeaderValidation()
 }
 
 describe('AuthorizationHeaderValidation', () => {

@@ -8,6 +8,7 @@ let surveyCollection: Collection
 let usersCollection: Collection
 let accessToken: string
 let surveyId: string
+let answer: string
 
 describe('Survey Routes', () => {
   beforeAll(async () => {
@@ -18,10 +19,12 @@ describe('Survey Routes', () => {
     await usersCollection.deleteMany({})
     await surveyCollection.deleteMany({})
 
-    const surveyResult = await surveyCollection.insertOne(mockAddSurveyParams())
+    const surveyModel = mockAddSurveyParams()
+    answer = surveyModel.answers[0].answer
+    const surveyResult = await surveyCollection.insertOne(surveyModel)
     surveyId = surveyResult.insertedId.toString()
 
-    const userResult = await usersCollection.insertOne(mockAddUserParams())
+    const userResult = await usersCollection.insertOne(mockAddUserParams('admin'))
     accessToken = sign({ id: userResult.insertedId }, env.TOKEN_SECRET)
   })
 
@@ -34,7 +37,7 @@ describe('Survey Routes', () => {
       await request(app)
         .put(`/api/survey/${surveyId}/results`)
         .set('authorization', 'Bearer ' + accessToken)
-        .send({ answer: 'any-answer' })
+        .send({ answer })
         .expect(200)
     })
 
@@ -49,7 +52,7 @@ describe('Survey Routes', () => {
     it('should return 400 if no accessToken is provided', async () => {
       await request(app)
         .put(`/api/survey/${surveyId}/results`)
-        .send({ answer: 'any-answer' })
+        .send({ answer })
         .expect(400)
     })
   })

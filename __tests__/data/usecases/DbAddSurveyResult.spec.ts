@@ -1,18 +1,17 @@
 import { DbAddSurveyResult } from '@/data/usecases'
-import { LoadSurveyResultRepository, AddSurveyResultRepository } from '@/data/protocols'
 import { mockAddSurveyResultParams } from '@/tests/domain/mocks'
-import { mockLoadSurveyResultRepository, mockAddSurveyResultRepository } from '@/tests/data/mocks'
+import { LoadSurveyResultRepositorySpy, AddSurveyResultRepositorySpy } from '@/tests/data/mocks'
 import MockDate from 'mockdate'
 
 type SutTypes = {
   sut: DbAddSurveyResult
-  addSurveyResultRepositorySpy: AddSurveyResultRepository
-  loadSurveyResultRepositorySpy: LoadSurveyResultRepository
+  addSurveyResultRepositorySpy: AddSurveyResultRepositorySpy
+  loadSurveyResultRepositorySpy: LoadSurveyResultRepositorySpy
 }
 
 const makeSut = (): SutTypes => {
-  const loadSurveyResultRepositorySpy = mockLoadSurveyResultRepository()
-  const addSurveyResultRepositorySpy = mockAddSurveyResultRepository()
+  const loadSurveyResultRepositorySpy = new LoadSurveyResultRepositorySpy()
+  const addSurveyResultRepositorySpy = new AddSurveyResultRepositorySpy()
   const sut = new DbAddSurveyResult(addSurveyResultRepositorySpy, loadSurveyResultRepositorySpy)
   return {
     sut,
@@ -32,30 +31,29 @@ describe('DbSaveSurveyResult', () => {
 
   it('should call SaveSurveyResultRepository with correct value', async () => {
     const { sut, addSurveyResultRepositorySpy } = makeSut()
-    const listSpy = jest.spyOn(addSurveyResultRepositorySpy, 'add')
     const model = mockAddSurveyResultParams()
     await sut.add(model)
-    expect(listSpy).toBeCalledWith(model)
+    expect(addSurveyResultRepositorySpy.survey).toEqual(model)
   })
 
   it('should return survey on success', async () => {
-    const { sut } = makeSut()
+    const { sut, loadSurveyResultRepositorySpy } = makeSut()
     const model = mockAddSurveyResultParams()
     const survey = await sut.add(model)
-    expect(survey.surveyId).toEqual(model.surveyId)
-    expect(survey.answers[0].answer).toEqual(model.answer)
+    expect(survey.surveyId).toBe(loadSurveyResultRepositorySpy.surveyResult.surveyId)
+    expect(survey.answers[0].answer).toBe(loadSurveyResultRepositorySpy.surveyResult.answers[0].answer)
   })
 
   it('should throw if any dependency throws', async () => {
-    const loadSurveyResultRepositorySpy = mockLoadSurveyResultRepository()
-    const addSurveyResultRepository = mockAddSurveyResultRepository()
+    const loadSurveyResultRepositorySpy = new LoadSurveyResultRepositorySpy()
+    const addSurveyResultRepositorySpy = new AddSurveyResultRepositorySpy()
     const suts = [].concat(
       new DbAddSurveyResult(
         { add () { throw new Error() } },
         loadSurveyResultRepositorySpy
       ),
       new DbAddSurveyResult(
-        addSurveyResultRepository,
+        addSurveyResultRepositorySpy,
         { load () { throw new Error() } }
       )
     )

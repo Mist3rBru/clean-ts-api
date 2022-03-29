@@ -1,4 +1,5 @@
 import { JwtAdapter } from '@/infra/cryptography'
+import { throwError } from '@/tests/domain/mocks'
 import jwt from 'jsonwebtoken'
 
 jest.mock('jsonwebtoken', () => ({
@@ -12,9 +13,7 @@ jest.mock('jsonwebtoken', () => ({
 }))
 
 const makeSut = (): JwtAdapter => {
-  const secret = 'any-secret'
-  const sut = new JwtAdapter(secret)
-  return sut
+  return new JwtAdapter('any-secret')
 }
 
 describe('JwtAdapter', () => {
@@ -24,7 +23,9 @@ describe('JwtAdapter', () => {
       const signSpy = jest.spyOn(jwt, 'sign')
       await sut.encrypt('any-value')
       expect(signSpy).toBeCalledWith(
-        { id: 'any-value' }, 'any-secret', { expiresIn: '15m' }
+        { id: 'any-value' },
+        'any-secret',
+        { expiresIn: '15m' }
       )
     })
 
@@ -36,9 +37,7 @@ describe('JwtAdapter', () => {
 
     it('should throw when sign throws', async () => {
       const sut = makeSut()
-      jest.spyOn(jwt, 'sign').mockImplementationOnce(
-        () => { throw new Error() }
-      )
+      jest.spyOn(jwt, 'sign').mockImplementationOnce(throwError)
       const promise = sut.encrypt('any-value')
       void expect(promise).rejects.toThrow()
     })
@@ -67,11 +66,9 @@ describe('JwtAdapter', () => {
 
     it('should throw when verify throws', async () => {
       const sut = makeSut()
-      jest.spyOn(jwt, 'verify').mockImplementationOnce(
-        () => { throw new Error() }
-      )
+      jest.spyOn(jwt, 'verify').mockImplementationOnce(throwError)
       const promise = sut.decrypt('any-token')
-      void expect(promise).rejects.toThrow()
+      await expect(promise).rejects.toThrow()
     })
   })
 })

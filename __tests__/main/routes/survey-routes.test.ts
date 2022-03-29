@@ -29,13 +29,14 @@ describe('Survey Routes', () => {
         mockAddUserParams('admin')
       )
       const adminToken = sign({ id: insertedId }, env.TOKEN_SECRET)
+      const surveyModel = mockAddSurveyParams()
       await request(app)
         .post('/api/survey')
         .set('authorization', 'Bearer ' + adminToken)
-        .send(mockAddSurveyParams())
+        .send(surveyModel)
         .expect(204)
       const dbSurvey = await surveyCollection.findOne({
-        question: 'any-question'
+        question: surveyModel.question
       })
       expect(dbSurvey).toBeTruthy()
     })

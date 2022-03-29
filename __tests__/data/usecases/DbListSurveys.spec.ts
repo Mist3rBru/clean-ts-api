@@ -1,16 +1,15 @@
-import { ListSurveysRepository } from '@/data/protocols'
 import { DbListSurveys } from '@/data/usecases'
-import { mockSurveyList } from '@/tests/domain/mocks'
-import { mockListSurveysRepository } from '@/tests/data/mocks'
+import { ListSurveysRepositorySpy } from '@/tests/data/mocks'
 import MockDate from 'mockdate'
+import { throwError } from '../../domain/mocks'
 
 type SutTypes = {
   sut: DbListSurveys
-  listSurveysRepositorySpy: ListSurveysRepository
+  listSurveysRepositorySpy: ListSurveysRepositorySpy
 }
 
 const makeSut = (): SutTypes => {
-  const listSurveysRepositorySpy = mockListSurveysRepository()
+  const listSurveysRepositorySpy = new ListSurveysRepositorySpy()
   const sut = new DbListSurveys(
     listSurveysRepositorySpy
   )
@@ -31,26 +30,20 @@ describe('DbListSurveys', () => {
 
   it('should call ListSurveysRepository', async () => {
     const { sut, listSurveysRepositorySpy } = makeSut()
-    const listSpy = jest.spyOn(listSurveysRepositorySpy, 'list')
     await sut.list()
-    expect(listSpy).toBeCalled()
+    expect(listSurveysRepositorySpy.count).toBe(1)
   })
 
   it('should return list from ListSurveysRepository', async () => {
-    const { sut } = makeSut()
+    const { sut, listSurveysRepositorySpy } = makeSut()
     const list = await sut.list()
-    expect(list).toEqual(mockSurveyList())
+    expect(list).toEqual(listSurveysRepositorySpy.surveyList)
   })
 
-  it('should throw if any dependency throws', async () => {
-    const suts = [].concat(
-      new DbListSurveys(
-        { list () { throw new Error() } }
-      )
-    )
-    for (const sut of suts) {
-      const promise = sut.list()
-      await expect(promise).rejects.toThrow()
-    }
+  it('should throw if ListSurveysRepository throws', async () => {
+    const { sut, listSurveysRepositorySpy } = makeSut()
+    jest.spyOn(listSurveysRepositorySpy, 'list').mockImplementationOnce(throwError)
+    const promise = sut.list()
+    await expect(promise).rejects.toThrow()
   })
 })

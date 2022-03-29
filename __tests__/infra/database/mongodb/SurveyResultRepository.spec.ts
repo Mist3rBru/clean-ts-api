@@ -9,8 +9,7 @@ let surveyCollection: Collection
 let usersCollection: Collection
 
 const makeSut = (): SurveyResultRepository => {
-  const sut = new SurveyResultRepository()
-  return sut
+  return new SurveyResultRepository()
 }
 
 const mockSurvey = async (): Promise<SurveyModel> => {

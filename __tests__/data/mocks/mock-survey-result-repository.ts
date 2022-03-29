@@ -3,18 +3,20 @@ import { SurveyResultModel } from '@/domain/models'
 import { AddSurveyResultParams } from '@/domain/usecases'
 import { mockSurveyResultModel } from '@/tests/domain/mocks'
 
-export const mockAddSurveyResultRepository = (): AddSurveyResultRepository => {
-  class AddSurveyResultRepositorySpy implements AddSurveyResultRepository {
-    async add (survey: AddSurveyResultParams): Promise<void> {}
+export class AddSurveyResultRepositorySpy implements AddSurveyResultRepository {
+  survey: AddSurveyResultParams
+  async add (survey: AddSurveyResultParams): Promise<void> {
+    this.survey = survey
   }
-  return new AddSurveyResultRepositorySpy()
 }
 
-export const mockLoadSurveyResultRepository = (): LoadSurveyResultRepository => {
-  class LoadSurveyResultRepositorySpy implements LoadSurveyResultRepository {
-    async load (surveyId: string, userId: string): Promise<SurveyResultModel> {
-      return mockSurveyResultModel()
-    }
+export class LoadSurveyResultRepositorySpy implements LoadSurveyResultRepository {
+  surveyId: string
+  userId: string
+  surveyResult = mockSurveyResultModel()
+  async load (surveyId: string, userId: string): Promise<SurveyResultModel> {
+    this.surveyId = surveyId
+    this.userId = userId
+    return this.surveyResult
   }
-  return new LoadSurveyResultRepositorySpy()
 }

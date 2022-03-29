@@ -1,96 +1,100 @@
 import { AuthMiddleware } from '@/presentation/middlewares'
 import { HttpRequest } from '@/presentation/protocols'
 import { badRequest, forbidden, ok } from '@/presentation/helpers'
-import { AccessDeniedError, MissingParamError } from '@/presentation/errors'
-import { Validation } from '@/validation/protocols'
-import { FindUserByToken } from '@/domain/usecases'
-import { mockValidation, mockFindUserByToken } from '@/tests/presentation/mocks'
+import { AccessDeniedError } from '@/presentation/errors'
+import { ValidationSpy, FindUserByTokenSpy } from '@/tests/presentation/mocks'
+import faker from '@faker-js/faker'
 
 type SutTypes = {
   sut: AuthMiddleware
-  validationSpy: Validation
-  findUserByTokenSpy: FindUserByToken
+  validationSpy: ValidationSpy
+  findUserByTokenSpy: FindUserByTokenSpy
 }
 
 const makeSut = (): SutTypes => {
-  const findUserByTokenSpy = mockFindUserByToken()
-  const validationSpy = mockValidation()
-  const sut = new AuthMiddleware(validationSpy, findUserByTokenSpy, 'admin')
+  const findUserByTokenSpy = new FindUserByTokenSpy()
+  const validationSpy = new ValidationSpy()
+  const sut = new AuthMiddleware(
+    validationSpy,
+    findUserByTokenSpy,
+    'admin'
+  )
   return {
     sut,
     validationSpy,
-    findUserByTokenSpy,
+    findUserByTokenSpy
   }
 }
 
-const mockRequest = (): HttpRequest => ({
-  headers: {
-    authorization: 'any-protocol any-token',
-  },
-})
+const mockRequest = (): HttpRequest => {
+  const protocol = faker.internet.protocol()
+  const token = faker.datatype.uuid()
+  return {
+    headers: {
+      authorization: protocol + ' ' + token
+    },
+    body: {
+      test: {
+        protocol,
+        token
+      }
+    }
+  }
+}
 
 describe('AuthMiddleware', () => {
   it('should call Validation with correct value', async () => {
     const { sut, validationSpy } = makeSut()
-    const validateSpy = jest.spyOn(validationSpy, 'validate')
     const httpRequest = mockRequest()
     await sut.handle(httpRequest)
-    expect(validateSpy).toBeCalledWith(httpRequest.headers)
+    expect(validationSpy.input).toEqual(httpRequest.headers)
   })
 
   it('should return 400 if invalid token is provided', async () => {
     const { sut, validationSpy } = makeSut()
-    const fakeError = new MissingParamError('token')
-    jest.spyOn(validationSpy, 'validate').mockReturnValueOnce(fakeError)
-    const httpRequest = mockRequest()
-    const httpResponse = await sut.handle(httpRequest)
+    const fakeError = new Error('any-error')
+    validationSpy.error = fakeError
+    const httpResponse = await sut.handle(mockRequest())
     expect(httpResponse).toEqual(badRequest(fakeError))
   })
 
   it('should call FindUserByToken with correct value', async () => {
     const { sut, findUserByTokenSpy } = makeSut()
-    const findSpy = jest.spyOn(findUserByTokenSpy, 'findByToken')
     const httpRequest = mockRequest()
     await sut.handle(httpRequest)
-    expect(findSpy).toBeCalledWith('any-token', 'admin')
+    const { token } = httpRequest.body.test
+    expect(findUserByTokenSpy.token).toBe(token)
+    expect(findUserByTokenSpy.role).toBe('admin')
   })
 
   it('should return 403 if FindUserByToken returns null', async () => {
     const { sut, findUserByTokenSpy } = makeSut()
-    jest.spyOn(findUserByTokenSpy, 'findByToken').mockReturnValueOnce(null)
-    const httpRequest = mockRequest()
-    const httpResponse = await sut.handle(httpRequest)
+    findUserByTokenSpy.user = null
+    const httpResponse = await sut.handle(mockRequest())
     expect(httpResponse).toEqual(forbidden(new AccessDeniedError()))
   })
 
   it('should return 200 on success', async () => {
-    const { sut } = makeSut()
-    const httpRequest = mockRequest()
-    const httpResponse = await sut.handle(httpRequest)
-    expect(httpResponse).toEqual(ok({ userId: 'any-id' }))
+    const { sut, findUserByTokenSpy } = makeSut()
+    const httpResponse = await sut.handle(mockRequest())
+    expect(httpResponse).toEqual(ok({ userId: findUserByTokenSpy.user.id }))
   })
 
   it('should return 500 if any dependency throws', async () => {
-    const validation = mockValidation()
-    const findUserByToken = mockFindUserByToken()
+    const validationSpy = new ValidationSpy()
+    const findUserByTokenSpy = new FindUserByTokenSpy()
     const suts = [].concat(
       new AuthMiddleware(
-        {
-          validate() {
-            throw new Error()
-          },
-        },
-        findUserByToken
+        { validate () { throw new Error() } },
+        findUserByTokenSpy
       ),
-      new AuthMiddleware(validation, {
-        findByToken() {
-          throw new Error()
-        },
-      })
+      new AuthMiddleware(
+        validationSpy,
+        { findByToken () { throw new Error() } }
+      )
     )
     for (const sut of suts) {
-      const httpRequest = mockRequest()
-      const httpResponse = await sut.handle(httpRequest)
+      const httpResponse = await sut.handle(mockRequest())
       expect(httpResponse.statusCode).toBe(500)
     }
   })

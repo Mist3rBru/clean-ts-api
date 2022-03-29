@@ -5,8 +5,7 @@ const uri = env.MONGO_URL
 let logsCollection: Collection
 
 const makeSut = (): LogRepository => {
-  const sut = new LogRepository()
-  return sut
+  return new LogRepository()
 }
 
 describe('LogRepository', () => {

@@ -1,37 +1,40 @@
 import { Decrypter, Encrypter, HashComparator, HashGenerator } from '@/data/protocols'
+import faker from '@faker-js/faker'
 
-export const mockHashGenerator = (): HashGenerator => {
-  class HashGeneratorSpy implements HashGenerator {
-    async generate (value: string): Promise<string> {
-      return 'hashed-password'
-    }
+export class HashGeneratorSpy implements HashGenerator {
+  value: string
+  hashedValue = faker.datatype.uuid()
+  async generate (value: string): Promise<string> {
+    this.value = value
+    return this.hashedValue
   }
-  return new HashGeneratorSpy()
 }
 
-export const mockHashComparator = (): HashComparator => {
-  class HashComparatorSpy implements HashComparator {
-    async compare (value: string, hash: string): Promise<boolean> {
-      return true
-    }
+export class HashComparatorSpy implements HashComparator {
+  value: string
+  hash: string
+  isValid = true
+  async compare (value: string, hash: string): Promise<boolean> {
+    this.value = value
+    this.hash = hash
+    return this.isValid
   }
-  return new HashComparatorSpy()
 }
 
-export const mockEncrypter = (): Encrypter => {
-  class EncrypterSpy implements Encrypter {
-    async encrypt (value: string): Promise<string> {
-      return 'any-token'
-    }
+export class EncrypterSpy implements Encrypter {
+  value: string
+  token = faker.datatype.uuid()
+  async encrypt (value: string): Promise<string> {
+    this.value = value
+    return this.token
   }
-  return new EncrypterSpy()
 }
 
-export const mockDecrypter = (): Decrypter => {
-  class DecrypterSpy implements Decrypter {
-    async decrypt (token: string): Promise<string> {
-      return 'any-id'
-    }
+export class DecrypterSpy implements Decrypter {
+  token: string
+  payload = faker.datatype.uuid()
+  async decrypt (token: string): Promise<string> {
+    this.token = token
+    return this.payload
   }
-  return new DecrypterSpy()
 }

@@ -1,67 +1,68 @@
 import { SurveyModel } from '@/domain/models'
 import { AddSurveyParams } from '@/domain/usecases'
+import faker from '@faker-js/faker'
 
 export const mockSurveyModel = (): SurveyModel => ({
-  id: 'd58e57670afae38d70f8546f',
-  question: 'any-question',
+  id: faker.datatype.uuid(),
+  question: faker.random.words(),
   answers: [{
-    image: 'any-image',
-    answer: 'any-answer'
+    image: faker.image.imageUrl(),
+    answer: faker.random.word()
   }, {
-    image: 'other-image',
-    answer: 'other-answer'
+    image: faker.image.imageUrl(),
+    answer: faker.random.word()
   }],
-  date: new Date()
+  date: faker.date.recent()
 })
 
 export const mockSurveyList = (): SurveyModel[] => ([
   {
-    id: 'd58e57670afae38d70f8546f',
-    question: 'any-question',
+    id: faker.datatype.uuid(),
+    question: faker.random.words(),
     answers: [{
-      image: 'any-image',
-      answer: 'any-answer'
+      image: faker.image.imageUrl(),
+      answer: faker.random.word()
     }],
-    date: new Date()
+    date: faker.date.recent()
   }, {
-    id: 'ded3e2a46879db2bfc7f19d7',
-    question: 'other-question',
+    id: faker.datatype.uuid(),
+    question: faker.random.words(),
     answers: [{
-      image: 'other-image',
-      answer: 'other-answer'
+      image: faker.image.imageUrl(),
+      answer: faker.random.word()
     }],
-    date: new Date()
+    date: faker.date.recent()
   }
 ])
 
 export const mockAddSurveyParams = (): AddSurveyParams => ({
-  question: 'any-question',
+  question: faker.random.words(),
   answers: [{
-    image: 'any-image',
-    answer: 'any-answer'
+    image: faker.image.imageUrl(),
+    answer: faker.random.word()
   }, {
-    image: 'other-image',
-    answer: 'other-answer'
+    image: faker.image.imageUrl(),
+    answer: faker.random.word()
   }],
-  date: new Date()
+  date: faker.date.recent()
 })
 
 export const mockAddSurveyParamsList = (): AddSurveyParams[] => ([
   {
-    question: 'any-question',
+    question: faker.random.words(),
     answers: [{
-      image: 'any-image',
-      answer: 'any-answer'
+      image: faker.image.imageUrl(),
+      answer: faker.random.word()
     }],
-    date: new Date()
+    date: faker.date.recent()
   },
   {
-    question: 'other-question',
+    question: faker.random.words(),
     answers: [{
-      image: 'other-image',
-      answer: 'other-answer'
+      image: faker.image.imageUrl(),
+      answer: faker.random.word()
     }],
-    date: new Date()
+    date: faker.date.recent()
   }
 
 ])

@@ -1,42 +1,44 @@
 import { SurveyResultModel } from '@/domain/models'
 import { AddSurveyResultParams } from '@/domain/usecases'
+import faker from '@faker-js/faker'
 
 export const mockAddSurveyResultParams = (): AddSurveyResultParams => ({
-  userId: 'd58e57670afae38d70f8546f',
-  surveyId: 'd58e57670afae38d70f8546f',
-  answer: 'any-answer',
-  date: new Date()
+  userId: faker.datatype.hexaDecimal(24).substring(2, 26),
+  surveyId: faker.datatype.hexaDecimal(24).substring(2, 26),
+  answer: faker.random.word(),
+  date: faker.date.recent()
 })
 
 export const mockSurveyResultModel = (): SurveyResultModel => ({
-  surveyId: 'd58e57670afae38d70f8546f',
-  question: 'any-question,',
+  surveyId: faker.datatype.hexaDecimal(24).substring(2, 26),
+  question: faker.random.words(),
   answers: [{
-    answer: 'any-answer',
-    count: 4,
-    percent: 40
+    answer: faker.random.word(),
+    count: faker.datatype.number({ min: 0, max: 1000 }),
+    percent: faker.datatype.number({ min: 0, max: 100 })
   },
   {
-    answer: 'other-answer',
-    count: 6,
-    percent: 60
+    answer: faker.random.word(),
+    count: faker.datatype.number({ min: 0, max: 1000 }),
+    percent: faker.datatype.number({ min: 0, max: 100 })
   }],
-  date: new Date()
+  date: faker.date.recent()
 })
+
 export const mockEmptySurveyResultModel = (): SurveyResultModel => ({
-  surveyId: 'd58e57670afae38d70f8546f',
-  question: 'any-question',
+  surveyId: faker.datatype.hexaDecimal(24).substring(2, 26),
+  question: faker.random.words(),
   answers: [{
-    image: 'any-image',
-    answer: 'any-answer',
+    image: faker.image.imageUrl(),
+    answer: faker.random.word(),
     count: 0,
     percent: 0
   },
   {
-    image: 'other-image',
-    answer: 'other-answer',
+    image: faker.image.imageUrl(),
+    answer: faker.random.word(),
     count: 0,
     percent: 0
   }],
-  date: new Date()
+  date: faker.date.recent()
 })

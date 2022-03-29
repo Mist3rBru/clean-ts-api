@@ -6,8 +6,7 @@ const uri = env.MONGO_URL
 let surveyCollection: Collection
 
 const makeSut = (): SurveyRepository => {
-  const sut = new SurveyRepository()
-  return sut
+  return new SurveyRepository()
 }
 
 describe('SurveyRepository', () => {

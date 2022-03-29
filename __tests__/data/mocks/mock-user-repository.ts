@@ -3,29 +3,29 @@ import { UserModel } from '@/domain/models'
 import { AddUserParams } from '@/domain/usecases'
 import { mockUserModel } from '@/tests/domain/mocks'
 
-export const mockAddUserRepository = (): AddUserRepository => {
-  class AddUserRepositorySpy implements AddUserRepository {
-    async add (model: AddUserParams): Promise<UserModel> {
-      return mockUserModel()
-    }
+export class AddUserRepositorySpy implements AddUserRepository {
+  model: AddUserParams
+  user = mockUserModel()
+  async add (model: AddUserParams): Promise<UserModel> {
+    this.model = model
+    return this.user
   }
-  return new AddUserRepositorySpy()
 }
 
-export const mockFindUserByIdRepository = (): FindUserByIdRepository => {
-  class FindUserByIdRepositorySpy implements FindUserByIdRepository {
-    async findById (id: any): Promise<UserModel> {
-      return mockUserModel('any-role')
-    }
+export class FindUserByIdRepositorySpy implements FindUserByIdRepository {
+  id: string
+  user = mockUserModel('any-role')
+  async findById (id: any): Promise<UserModel> {
+    this.id = id
+    return this.user
   }
-  return new FindUserByIdRepositorySpy()
 }
 
-export const mockFindUserByEmailRepository = (): FindUserByEmailRepository => {
-  class FindUserByEmailRepositorySpy implements FindUserByEmailRepository {
-    async findByEmail (email: string): Promise<UserModel> {
-      return mockUserModel('any-role')
-    }
+export class FindUserByEmailRepositorySpy implements FindUserByEmailRepository {
+  email: string
+  user = mockUserModel('any-role')
+  async findByEmail (email: string): Promise<UserModel> {
+    this.email = email
+    return this.user
   }
-  return new FindUserByEmailRepositorySpy()
 }

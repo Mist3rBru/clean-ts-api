@@ -1,14 +1,16 @@
 import { ValidationComposite } from '@/validation/validators'
-import { Validation } from '@/validation/protocols'
-import { mockValidation } from '@/tests/validation/mocks'
+import { ValidationSpy } from '@/tests/validation/mocks'
 
 type SutTypes = {
   sut: ValidationComposite
-  validationSpies: Validation[]
+  validationSpies: ValidationSpy[]
 }
 
 const makeSut = (): SutTypes => {
-  const validationSpies = [mockValidation(), mockValidation()]
+  const validationSpies = [
+    new ValidationSpy(),
+    new ValidationSpy()
+  ]
   const sut = new ValidationComposite(validationSpies)
   return {
     sut,
@@ -19,21 +21,15 @@ const makeSut = (): SutTypes => {
 describe('ValidationComposite', () => {
   it('should call Validations with correct value', () => {
     const { sut, validationSpies } = makeSut()
-    const firstValidateSpy = jest.spyOn(validationSpies[0], 'validate')
-    const secondValidateSpy = jest.spyOn(validationSpies[1], 'validate')
     sut.validate('any-input')
-    expect(firstValidateSpy).toBeCalledWith('any-input')
-    expect(secondValidateSpy).toBeCalledWith('any-input')
+    expect(validationSpies[0].input).toBe('any-input')
+    expect(validationSpies[1].input).toBe('any-input')
   })
 
   it('should return error when first Validation returns error', () => {
     const { sut, validationSpies } = makeSut()
-    jest
-      .spyOn(validationSpies[0], 'validate')
-      .mockReturnValueOnce(new Error('0'))
-    jest
-      .spyOn(validationSpies[1], 'validate')
-      .mockReturnValueOnce(new Error('1'))
+    validationSpies[0].error = new Error('0')
+    validationSpies[1].error = new Error('1')
     const error = sut.validate('any-input')
     expect(error).toEqual(new Error('0'))
   })

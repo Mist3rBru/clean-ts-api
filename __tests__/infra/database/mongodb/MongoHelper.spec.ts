@@ -1,5 +1,6 @@
 import { MongoHelper } from '@/infra/database/mongodb'
 import { env } from '@/main/config'
+import faker from '@faker-js/faker'
 const uri = env.MONGO_URL
 
 describe('MongoHelper', () => {
@@ -27,8 +28,8 @@ describe('MongoHelper', () => {
 
   it('should return the data collection without _id', async () => {
     const collection = {
-      _id: 'any-id',
-      email: 'any-email'
+      _id: faker.datatype.uuid(),
+      email: faker.internet.email()
     }
     const newCollection = MongoHelper.map(collection)
     expect(newCollection).toEqual({
