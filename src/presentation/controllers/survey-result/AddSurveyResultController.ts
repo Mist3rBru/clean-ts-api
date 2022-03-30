@@ -1,7 +1,7 @@
 import { FindSurveyById, AddSurveyResult } from '@/domain/usecases'
 import { InvalidParamError } from '@/presentation/errors'
 import { forbidden, ok, serverError } from '@/presentation/helpers'
-import { Controller, HttpRequest, HttpResponse } from '@/presentation/protocols'
+import { Controller, HttpResponse } from '@/presentation/protocols'
 
 export class AddSurveyResultController implements Controller {
   constructor (
@@ -9,11 +9,9 @@ export class AddSurveyResultController implements Controller {
     private readonly addSurveyResult: AddSurveyResult
   ) {}
 
-  async handle (request: HttpRequest): Promise<HttpResponse> {
+  async handle (request: AddSurveyResultController.Request): Promise<HttpResponse> {
     try {
-      const { userId } = request
-      const { surveyId } = request.params
-      const { answer } = request.body
+      const { userId, surveyId, answer } = request
       const survey = await this.findSurveyById.findById(surveyId)
       if (!survey) {
         return forbidden(new InvalidParamError('survey id'))
@@ -32,5 +30,13 @@ export class AddSurveyResultController implements Controller {
     } catch (error) {
       return serverError(error)
     }
+  }
+}
+
+export namespace AddSurveyResultController {
+  export type Request = {
+    userId: string
+    surveyId: string
+    answer: string
   }
 }

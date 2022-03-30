@@ -1,4 +1,4 @@
-import { HttpRequest, HttpResponse, Middleware } from '@/presentation/protocols'
+import { HttpResponse, Middleware } from '@/presentation/protocols'
 import { badRequest, forbidden, ok, serverError } from '@/presentation/helpers'
 import { Validation } from '@/validation/protocols'
 import { FindUserByToken } from '@/domain/usecases'
@@ -11,13 +11,13 @@ export class AuthMiddleware implements Middleware {
     private readonly role?: string
   ) {}
 
-  async handle (request: HttpRequest): Promise<HttpResponse> {
+  async handle (request: AuthMiddleware.Request): Promise<HttpResponse> {
     try {
-      const error = this.validation.validate(request.headers)
+      const error = this.validation.validate(request)
       if (error) {
         return badRequest(error)
       }
-      const bearerToken = request.headers.authorization
+      const bearerToken = request.authorization
       const token = bearerToken.split(' ')[1]
       const user = await this.findUserByToken.findByToken(token, this.role)
       if (!user) {
@@ -27,5 +27,11 @@ export class AuthMiddleware implements Middleware {
     } catch (error) {
       return serverError(error)
     }
+  }
+}
+
+export namespace AuthMiddleware {
+  export type Request = {
+    authorization: string
   }
 }

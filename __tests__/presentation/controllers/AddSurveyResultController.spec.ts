@@ -1,6 +1,5 @@
 import { InvalidParamError } from '@/presentation/errors'
 import { forbidden, ok } from '@/presentation/helpers'
-import { HttpRequest } from '@/presentation/protocols'
 import { AddSurveyResultController } from '@/presentation/controllers'
 import { AddSurveyResultSpy, FindSurveyByIdSpy } from '@/tests/presentation/mocks'
 import faker from '@faker-js/faker'
@@ -26,14 +25,10 @@ const makeSut = (): SutTypes => {
   }
 }
 
-const mockRequest = (survey: any = null): HttpRequest => ({
-  params: {
-    surveyId: faker.datatype.uuid()
-  },
-  body: {
-    answer: survey?.answers[0].answer
-  },
-  userId: faker.datatype.uuid()
+const mockRequest = (survey: any = null): AddSurveyResultController.Request => ({
+  userId: faker.datatype.uuid(),
+  surveyId: faker.datatype.uuid(),
+  answer: survey?.answers[0].answer
 })
 
 describe('SaveSurveyResultController', () => {
@@ -47,9 +42,9 @@ describe('SaveSurveyResultController', () => {
 
   it('should call FindSurveyById with correct values', async () => {
     const { sut, findSurveyByIdSpy } = makeSut()
-    const httpRequest = mockRequest()
-    await sut.handle(httpRequest)
-    expect(findSurveyByIdSpy.id).toBe(httpRequest.params.surveyId)
+    const request = mockRequest()
+    await sut.handle(request)
+    expect(findSurveyByIdSpy.id).toBe(request.surveyId)
   })
 
   it('should return 403 if FindSurveyById returns null', async () => {
@@ -61,22 +56,17 @@ describe('SaveSurveyResultController', () => {
 
   it('should return 403 if invalid answer is provided', async () => {
     const { sut } = makeSut()
-    const httpRequest = mockRequest()
-    httpRequest.body.answer = 'invalid-answer'
-    const httpResponse = await sut.handle(httpRequest)
+    const request = mockRequest()
+    request.answer = 'invalid-answer'
+    const httpResponse = await sut.handle(request)
     expect(httpResponse).toEqual(forbidden(new InvalidParamError('answer')))
   })
 
   it('should call SaveSurveyResult with correct values', async () => {
     const { sut, addSurveyResultSpy, findSurveyByIdSpy } = makeSut()
-    const httpRequest = mockRequest(findSurveyByIdSpy.survey)
-    await sut.handle(httpRequest)
-    expect(addSurveyResultSpy.model).toEqual({
-      userId: httpRequest.userId,
-      surveyId: httpRequest.params.surveyId,
-      answer: httpRequest.body.answer,
-      date: new Date()
-    })
+    const request = mockRequest(findSurveyByIdSpy.survey)
+    await sut.handle(request)
+    expect(addSurveyResultSpy.model).toEqual({ ...request, date: new Date() })
   })
 
   it('should return 200 on success', async () => {

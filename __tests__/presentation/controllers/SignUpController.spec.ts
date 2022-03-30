@@ -1,7 +1,6 @@
 import { SignUpController } from '@/presentation/controllers'
 import { badRequest, forbidden, ok } from '@/presentation/helpers'
 import { MissingParamError, EmailInUseError } from '@/presentation/errors'
-import { HttpRequest } from '@/presentation/protocols'
 import { ValidationSpy, AddUserSpy, AuthenticationSpy } from '@/tests/presentation/mocks'
 import faker from '@faker-js/faker'
 
@@ -25,24 +24,22 @@ const makeSut = (): SutTypes => {
   }
 }
 
-const mockRequest = (): HttpRequest => {
+const mockRequest = (): SignUpController.Request => {
   const fakePassword = faker.internet.password()
   return {
-    body: {
-      name: faker.name.findName(),
-      email: faker.internet.email(),
-      password: fakePassword,
-      passwordConfirmation: fakePassword
-    }
+    name: faker.name.findName(),
+    email: faker.internet.email(),
+    password: fakePassword,
+    passwordConfirmation: fakePassword
   }
 }
 
 describe('Signup Controller', () => {
   it('should call Validation with correct values', async () => {
     const { sut, validationSpy } = makeSut()
-    const httpRequest = mockRequest()
-    await sut.handle(httpRequest)
-    expect(validationSpy.input).toEqual(httpRequest.body)
+    const request = mockRequest()
+    await sut.handle(request)
+    expect(validationSpy.input).toEqual(request)
   })
 
   it('should return 400 if Validation returns an error', async () => {
@@ -55,17 +52,17 @@ describe('Signup Controller', () => {
 
   it('should call AddAccount with correct values', async () => {
     const { sut, addUserSpy } = makeSut()
-    const httpRequest = mockRequest()
-    await sut.handle(httpRequest)
-    const { passwordConfirmation, ...expectedValues } = httpRequest.body
+    const request = mockRequest()
+    await sut.handle(request)
+    const { passwordConfirmation, ...expectedValues } = request
     expect(addUserSpy.model).toEqual(expectedValues)
   })
 
   it('should call authentication with correct values', async () => {
     const { sut, authenticationSpy } = makeSut()
-    const httpRequest = mockRequest()
-    await sut.handle(httpRequest)
-    const { email, password } = httpRequest.body
+    const request = mockRequest()
+    await sut.handle(request)
+    const { email, password } = request
     expect(authenticationSpy.credentials).toEqual({ email, password })
   })
 

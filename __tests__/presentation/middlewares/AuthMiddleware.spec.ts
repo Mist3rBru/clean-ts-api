@@ -1,5 +1,4 @@
 import { AuthMiddleware } from '@/presentation/middlewares'
-import { HttpRequest } from '@/presentation/protocols'
 import { badRequest, forbidden, ok } from '@/presentation/helpers'
 import { AccessDeniedError } from '@/presentation/errors'
 import { ValidationSpy, FindUserByTokenSpy } from '@/tests/presentation/mocks'
@@ -26,28 +25,22 @@ const makeSut = (): SutTypes => {
   }
 }
 
-const mockRequest = (): HttpRequest => {
-  const protocol = faker.internet.protocol()
-  const token = faker.datatype.uuid()
+let token: string
+let protocol: string
+const mockRequest = (): AuthMiddleware.Request => {
+  protocol = faker.internet.protocol()
+  token = faker.datatype.uuid()
   return {
-    headers: {
-      authorization: protocol + ' ' + token
-    },
-    body: {
-      test: {
-        protocol,
-        token
-      }
-    }
+    authorization: protocol + ' ' + token
   }
 }
 
 describe('AuthMiddleware', () => {
   it('should call Validation with correct value', async () => {
     const { sut, validationSpy } = makeSut()
-    const httpRequest = mockRequest()
-    await sut.handle(httpRequest)
-    expect(validationSpy.input).toEqual(httpRequest.headers)
+    const request = mockRequest()
+    await sut.handle(request)
+    expect(validationSpy.input).toEqual(request)
   })
 
   it('should return 400 if invalid token is provided', async () => {
@@ -60,9 +53,8 @@ describe('AuthMiddleware', () => {
 
   it('should call FindUserByToken with correct value', async () => {
     const { sut, findUserByTokenSpy } = makeSut()
-    const httpRequest = mockRequest()
-    await sut.handle(httpRequest)
-    const { token } = httpRequest.body.test
+    const request = mockRequest()
+    await sut.handle(request)
     expect(findUserByTokenSpy.token).toBe(token)
     expect(findUserByTokenSpy.role).toBe('admin')
   })
