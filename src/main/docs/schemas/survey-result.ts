@@ -1,20 +1,41 @@
 export const SurveyResultSchema = {
   type: 'object',
   properties: {
-    id: {
-      type: 'string'
-    },
     surveyId: {
       type: 'string'
     },
-    userId: {
+    question: {
+      type: 'string'
+    },
+    answers: {
+      type: 'array',
+      items: {
+        $ref: '#/schemas/surveyResultAnswer'
+      }
+    },
+    date: {
+      type: 'string'
+    }
+  }
+}
+
+export const SurveyResultAnswerSchema = {
+  type: 'object',
+  properties: {
+    image: {
       type: 'string'
     },
     answer: {
       type: 'string'
     },
-    date: {
-      type: 'string'
+    count: {
+      type: 'number'
+    },
+    percent: {
+      type: 'number'
+    },
+    isCurrentUserAnswer: {
+      type: 'boolean'
     }
   }
 }
