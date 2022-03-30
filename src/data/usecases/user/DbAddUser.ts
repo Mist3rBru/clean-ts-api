@@ -1,10 +1,5 @@
-import {
-  HashGenerator,
-  AddUserRepository,
-  FindUserByEmailRepository
-} from '@/data/protocols'
-import { AddUser, AddUserParams } from '@/domain/usecases'
-import { UserModel } from '@/domain/models'
+import { HashGenerator, AddUserRepository, FindUserByEmailRepository } from '@/data/protocols'
+import { AddUser } from '@/domain/usecases'
 
 export class DbAddUser implements AddUser {
   constructor (
@@ -13,14 +8,12 @@ export class DbAddUser implements AddUser {
     private readonly findUserByEmailRepository: FindUserByEmailRepository
   ) {}
 
-  async add (model: AddUserParams): Promise<UserModel> {
-    const alreadyExists = await this.findUserByEmailRepository.findByEmail(
-      model.email
-    )
+  async add (data: AddUser.Params): Promise<AddUser.Result> {
+    const alreadyExists = await this.findUserByEmailRepository.findByEmail(data.email)
     if (alreadyExists) return null
-    const hashedPassword = await this.hashGenerator.generate(model.password)
+    const hashedPassword = await this.hashGenerator.generate(data.password)
     const user = await this.addUserRepository.add(
-      Object.assign({}, model, { password: hashedPassword })
+      Object.assign({}, data, { password: hashedPassword })
     )
     return user
   }

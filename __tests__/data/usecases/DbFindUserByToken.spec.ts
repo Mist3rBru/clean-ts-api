@@ -1,5 +1,7 @@
 import { DbFindUserByToken } from '@/data/usecases'
+import { FindUserByToken } from '@/domain/usecases'
 import { DecrypterSpy, FindUserByIdRepositorySpy } from '@/tests/data/mocks'
+import faker from '@faker-js/faker'
 
 type SutTypes = {
   sut: DbFindUserByToken
@@ -18,49 +20,55 @@ const makeSut = (): SutTypes => {
   }
 }
 
+const mockParams = (role: string = null): FindUserByToken.Params => ({
+  token: faker.datatype.uuid(),
+  role
+})
+
 describe('DbFindUserByToken', () => {
   it('should call Decrypter with correct value', async () => {
     const { sut, decrypterSpy } = makeSut()
-    await sut.findByToken('any-token')
-    expect(decrypterSpy.token).toBe('any-token')
+    const params = mockParams()
+    await sut.findByToken(params)
+    expect(decrypterSpy.data).toEqual(params.token)
   })
 
   it('should return null if Decrypter returns null', async () => {
     const { sut, decrypterSpy } = makeSut()
     decrypterSpy.payload = null
-    const user = await sut.findByToken('any-token')
+    const user = await sut.findByToken(mockParams())
     expect(user).toBeNull()
   })
 
   it('should call FindUserByIdRepository with correct value', async () => {
     const { sut, findUserByIdRepositorySpy, decrypterSpy } = makeSut()
-    await sut.findByToken('any-token')
+    await sut.findByToken(mockParams())
     expect(findUserByIdRepositorySpy.id).toBe(decrypterSpy.payload)
   })
 
   it('should return null if FindUserByIdRepository returns null', async () => {
     const { sut, findUserByIdRepositorySpy } = makeSut()
     findUserByIdRepositorySpy.user = null
-    const user = await sut.findByToken('any-token')
+    const user = await sut.findByToken(mockParams())
     expect(user).toBeNull()
   })
 
   it('should return null if user role is different from param role', async () => {
     const { sut, findUserByIdRepositorySpy } = makeSut()
     findUserByIdRepositorySpy.user.role = 'different-role'
-    const user = await sut.findByToken('any-token', 'any-role')
+    const user = await sut.findByToken(mockParams('any-role'))
     expect(user).toBeNull()
   })
 
   it('should return user if user role is equal param role', async () => {
     const { sut, findUserByIdRepositorySpy } = makeSut()
-    const user = await sut.findByToken('any-token', 'any-role')
+    const user = await sut.findByToken(mockParams('any-role'))
     expect(user).toEqual(findUserByIdRepositorySpy.user)
   })
 
   it('should return user if no param role is provided', async () => {
     const { sut, findUserByIdRepositorySpy } = makeSut()
-    const user = await sut.findByToken('any-token')
+    const user = await sut.findByToken(mockParams())
     expect(user).toEqual(findUserByIdRepositorySpy.user)
   })
 
@@ -78,7 +86,7 @@ describe('DbFindUserByToken', () => {
       )
     )
     for (const sut of suts) {
-      const promise = sut.findByToken('any-token')
+      const promise = sut.findByToken(mockParams())
       await expect(promise).rejects.toThrow()
     }
   })

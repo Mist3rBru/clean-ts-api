@@ -1,12 +1,16 @@
 import { SurveyResultModel } from '@/domain/models'
 
-export type AddSurveyResultParams = {
-  surveyId: string
-  userId: string
-  answer: string
-  date: Date
+export namespace AddSurveyResult {
+  export type Params = {
+    surveyId: string
+    userId: string
+    answer: string
+    date: Date
+  }
+
+  export type Result = SurveyResultModel
 }
 
 export interface AddSurveyResult {
-  add(model: AddSurveyResultParams): Promise<SurveyResultModel>
+  add(data: AddSurveyResult.Params): Promise<AddSurveyResult.Result>
 }

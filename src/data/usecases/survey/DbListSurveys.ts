@@ -1,5 +1,4 @@
 import { ListSurveysRepository } from '@/data/protocols'
-import { SurveyModel } from '@/domain/models'
 import { ListSurveys } from '@/domain/usecases'
 
 export class DbListSurveys implements ListSurveys {
@@ -7,7 +6,7 @@ export class DbListSurveys implements ListSurveys {
     private readonly listSurveysRepository: ListSurveysRepository
   ) {}
 
-  async list (): Promise<SurveyModel[]> {
+  async list (): Promise<ListSurveys.Result> {
     const list = await this.listSurveysRepository.list()
     return list
   }

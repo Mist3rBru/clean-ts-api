@@ -1,6 +1,11 @@
 import { UserModel } from '@/domain/models'
-import { AddUserParams } from '@/domain/usecases'
+import { AddUser } from '@/domain/usecases'
+
+export namespace AddUserRepository {
+  export type Params = AddUser.Params
+  export type Result = UserModel
+}
 
 export interface AddUserRepository {
-  add (model: AddUserParams): Promise<UserModel>
+  add (data: AddUserRepository.Params): Promise<AddUserRepository.Result>
 }

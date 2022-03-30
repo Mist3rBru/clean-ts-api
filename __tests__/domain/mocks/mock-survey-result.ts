@@ -1,8 +1,8 @@
 import { SurveyResultModel } from '@/domain/models'
-import { AddSurveyResultParams } from '@/domain/usecases'
+import { AddSurveyResult } from '@/domain/usecases'
 import faker from '@faker-js/faker'
 
-export const mockAddSurveyResultParams = (): AddSurveyResultParams => ({
+export const mockAddSurveyResultParams = (): AddSurveyResult.Params => ({
   userId: faker.datatype.hexaDecimal(24).substring(2, 26),
   surveyId: faker.datatype.hexaDecimal(24).substring(2, 26),
   answer: faker.random.word(),

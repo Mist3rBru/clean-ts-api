@@ -1,9 +1,7 @@
 export interface Encrypter {
-  encrypt (value: string): Promise<token>
+  encrypt (data: string): Promise<string>
 }
 
 export interface Decrypter {
-  decrypt (token: string): Promise<string>
+  decrypt (token: string): Promise<any>
 }
-
-export type token = string | null

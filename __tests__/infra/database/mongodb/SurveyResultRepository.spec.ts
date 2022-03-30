@@ -87,7 +87,7 @@ describe('SurveyResultRepository', () => {
       ]
       await surveyResultCollection.insertMany(query)
       const sut = makeSut()
-      const surveyResult = await sut.load(survey.id, userIdOne)
+      const surveyResult = await sut.load({ surveyId: survey.id, userId: userIdOne })
       expect(surveyResult).toBeTruthy()
       expect(surveyResult.surveyId).toBe(survey.id)
       expect(surveyResult.answers[0].count).toBe(2)

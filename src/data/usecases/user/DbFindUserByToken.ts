@@ -1,5 +1,4 @@
 import { Decrypter, FindUserByIdRepository } from '@/data/protocols'
-import { UserModel } from '@/domain/models'
 import { FindUserByToken } from '@/domain/usecases'
 
 export class DbFindUserByToken implements FindUserByToken {
@@ -8,7 +7,8 @@ export class DbFindUserByToken implements FindUserByToken {
     private readonly findUserByIdRepository: FindUserByIdRepository
   ) {}
 
-  async findByToken (token: string, role?: string): Promise<UserModel> {
+  async findByToken (data: FindUserByToken.Params): Promise<FindUserByToken.Result> {
+    const { token, role } = data
     const userId = await this.decrypter.decrypt(token)
     if (!userId) return null
     const user = await this.findUserByIdRepository.findById(userId)

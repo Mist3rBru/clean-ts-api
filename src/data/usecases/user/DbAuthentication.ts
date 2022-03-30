@@ -1,6 +1,5 @@
-import { Authentication, AuthenticationParams } from '@/domain/usecases'
+import { Authentication } from '@/domain/usecases'
 import { FindUserByEmailRepository, HashComparator, Encrypter } from '@/data/protocols'
-import { AuthenticationModel } from '@/domain/models'
 
 export class DbAuthentication implements Authentication {
   constructor (
@@ -9,8 +8,8 @@ export class DbAuthentication implements Authentication {
     private readonly encrypter: Encrypter
   ) {}
 
-  async auth (credentials: AuthenticationParams): Promise<AuthenticationModel> {
-    const { email, password } = credentials
+  async auth (data: Authentication.Params): Promise<Authentication.Result> {
+    const { email, password } = data
     const user = await this.findUserByEmailRepository.findByEmail(email)
     const isValid =
       user && (await this.hashComparator.compare(password, user.password))

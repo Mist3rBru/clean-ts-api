@@ -57,8 +57,7 @@ describe('LoadSurveyResultController', () => {
     const { sut, loadSurveyResultSpy } = makeSut()
     const request = mockRequest()
     await sut.handle(request)
-    expect(loadSurveyResultSpy.surveyId).toBe(request.surveyId)
-    expect(loadSurveyResultSpy.userId).toBe(request.userId)
+    expect(loadSurveyResultSpy.data).toEqual(request)
   })
 
   it('should return survey result on success', async () => {

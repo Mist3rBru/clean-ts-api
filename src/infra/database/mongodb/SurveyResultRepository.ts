@@ -1,22 +1,21 @@
 import { LoadSurveyResultRepository, AddSurveyResultRepository } from '@/data/protocols'
 import { SurveyResultModel } from '@/domain/models'
-import { AddSurveyResultParams } from '@/domain/usecases'
 import { MongoHelper, QueryBuilder } from '@/infra/database/mongodb'
 import round from 'mongo-round'
 import { ObjectId } from 'mongodb'
 
 export class SurveyResultRepository implements AddSurveyResultRepository, LoadSurveyResultRepository {
-  async add (model: AddSurveyResultParams): Promise<void> {
+  async add (data: AddSurveyResultRepository.Params): Promise<void> {
     const surveyResultsCollection = await MongoHelper.getCollection('survey_results')
     await surveyResultsCollection.findOneAndUpdate(
       {
-        surveyId: new ObjectId(model.surveyId),
-        userId: new ObjectId(model.userId)
+        surveyId: new ObjectId(data.surveyId),
+        userId: new ObjectId(data.userId)
       },
       {
         $set: {
-          answer: model.answer,
-          date: model.date
+          answer: data.answer,
+          date: data.date
         }
       },
       {
@@ -25,8 +24,9 @@ export class SurveyResultRepository implements AddSurveyResultRepository, LoadSu
     )
   }
 
-  async load (surveyId: string, userId: string): Promise<SurveyResultModel> {
+  async load (data: LoadSurveyResultRepository.Params): Promise<LoadSurveyResultRepository.Result> {
     const surveyResultCollection = await MongoHelper.getCollection('survey_results')
+    const { surveyId, userId } = data
     const query = new QueryBuilder()
       .match({
         surveyId: new ObjectId(surveyId)

@@ -1,5 +1,5 @@
 import { UserModel } from '@/domain/models'
-import { AddUserParams } from '@/domain/usecases'
+import { AddUser } from '@/domain/usecases'
 import faker from '@faker-js/faker'
 
 export const mockUserModel = (role: string = null): UserModel => ({
@@ -10,7 +10,7 @@ export const mockUserModel = (role: string = null): UserModel => ({
   role: role
 })
 
-export const mockAddUserParams = (role: string = null): AddUserParams => ({
+export const mockAddUserParams = (role: string = null): AddUser.Params => ({
   name: faker.name.findName(),
   email: faker.internet.email(),
   password: faker.internet.password(),

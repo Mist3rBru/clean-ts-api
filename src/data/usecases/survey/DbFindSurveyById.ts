@@ -1,5 +1,4 @@
 import { FindSurveyByIdRepository } from '@/data/protocols'
-import { SurveyModel } from '@/domain/models'
 import { FindSurveyById } from '@/domain/usecases'
 
 export class DbFindSurveyById implements FindSurveyById {
@@ -7,7 +6,7 @@ export class DbFindSurveyById implements FindSurveyById {
     private readonly findSurveyByIdRepository: FindSurveyByIdRepository
   ) {}
 
-  async findById (id: string): Promise<SurveyModel> {
+  async findById (id: string): Promise<FindSurveyById.Result> {
     const survey = await this.findSurveyByIdRepository.findById(id)
     return survey
   }

@@ -45,7 +45,7 @@ describe('LoginController', () => {
     const { sut, authenticationSpy } = makeSut()
     const request = mockRequest()
     await sut.handle(request)
-    expect(authenticationSpy.credentials).toEqual(request)
+    expect(authenticationSpy.data).toEqual(request)
   })
 
   it('should  return 401 if invalid credentials are provided', async () => {

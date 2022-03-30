@@ -33,7 +33,7 @@ describe('DbSaveSurveyResult', () => {
     const { sut, addSurveyResultRepositorySpy } = makeSut()
     const model = mockAddSurveyResultParams()
     await sut.add(model)
-    expect(addSurveyResultRepositorySpy.survey).toEqual(model)
+    expect(addSurveyResultRepositorySpy.data).toEqual(model)
   })
 
   it('should return survey on success', async () => {

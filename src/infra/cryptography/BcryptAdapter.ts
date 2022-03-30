@@ -1,4 +1,4 @@
-import { HashGenerator, HashComparator, hash } from '@/data/protocols'
+import { HashGenerator, HashComparator } from '@/data/protocols'
 import bcrypt from 'bcrypt'
 
 export class BcryptAdapter implements HashGenerator, HashComparator {
@@ -6,11 +6,11 @@ export class BcryptAdapter implements HashGenerator, HashComparator {
     private readonly salt: number
   ) {}
 
-  async generate (value: string): Promise<hash> {
-    return await bcrypt.hash(value, this.salt)
+  async generate (data: string): Promise<string> {
+    return await bcrypt.hash(data, this.salt)
   }
 
-  async compare (value: string, hash: string): Promise<boolean> {
-    return await bcrypt.compare(value, hash)
+  async compare (data: string, hash: string): Promise<boolean> {
+    return await bcrypt.compare(data, hash)
   }
 }

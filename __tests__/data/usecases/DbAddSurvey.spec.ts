@@ -21,7 +21,7 @@ describe('DbAddSurvey', () => {
     const { sut, addSurveyRepositorySpy } = makeSut()
     const model = mockSurveyModel()
     await sut.add(model)
-    expect(addSurveyRepositorySpy.survey).toEqual(model)
+    expect(addSurveyRepositorySpy.data).toEqual(model)
   })
 
   it('should throw if AddSurveyRepository throws', async () => {

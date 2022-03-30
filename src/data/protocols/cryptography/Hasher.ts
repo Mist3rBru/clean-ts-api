@@ -1,9 +1,7 @@
 export interface HashGenerator {
-  generate (value: string): Promise<hash>
+  generate (data: string): Promise<string>
 }
 
 export interface HashComparator {
-  compare (value: string, hash: string): Promise<boolean>
+  compare (data: string, hash: string): Promise<boolean>
 }
-
-export type hash = string

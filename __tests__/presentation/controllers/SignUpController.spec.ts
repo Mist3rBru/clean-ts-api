@@ -55,7 +55,7 @@ describe('Signup Controller', () => {
     const request = mockRequest()
     await sut.handle(request)
     const { passwordConfirmation, ...expectedValues } = request
-    expect(addUserSpy.model).toEqual(expectedValues)
+    expect(addUserSpy.data).toEqual(expectedValues)
   })
 
   it('should call authentication with correct values', async () => {
@@ -63,7 +63,7 @@ describe('Signup Controller', () => {
     const request = mockRequest()
     await sut.handle(request)
     const { email, password } = request
-    expect(authenticationSpy.credentials).toEqual({ email, password })
+    expect(authenticationSpy.data).toEqual({ email, password })
   })
 
   it('should should return 403 if AddAccount returns null', async () => {

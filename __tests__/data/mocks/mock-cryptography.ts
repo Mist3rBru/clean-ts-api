@@ -2,39 +2,39 @@ import { Decrypter, Encrypter, HashComparator, HashGenerator } from '@/data/prot
 import faker from '@faker-js/faker'
 
 export class HashGeneratorSpy implements HashGenerator {
-  value: string
-  hashedValue = faker.datatype.uuid()
-  async generate (value: string): Promise<string> {
-    this.value = value
-    return this.hashedValue
+  data: string
+  hash = faker.datatype.uuid()
+  async generate (data: string): Promise<string> {
+    this.data = data
+    return this.hash
   }
 }
 
 export class HashComparatorSpy implements HashComparator {
-  value: string
+  data: string
   hash: string
   isValid = true
-  async compare (value: string, hash: string): Promise<boolean> {
-    this.value = value
+  async compare (data: string, hash: string): Promise<boolean> {
+    this.data = data
     this.hash = hash
     return this.isValid
   }
 }
 
 export class EncrypterSpy implements Encrypter {
-  value: string
+  data: string
   token = faker.datatype.uuid()
-  async encrypt (value: string): Promise<string> {
-    this.value = value
+  async encrypt (data: string): Promise<string> {
+    this.data = data
     return this.token
   }
 }
 
 export class DecrypterSpy implements Decrypter {
-  token: string
+  data: string
   payload = faker.datatype.uuid()
-  async decrypt (token: string): Promise<string> {
-    this.token = token
+  async decrypt (data: string): Promise<string> {
+    this.data = data
     return this.payload
   }
 }

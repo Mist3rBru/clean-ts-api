@@ -1,5 +1,5 @@
 import { DbAuthentication } from '@/data/usecases'
-import { AuthenticationParams } from '@/domain/usecases'
+import { Authentication } from '@/domain/usecases'
 import { EncrypterSpy, HashComparatorSpy, FindUserByEmailRepositorySpy } from '@/tests/data/mocks'
 import faker from '@faker-js/faker'
 
@@ -27,7 +27,7 @@ const makeSut = (): SutTypes => {
   }
 }
 
-const mockCredentials = (): AuthenticationParams => ({
+const mockCredentials = (): Authentication.Params => ({
   email: faker.internet.email(),
   password: faker.internet.password()
 })
@@ -44,7 +44,7 @@ describe('DbAuthentication', () => {
     const { sut, hashComparatorSpy, findUserByEmailRepositorySpy } = makeSut()
     const credentials = mockCredentials()
     await sut.auth(credentials)
-    expect(hashComparatorSpy.value).toBe(credentials.password)
+    expect(hashComparatorSpy.data).toBe(credentials.password)
     expect(hashComparatorSpy.hash).toBe(findUserByEmailRepositorySpy.user.password)
   })
 
@@ -65,7 +65,7 @@ describe('DbAuthentication', () => {
   it('should call Encrypter with correct value', async () => {
     const { sut, encrypterSpy, findUserByEmailRepositorySpy } = makeSut()
     await sut.auth(mockCredentials())
-    expect(encrypterSpy.value).toBe(findUserByEmailRepositorySpy.user.id)
+    expect(encrypterSpy.data).toBe(findUserByEmailRepositorySpy.user.id)
   })
 
   it('should return token valid credentials are provided', async () => {

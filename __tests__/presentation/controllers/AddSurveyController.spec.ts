@@ -53,7 +53,7 @@ describe('AddSurveyController', () => {
     const request = mockRequest()
     await sut.handle(request)
     const { question, answers } = request
-    expect(addSurveySpy.survey).toEqual({ question, answers, date: new Date() })
+    expect(addSurveySpy.data).toEqual({ question, answers, date: new Date() })
   })
 
   it('should return 500 if any dependency throws', async () => {

@@ -1,7 +1,10 @@
 import { UserModel } from '@/domain/models'
 
-export type AddUserParams = Omit<UserModel, 'id'>
+export namespace AddUser {
+  export type Params = Omit<UserModel, 'id'>
+  export type Result = UserModel
+}
 
 export interface AddUser {
-  add(user: AddUserParams): Promise<UserModel>
+  add(data: AddUser.Params): Promise<AddUser.Result>
 }

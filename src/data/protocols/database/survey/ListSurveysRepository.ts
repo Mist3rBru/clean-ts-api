@@ -1,5 +1,9 @@
 import { SurveyModel } from '@/domain/models'
 
+export namespace ListSurveysRepository {
+  export type Result =SurveyModel[]
+}
+
 export interface ListSurveysRepository {
-  list (): Promise<SurveyModel[]>
+  list (): Promise<ListSurveysRepository.Result>
 }

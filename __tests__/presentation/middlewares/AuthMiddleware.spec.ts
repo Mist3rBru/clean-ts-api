@@ -55,8 +55,7 @@ describe('AuthMiddleware', () => {
     const { sut, findUserByTokenSpy } = makeSut()
     const request = mockRequest()
     await sut.handle(request)
-    expect(findUserByTokenSpy.token).toBe(token)
-    expect(findUserByTokenSpy.role).toBe('admin')
+    expect(findUserByTokenSpy.data.token).toBe(token)
   })
 
   it('should return 403 if FindUserByToken returns null', async () => {

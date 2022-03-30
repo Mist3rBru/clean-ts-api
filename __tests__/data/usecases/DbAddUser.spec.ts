@@ -39,15 +39,15 @@ describe('DbAddUser', () => {
     const { sut, hashGeneratorSpy } = makeSut()
     const model = mockAddUserParams()
     await sut.add(model)
-    expect(hashGeneratorSpy.value).toBe(model.password)
+    expect(hashGeneratorSpy.data).toBe(model.password)
   })
 
   it('should call AddUserRepository with correct values', async () => {
     const { sut, addUserRepositorySpy, hashGeneratorSpy } = makeSut()
     const model = mockAddUserParams()
     await sut.add(model)
-    model.password = hashGeneratorSpy.hashedValue
-    expect(addUserRepositorySpy.model).toEqual(model)
+    model.password = hashGeneratorSpy.hash
+    expect(addUserRepositorySpy.data).toEqual(model)
   })
 
   it('should return user if AddUserRepository return user', async () => {

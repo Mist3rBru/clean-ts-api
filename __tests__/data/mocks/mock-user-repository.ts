@@ -1,13 +1,11 @@
 import { AddUserRepository, FindUserByEmailRepository, FindUserByIdRepository } from '@/data/protocols'
-import { UserModel } from '@/domain/models'
-import { AddUserParams } from '@/domain/usecases'
 import { mockUserModel } from '@/tests/domain/mocks'
 
 export class AddUserRepositorySpy implements AddUserRepository {
-  model: AddUserParams
+  data: AddUserRepository.Params
   user = mockUserModel()
-  async add (model: AddUserParams): Promise<UserModel> {
-    this.model = model
+  async add (data: AddUserRepository.Params): Promise<AddUserRepository.Result> {
+    this.data = data
     return this.user
   }
 }
@@ -15,7 +13,7 @@ export class AddUserRepositorySpy implements AddUserRepository {
 export class FindUserByIdRepositorySpy implements FindUserByIdRepository {
   id: string
   user = mockUserModel('any-role')
-  async findById (id: any): Promise<UserModel> {
+  async findById (id: any): Promise<FindUserByIdRepository.Result> {
     this.id = id
     return this.user
   }
@@ -24,7 +22,7 @@ export class FindUserByIdRepositorySpy implements FindUserByIdRepository {
 export class FindUserByEmailRepositorySpy implements FindUserByEmailRepository {
   email: string
   user = mockUserModel('any-role')
-  async findByEmail (email: string): Promise<UserModel> {
+  async findByEmail (email: string): Promise<FindUserByEmailRepository.Result> {
     this.email = email
     return this.user
   }
