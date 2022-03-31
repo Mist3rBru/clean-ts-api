@@ -1,17 +1,20 @@
 import { mockAddUserParams, mockAddSurveyParams } from '@/tests/domain/mocks'
 import { MongoHelper } from '@/infra/database/mongodb'
-import { app, env } from '@/main/config'
+import { setupApp, env } from '@/main/config'
 import { sign } from 'jsonwebtoken'
 import { Collection } from 'mongodb'
+import { Express } from 'express'
 import request from 'supertest'
 let surveyCollection: Collection
 let usersCollection: Collection
 let accessToken: string
 let surveyId: string
 let answer: string
+let app: Express
 
 describe('Survey Routes', () => {
   beforeAll(async () => {
+    app = await setupApp()
     await MongoHelper.connect(env.MONGO_URL)
     surveyCollection = await MongoHelper.getCollection('survey')
     usersCollection = await MongoHelper.getCollection('users')
