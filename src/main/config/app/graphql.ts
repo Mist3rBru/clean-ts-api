@@ -1,6 +1,6 @@
-import { Express } from 'express'
 import { ApolloServer } from 'apollo-server-express'
 import { GraphQLError } from 'graphql'
+import { Express } from 'express'
 import typeDefs from '@/main/graphql/type-defs'
 import resolvers from '@/main/graphql/resolvers'
 
