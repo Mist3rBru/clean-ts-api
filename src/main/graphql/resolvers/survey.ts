@@ -3,6 +3,6 @@ import { makeListSurveysController } from '@/main/composers/controllers'
 
 export default {
   Query: {
-    surveys: async () => adaptResolver(makeListSurveysController())
+    survey: async () => adaptResolver(makeListSurveysController())
   }
 }
