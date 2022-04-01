@@ -8,10 +8,10 @@ import setupGraphql from './graphql'
 export const setupApp = async (): Promise<Express> => {
   const app = express()
   const router = express.Router()
-  await setupGraphql(app)
   setupDocs(app)
   setupStaticFiles(app)
   setupMiddlewares(app)
   setupRoutes(app, router)
+  await setupGraphql(app)
   return app
 }
