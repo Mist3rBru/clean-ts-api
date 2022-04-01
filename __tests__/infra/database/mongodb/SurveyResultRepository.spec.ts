@@ -26,7 +26,7 @@ describe('SurveyResultRepository', () => {
   beforeAll(async () => {
     await MongoHelper.connect(uri)
     surveyResultCollection = await MongoHelper.getCollection('survey_results')
-    surveyCollection = await MongoHelper.getCollection('surveys')
+    surveyCollection = await MongoHelper.getCollection('survey')
     usersCollection = await MongoHelper.getCollection('users')
   })
 
