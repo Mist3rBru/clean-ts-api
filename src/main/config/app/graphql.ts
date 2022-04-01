@@ -3,6 +3,7 @@ import { GraphQLError } from 'graphql'
 import { Express } from 'express'
 import typeDefs from '@/main/graphql/type-defs'
 import resolvers from '@/main/graphql/resolvers'
+import { authDirectiveTransformer } from '@/main/graphql/directives'
 import { makeExecutableSchema } from '@graphql-tools/schema'
 
 const checkError = (error: GraphQLError, errorName: string): boolean => {
@@ -24,7 +25,8 @@ const handleErrors = (response: any, errors: readonly GraphQLError[]): void => {
   })
 }
 
-const schema = makeExecutableSchema({ resolvers, typeDefs })
+let schema = makeExecutableSchema({ resolvers, typeDefs })
+schema = authDirectiveTransformer(schema)
 
 export default async (app: Express): Promise<void> => {
   const server = new ApolloServer({
