@@ -44,7 +44,7 @@ export class SurveyResultRepository implements AddSurveyResultRepository, LoadSu
         path: '$data'
       })
       .lookup({
-        from: 'surveys',
+        from: 'survey',
         foreignField: '_id',
         localField: 'data.surveyId',
         as: 'survey'
