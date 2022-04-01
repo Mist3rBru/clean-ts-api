@@ -1,8 +1,7 @@
 import { UserRepository, MongoHelper } from '@/infra/database/mongodb'
-import { env } from '@/main/config'
 import { mockAddUserParams } from '@/tests/domain/mocks'
 import { Collection, ObjectId } from 'mongodb'
-const uri = env.MONGO_URL
+const uri = process.env.MONGO_URL
 let usersCollection: Collection
 
 const makeSut = (): UserRepository => {

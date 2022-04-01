@@ -1,8 +1,7 @@
 import { MongoHelper, SurveyRepository } from '@/infra/database/mongodb'
-import { env } from '@/main/config'
 import { mockAddSurveyParams, mockSurveyList } from '@/tests/domain/mocks'
 import { Collection } from 'mongodb'
-const uri = env.MONGO_URL
+const uri = process.env.MONGO_URL
 let surveyCollection: Collection
 
 const makeSut = (): SurveyRepository => {

@@ -1,9 +1,8 @@
-import { env } from '@/main/config'
 import { SurveyModel } from '@/domain/models'
 import { SurveyResultRepository, MongoHelper } from '@/infra/database/mongodb'
 import { mockAddSurveyParams, mockAddSurveyResultParams, mockAddUserParams } from '@/tests/domain/mocks'
 import { Collection, ObjectId } from 'mongodb'
-const uri = env.MONGO_URL
+const uri = process.env.MONGO_URL
 let surveyResultCollection: Collection
 let surveyCollection: Collection
 let usersCollection: Collection

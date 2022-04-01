@@ -1,7 +1,5 @@
 import { LogRepository, MongoHelper } from '@/infra/database/mongodb'
 import { Collection } from 'mongodb'
-import { env } from '@/main/config'
-const uri = env.MONGO_URL
 let logsCollection: Collection
 
 const makeSut = (): LogRepository => {
@@ -10,7 +8,7 @@ const makeSut = (): LogRepository => {
 
 describe('LogRepository', () => {
   beforeAll(async () => {
-    await MongoHelper.connect(uri)
+    await MongoHelper.connect(process.env.MONGO_URL)
     logsCollection = await MongoHelper.getCollection('logs')
   })
 

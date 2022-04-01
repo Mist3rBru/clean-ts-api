@@ -1,7 +1,6 @@
 import { MongoHelper } from '@/infra/database/mongodb'
-import { env } from '@/main/config'
 import faker from '@faker-js/faker'
-const uri = env.MONGO_URL
+const uri = process.env.MONGO_URL
 
 describe('MongoHelper', () => {
   afterAll(async () => {

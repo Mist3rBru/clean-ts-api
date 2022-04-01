@@ -12,7 +12,7 @@ let app: Express
 describe('Survey Routes', () => {
   beforeAll(async () => {
     app = await setupApp()
-    await MongoHelper.connect(env.MONGO_URL)
+    await MongoHelper.connect(process.env.MONGO_URL)
     surveyCollection = await MongoHelper.getCollection('survey')
     usersCollection = await MongoHelper.getCollection('users')
   })

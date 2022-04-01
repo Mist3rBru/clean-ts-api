@@ -1,5 +1,5 @@
 import { MongoHelper } from '@/infra/database/mongodb'
-import { setupApp, env } from '@/main/config'
+import { setupApp } from '@/main/config'
 import { Collection } from 'mongodb'
 import { Express } from 'express'
 import request from 'supertest'
@@ -9,7 +9,7 @@ let app: Express
 describe('Auth Routes', () => {
   beforeAll(async () => {
     app = await setupApp()
-    await MongoHelper.connect(env.MONGO_URL)
+    await MongoHelper.connect(process.env.MONGO_URL)
     usersCollection = await MongoHelper.getCollection('users')
     await usersCollection.deleteMany({})
   })
