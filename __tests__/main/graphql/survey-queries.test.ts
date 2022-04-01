@@ -7,15 +7,10 @@ import { sign } from 'jsonwebtoken'
 import request from 'supertest'
 import faker from '@faker-js/faker'
 import { MissingParamError } from '@/presentation/errors'
+import { SurveyModel } from '@/domain/models'
 let surveyCollection: Collection
 let usersCollection: Collection
 let app: Express
-
-const question = faker.lorem.sentence()
-const image = faker.image.imageUrl()
-const answer = faker.lorem.word()
-const answer2 = faker.lorem.word()
-const date = faker.date.recent()
 
 const mockAccessToken = async (): Promise<string> => {
   const res = await usersCollection.insertOne({
@@ -30,27 +25,32 @@ const mockAccessToken = async (): Promise<string> => {
   return accessToken
 }
 
+const mockSurvey = async (): Promise<SurveyModel> => {
+  const surveyData = {
+    question: faker.lorem.sentence(),
+    answers: [{
+      image: faker.image.imageUrl(),
+      answer: faker.lorem.word()
+    }, {
+      answer: faker.lorem.word()
+    }],
+    date: faker.date.recent()
+  }
+  const { insertedId } = await surveyCollection.insertOne(surveyData)
+  return Object.assign({}, surveyData, { id: insertedId.toString() })
+}
+
 describe('GraphQL Survey', () => {
   beforeAll(async () => {
     app = await setupApp()
     await MongoHelper.connect(process.env.MONGO_URL)
-
     surveyCollection = await MongoHelper.getCollection('survey')
     usersCollection = await MongoHelper.getCollection('users')
+  })
 
+  beforeEach(async () => {
     await surveyCollection.deleteMany({})
     await usersCollection.deleteMany({})
-
-    await surveyCollection.insertOne({
-      question,
-      answers: [{
-        answer,
-        image
-      }, {
-        answer: answer2
-      }],
-      date
-    })
   })
 
   afterAll(async () => {
@@ -71,6 +71,7 @@ describe('GraphQL Survey', () => {
     }`
 
     it('should return Surveys', async () => {
+      const survey = await mockSurvey()
       const accessToken = await mockAccessToken()
       const res = await request(app)
         .post('/graphql')
@@ -79,12 +80,15 @@ describe('GraphQL Survey', () => {
       expect(res.status).toBe(200)
       expect(res.body.data.surveys.length).toBe(1)
       expect(res.body.data.surveys[0].id).toBeTruthy()
-      expect(res.body.data.surveys[0].question).toBe(question)
-      expect(res.body.data.surveys[0].date).toBe(date.toISOString())
-      expect(res.body.data.surveys[0].answers).toEqual([
-        { answer, image },
-        { answer: answer2, image: null }
-      ])
+      expect(res.body.data.surveys[0].question).toBe(survey.question)
+      expect(res.body.data.surveys[0].date).toBe(survey.date.toISOString())
+      expect(res.body.data.surveys[0].answers).toEqual([{
+        image: survey.answers[0].image,
+        answer: survey.answers[0].answer
+      }, {
+        image: null,
+        answer: survey.answers[1].answer
+      }])
     })
 
     it('should return AccessDeniedError if no token is provided', async () => {
