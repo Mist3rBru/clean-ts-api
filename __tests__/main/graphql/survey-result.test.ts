@@ -130,7 +130,6 @@ describe('GraphQL SurveyResult', () => {
         .post('/graphql')
         .set('authorization', accessToken)
         .send({ query })
-      console.error(res.body)
       expect(res.status).toBe(200)
       expect(res.body.data.addSurveyResult.question).toBe(survey.question)
       expect(res.body.data.addSurveyResult.date).toBe(survey.date.toISOString())
