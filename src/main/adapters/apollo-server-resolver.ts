@@ -4,7 +4,7 @@ import { Controller } from '@/presentation/protocols'
 export const adaptResolver = async (controller: Controller, args?: any, context?: any): Promise<any> => {
   const request = {
     ...(args || {}),
-    accountId: context?.req?.accountId
+    userId: context?.req?.userId
   }
   const httpResponse = await controller.handle(request)
   switch (httpResponse.statusCode) {
