@@ -7,13 +7,13 @@ export const authDirectiveTransformer = (schema: GraphQLSchema): GraphQLSchema =
   return mapSchema(schema, {
     [MapperKind.OBJECT_FIELD]: (fieldConfig) => {
       const authDirective = getDirective(schema, fieldConfig, 'auth')
-      if (authDirective) {
+      const authAdminDirective = getDirective(schema, fieldConfig, 'authAdmin')
+      const role = authAdminDirective ? 'admin' : null
+      if (authDirective || authAdminDirective) {
         const { resolve } = fieldConfig
         fieldConfig.resolve = async (parent, args, context, info) => {
-          const request = {
-            authorization: context?.req?.headers?.authorization
-          }
-          const httpResponse = await makeAuthMiddleware().handle(request)
+          const request = { authorization: context?.req?.headers?.authorization }
+          const httpResponse = await makeAuthMiddleware(role).handle(request)
           if (httpResponse.statusCode === 200) {
             Object.assign(context?.req, httpResponse.body)
             return resolve.call(this, parent, args, context, info)

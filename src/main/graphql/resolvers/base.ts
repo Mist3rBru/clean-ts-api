@@ -1,5 +1,6 @@
 import { GraphQLDateTime } from 'graphql-scalars'
 
 export default {
-  DateTime: GraphQLDateTime
+  DateTime: GraphQLDateTime,
+  Null: null
 }
