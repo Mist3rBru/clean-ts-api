@@ -5,6 +5,15 @@ export default gql`
     surveys: [Survey!]! @auth
   }
 
+  extend type Mutation {
+    survey (question: String!, answers: [SurveyAnswerParams!]!): Null @authAdmin
+  }
+
+  input SurveyAnswerParams {
+    image: String
+    answer: String!
+  }
+
   type Survey {
     id: ID!
     question: String!
