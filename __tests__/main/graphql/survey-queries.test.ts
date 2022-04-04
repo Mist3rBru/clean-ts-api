@@ -12,12 +12,12 @@ let surveyCollection: Collection
 let usersCollection: Collection
 let app: Express
 
-const mockAccessToken = async (): Promise<string> => {
+const mockAccessToken = async (role: String = null): Promise<string> => {
   const res = await usersCollection.insertOne({
     name: faker.name.findName(),
     email: faker.internet.email(),
     password: faker.internet.password(),
-    role: 'admin'
+    role
   })
   const id = res.insertedId.toHexString()
   const token = sign({ id }, env.TOKEN_SECRET)
@@ -39,6 +39,18 @@ const mockSurvey = async (): Promise<SurveyModel> => {
   const { insertedId } = await surveyCollection.insertOne(surveyData)
   return Object.assign({}, surveyData, { id: insertedId.toString() })
 }
+
+const mockSurveyMutation = (): String => ` mutation {
+  survey (
+    question: "${faker.lorem.sentence()}",
+    answers: [{
+      image: "${faker.image.imageUrl()}",
+      answer: "${faker.lorem.word()}"
+    }, {
+      answer: "${faker.lorem.word()}"
+    }]
+  )
+}`
 
 describe('GraphQL Survey', () => {
   beforeAll(async () => {
@@ -98,6 +110,30 @@ describe('GraphQL Survey', () => {
       expect(res.status).toBe(403)
       expect(res.body.data).toBeFalsy()
       expect(res.body.errors[0].message).toBe(new MissingParamError('token').message)
+    })
+  })
+
+  describe('Survey Mutation', () => {
+    it('should return 200 on success', async () => {
+      const accessToken = await mockAccessToken('admin')
+      const query = mockSurveyMutation()
+      const res = await request(app)
+        .post('/graphql')
+        .set('authorization', accessToken)
+        .send({ query })
+      expect(res.status).toBe(200)
+      expect(res.body.data.survey).toBeNull()
+    })
+
+    it('should return 403 if an regular user  try to create a survey', async () => {
+      const accessToken = await mockAccessToken()
+      const query = mockSurveyMutation()
+      const res = await request(app)
+        .post('/graphql')
+        .set('authorization', accessToken)
+        .send({ query })
+      expect(res.status).toBe(403)
+      expect(res.body.data).toBeUndefined()
     })
   })
 })
