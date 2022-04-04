@@ -54,7 +54,7 @@ const mockSurveyResultQuery = (survey: SurveyModel): String => `query {
   }
 }`
 
-const mockAddSurveyResultQuery = (survey: SurveyModel): String => `mutation {
+const mockAddSurveyResultMutation = (survey: SurveyModel): String => `mutation {
   addSurveyResult (surveyId: "${survey.id}", answer: "${survey.answers[0].answer}") {
     question
     answers {
@@ -125,7 +125,7 @@ describe('GraphQL SurveyResult', () => {
     it('should return SurveyResult', async () => {
       const accessToken = await mockAccessToken()
       const survey = await mockSurvey()
-      const query = mockAddSurveyResultQuery(survey)
+      const query = mockAddSurveyResultMutation(survey)
       const res = await request(app)
         .post('/graphql')
         .set('authorization', accessToken)
@@ -148,7 +148,7 @@ describe('GraphQL SurveyResult', () => {
 
     it('should return AccessDeniedError if no token is provided', async () => {
       const survey = await mockSurvey()
-      const query = mockAddSurveyResultQuery(survey)
+      const query = mockAddSurveyResultMutation(survey)
       const res = await request(app)
         .post('/graphql')
         .send({ query })
